@@ -1,8 +1,0 @@
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\bin\Debug\netcoreapp3.1\GHPRS.Persistence.deps.json
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\bin\Debug\netcoreapp3.1\GHPRS.Persistence.dll
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\obj\Debug\netcoreapp3.1\GHPRS.Persistence.csprojAssemblyReference.cache
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\obj\Debug\netcoreapp3.1\GHPRS.Persistence.AssemblyInfoInputs.cache
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\obj\Debug\netcoreapp3.1\GHPRS.Persistence.AssemblyInfo.cs
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\bin\Debug\netcoreapp3.1\GHPRS.Persistence.runtimeconfig.json
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\bin\Debug\netcoreapp3.1\GHPRS.Persistence.runtimeconfig.dev.json
-C:\Palladium\Repos\ghprs-backend\GHPRS.Persistence\obj\Debug\netcoreapp3.1\GHPRS.Persistence.genruntimeconfig.cache

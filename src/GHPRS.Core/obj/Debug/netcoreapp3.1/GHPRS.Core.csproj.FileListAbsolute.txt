@@ -1,5 +1,0 @@
-C:\Palladium\Repos\ghprs-backend\GHPRS.Core\bin\Debug\netcoreapp3.1\GHPRS.Core.deps.json
-C:\Palladium\Repos\ghprs-backend\GHPRS.Core\bin\Debug\netcoreapp3.1\GHPRS.Core.dll
-C:\Palladium\Repos\ghprs-backend\GHPRS.Core\obj\Debug\netcoreapp3.1\GHPRS.Core.csprojAssemblyReference.cache
-C:\Palladium\Repos\ghprs-backend\GHPRS.Core\obj\Debug\netcoreapp3.1\GHPRS.Core.AssemblyInfoInputs.cache
-C:\Palladium\Repos\ghprs-backend\GHPRS.Core\obj\Debug\netcoreapp3.1\GHPRS.Core.AssemblyInfo.cs
