@@ -78,7 +78,7 @@ namespace GHPRS.Controllers
 
             Person person = new Person()
             {
-                Name = model.LastName,
+                Name = model.Name,
                 GenderId = model.GenderId,
                 MaritalStatusId = model.MaritalStatusId,
                 DateOfBirth = model.DateOfBirth,
@@ -108,14 +108,14 @@ namespace GHPRS.Controllers
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-            if (model.RoleId == 8)
+            if (model.RoleId == 0)
             {
                 if (await _roleManager.RoleExistsAsync(UserRoles.Administrator))
                 {
                     await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
                 }
             }
-            else if (model.RoleId == 8)
+            else if (model.RoleId == 1)
             {
                 if (await _roleManager.RoleExistsAsync(UserRoles.User))
                 {

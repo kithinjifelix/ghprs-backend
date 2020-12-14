@@ -19,13 +19,10 @@ namespace AppointmentScheduler.Core.Model
         public int RoleId { get; set; }
         public string PhoneNumber { get; set; }
 
-        public string HudumaNamba { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public int GenderId { get; set; }
         public int MaritalStatusId { get; set; }
-        public int FacilityId { get; set; }
+
         public DateTime DateOfBirth { get; set; }
 
     }

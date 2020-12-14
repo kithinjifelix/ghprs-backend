@@ -48,9 +48,8 @@ namespace GHPRS
             });
 
             //configure EF Core sql server
-            var connectionString = Configuration["ConnectionStrings:defaultConnection"];
             services.AddEntityFrameworkNpgsql().AddDbContext<GhprsContext>(opt =>
-                opt.UseNpgsql(Configuration.GetConnectionString(connectionString)));
+                opt.UseNpgsql(Configuration.GetConnectionString("defaultConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()
