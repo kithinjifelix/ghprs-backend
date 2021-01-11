@@ -6,6 +6,5 @@ namespace GHPRS.Core.Models
     {
         public int TemplateId { get; set; }
         public IFormFile File { get; set; }
-        public string currentUser { get; set; }
     }
 }

@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    [Migration("20210111114356_File")]
-    partial class File
+    [Migration("20210111204113_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,6 +114,9 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -126,6 +129,38 @@ namespace GHPRS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Templates");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.Upload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("File")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Uploads");
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
@@ -327,6 +362,15 @@ namespace GHPRS.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.Upload", b =>
+                {
+                    b.HasOne("GHPRS.Core.Entities.User", "User")
+                        .WithMany("Uploads")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
                 {
                     b.HasOne("GHPRS.Core.Entities.Person", "Person")
@@ -387,6 +431,11 @@ namespace GHPRS.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
+                {
+                    b.Navigation("Uploads");
                 });
 #pragma warning restore 612, 618
         }

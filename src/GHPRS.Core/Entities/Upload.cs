@@ -9,6 +9,7 @@ namespace GHPRS.Core.Entities
         public string ContentType { get; set; }
         public UploadStatus Status { get; set; }
         public string Comments { get; set; }
+        public virtual User User { get; set; }
     }
 
     public enum UploadStatus

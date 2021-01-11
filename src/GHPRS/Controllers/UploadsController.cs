@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,23 +15,33 @@ namespace GHPRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UploadsController : ControllerBase
     {
         private readonly ILogger<UploadsController> _logger;
         private readonly IUploadService _uploadService;
         private readonly IUploadRepository _uploadRepository;
+        private readonly UserManager<User> _userManager;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository)
+        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = templateService;
             _uploadRepository = uploadRepository;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public IEnumerable<object> GetList()
         {
             return _uploadRepository.GetList();
+        }
+
+        [HttpGet("USER")]
+        public async Task<IEnumerable<object>> GetListByUser()
+        {
+            var user = await GetUser();
+            return _uploadRepository.GetListByUser(user);
         }
 
         [HttpGet("{id}")]
@@ -39,6 +51,7 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("DOWNLOAD/{id}")]
+        [AllowAnonymous]
         public FileResult Download(int id)
         {
             var fileDetails = _uploadRepository.GetById(id);
@@ -55,7 +68,8 @@ namespace GHPRS.Controllers
                 {
                     if (template.File.Length > 0)
                     {
-                        result = await _uploadService.Upload(template);
+                        var user = await GetUser();
+                        result = await _uploadService.Upload(template, user);
                     }
                     else
                     {
@@ -91,6 +105,12 @@ namespace GHPRS.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        private async Task<User> GetUser()
+        {
+            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+            return await _userManager.FindByNameAsync(userName);
         }
     }
 }

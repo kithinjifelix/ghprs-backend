@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,7 @@ namespace GHPRS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class LookupController : ControllerBase
     {
         private readonly ILogger<LookupController> _logger;

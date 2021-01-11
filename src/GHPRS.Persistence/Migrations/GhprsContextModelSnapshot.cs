@@ -151,7 +151,12 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Uploads");
                 });
@@ -355,6 +360,15 @@ namespace GHPRS.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.Upload", b =>
+                {
+                    b.HasOne("GHPRS.Core.Entities.User", "User")
+                        .WithMany("Uploads")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
                 {
                     b.HasOne("GHPRS.Core.Entities.Person", "Person")
@@ -415,6 +429,11 @@ namespace GHPRS.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
+                {
+                    b.Navigation("Uploads");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,6 +6,6 @@ namespace GHPRS.Core.Interfaces
 {
     public interface IUploadService
     {
-        Task<Upload> Upload(UploadModel upload);
+        Task<Upload> Upload(UploadModel upload, User user);
     }
 }

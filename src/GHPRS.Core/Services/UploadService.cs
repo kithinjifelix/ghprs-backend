@@ -17,7 +17,7 @@ namespace GHPRS.Core.Services
             _templateRepository = templateRepository;
         }
 
-        public async Task<Upload> Upload(UploadModel upload)
+        public async Task<Upload> Upload(UploadModel upload, User user)
         {
             //Getting FileName
             var fileName = Path.GetFileName(upload.File.FileName);
@@ -25,14 +25,15 @@ namespace GHPRS.Core.Services
             var fileExtension = Path.GetExtension(fileName);
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
-            var Name = $"{template.Name}-{upload.currentUser}-{DateTime.Today.Date}";
+            var Name = $"{template.Name}-{user.UserName}-{DateTime.Today.Date}";
             var newFileName = String.Concat(Name, fileExtension);
 
             var initializedUpload = new Upload()
             {
                 Name = newFileName,
                 ContentType = upload.File.ContentType,
-                Status = UploadStatus.pending
+                Status = UploadStatus.pending,
+                User = user
             };
 
             using (var target = new MemoryStream())

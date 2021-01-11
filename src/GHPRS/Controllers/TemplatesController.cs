@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ namespace GHPRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TemplatesController : ControllerBase
     {
 
@@ -33,6 +35,7 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("DOWNLOAD/{id}")]
+        [AllowAnonymous]
         public FileResult Download(int id)
         {
             var fileDetails = _templateRepository.GetById(id);

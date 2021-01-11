@@ -22,6 +22,10 @@ namespace GHPRS.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<User>()
+                .HasMany(c => c.Uploads)
+                .WithOne(e => e.User);
+
             modelBuilder.Seed();
         }
     }
