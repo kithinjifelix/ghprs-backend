@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppointmentScheduler.Core.Model
+namespace GHPRS.Core.Model
 {
     public class LoginModel
     {

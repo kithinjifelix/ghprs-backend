@@ -23,6 +23,20 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Lookups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    LookupType = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lookups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Person",
                 columns: table => new
                 {
@@ -176,6 +190,20 @@ namespace GHPRS.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Lookups",
+                columns: new[] { "Id", "LookupType", "Name" },
+                values: new object[,]
+                {
+                    { 1, 0, "Male" },
+                    { 2, 0, "Female" },
+                    { 3, 1, "Single" },
+                    { 4, 1, "Married" },
+                    { 5, 1, "Divorced" },
+                    { 6, 1, "Widow" },
+                    { 7, 1, "Widower" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -235,6 +263,9 @@ namespace GHPRS.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Lookups");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -1,4 +1,4 @@
-﻿namespace AppointmentScheduler.Core.Model
+﻿namespace GHPRS.Core.Model
 {
     public class Response
     {

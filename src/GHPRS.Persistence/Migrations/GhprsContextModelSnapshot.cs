@@ -19,6 +19,68 @@ namespace GHPRS.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
+            modelBuilder.Entity("GHPRS.Core.Entities.Lookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<int>("LookupType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Lookups");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            LookupType = 0,
+                            Name = "Male"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            LookupType = 0,
+                            Name = "Female"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            LookupType = 1,
+                            Name = "Single"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            LookupType = 1,
+                            Name = "Married"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            LookupType = 1,
+                            Name = "Divorced"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            LookupType = 1,
+                            Name = "Widow"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            LookupType = 1,
+                            Name = "Widower"
+                        });
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.Person", b =>
                 {
                     b.Property<int>("Id")

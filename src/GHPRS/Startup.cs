@@ -42,8 +42,10 @@ namespace GHPRS
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:3001",
-                            "http://localhost:3000");
+                        builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+                        //builder.WithOrigins("http://localhost:3000", "https://localhost:3001");
                     });
             });
 
@@ -81,6 +83,7 @@ namespace GHPRS
             services.AddControllers();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<ILookupRepository, LookupRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
