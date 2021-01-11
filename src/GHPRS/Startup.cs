@@ -21,7 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-
+using Hangfire;
+using Hangfire.PostgreSql;
 namespace GHPRS
 {
     public class Startup
@@ -81,6 +82,14 @@ namespace GHPRS
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                     };
                 });
+
+            // Add Hangfire services.
+            services.AddHangfire(config =>
+                config.UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection")));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+
             services.AddControllers();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -117,6 +126,9 @@ namespace GHPRS
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
         }
     }
 }
