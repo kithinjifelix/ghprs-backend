@@ -87,6 +87,8 @@ namespace GHPRS
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ITemplateRepository, TemplateRepository>();
             services.AddScoped<ITemplateService, TemplateService>();
+            services.AddScoped<IUploadRepository, UploadRepository>();
+            services.AddScoped<IUploadService, UploadService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore

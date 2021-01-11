@@ -1,0 +1,96 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using GHPRS.Core.Entities;
+using GHPRS.Core.Interfaces;
+using GHPRS.Core.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
+namespace GHPRS.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UploadsController : ControllerBase
+    {
+        private readonly ILogger<UploadsController> _logger;
+        private readonly IUploadService _uploadService;
+        private readonly IUploadRepository _uploadRepository;
+
+        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository)
+        {
+            _logger = logger;
+            _uploadService = templateService;
+            _uploadRepository = uploadRepository;
+        }
+
+        [HttpGet]
+        public IEnumerable<object> GetList()
+        {
+            return _uploadRepository.GetList();
+        }
+
+        [HttpGet("{id}")]
+        public object GetById(int id)
+        {
+            return _uploadRepository.GetDetailsById(id);
+        }
+
+        [HttpGet("DOWNLOAD/{id}")]
+        public FileResult Download(int id)
+        {
+            var fileDetails = _uploadRepository.GetById(id);
+            return File(fileDetails.File, fileDetails.ContentType, fileDetails.Name);
+        }
+
+        [HttpPost("UPLOAD")]
+        public async Task<IActionResult> Upload([FromForm] UploadModel template)
+        {
+            try
+            {
+                var result = new Upload();
+                if (template.File != null)
+                {
+                    if (template.File.Length > 0)
+                    {
+                        result = await _uploadService.Upload(template);
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "File contains no data");
+                    }
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
+                }
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpPut("REVIEW/{id}")]
+        public IActionResult Review(int id, [FromBody] Review review)
+        {
+            try
+            {
+                var upload = _uploadRepository.GetById(id);
+
+                upload.Status = (UploadStatus)review.Status;
+                upload.Comments = review.Comments;
+
+                _uploadRepository.Update(upload);
+                return Ok(upload);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+    }
+}

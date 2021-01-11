@@ -16,6 +16,8 @@ namespace GHPRS.Persistence
 
         public DbSet<Template> Templates { get; set; }
 
+        public DbSet<Upload> Uploads { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

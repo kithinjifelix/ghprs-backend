@@ -15,11 +15,11 @@ namespace GHPRS.Controllers
     public class TemplatesController : ControllerBase
     {
 
-        private readonly ILogger<LookupController> _logger;
+        private readonly ILogger<TemplatesController> _logger;
         private readonly ITemplateService _templateService;
         private readonly ITemplateRepository  _templateRepository;
 
-        public TemplatesController(ILogger<LookupController> logger, ITemplateService templateService, ITemplateRepository templateRepository)
+        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository)
         {
             _logger = logger;
             _templateService = templateService;
