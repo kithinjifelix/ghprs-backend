@@ -14,6 +14,8 @@ namespace GHPRS.Persistence
 
         public DbSet<Lookup> Lookups { get; set; }
 
+        public DbSet<Template> Templates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

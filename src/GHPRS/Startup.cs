@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
+using GHPRS.Core.Services;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,6 +85,8 @@ namespace GHPRS
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ILookupRepository, LookupRepository>();
+            services.AddScoped<ITemplateRepository, TemplateRepository>();
+            services.AddScoped<ITemplateService, TemplateService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
