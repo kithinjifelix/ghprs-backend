@@ -23,13 +23,33 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Link",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Url = table.Column<string>(type: "text", nullable: true),
+                    LinkType = table.Column<int>(type: "integer", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Link", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Lookups",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    LookupType = table.Column<int>(type: "integer", nullable: false)
+                    LookupType = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,7 +65,9 @@ namespace GHPRS.Persistence.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     GenderId = table.Column<int>(type: "integer", nullable: false),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -61,7 +83,11 @@ namespace GHPRS.Persistence.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     File = table.Column<byte[]>(type: "bytea", nullable: true),
-                    ContentType = table.Column<string>(type: "text", nullable: true)
+                    ContentType = table.Column<string>(type: "text", nullable: true),
+                    Version = table.Column<decimal>(type: "numeric", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -217,7 +243,9 @@ namespace GHPRS.Persistence.Migrations
                     ContentType = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Comments = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,17 +259,37 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Lookups",
-                columns: new[] { "Id", "LookupType", "Name" },
+                table: "Link",
+                columns: new[] { "Id", "CreatedAt", "Key", "LinkType", "Name", "UpdatedAt", "Url" },
                 values: new object[,]
                 {
-                    { 1, 0, "Male" },
-                    { 2, 0, "Female" },
-                    { 3, 1, "Single" },
-                    { 4, 1, "Married" },
-                    { 5, 1, "Divorced" },
-                    { 6, 1, "Widow" },
-                    { 7, 1, "Widower" }
+                    { 8, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(765), "", 3, "Document Manager", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(797), "/documents" },
+                    { 20, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(884), "", 3, "WHO Global Health Observatory", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(885), "/Observatory" },
+                    { 19, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(881), "", 3, "World Bank Service Delivery Indicators", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(882), "http://datatopics.worldbank.org/sdi/" },
+                    { 18, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(879), "", 3, "World Bank", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(880), "https://data.worldbank.org/" },
+                    { 16, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(873), "", 3, "UNICEF (MICS)", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(874), "https://data.unicef.org/" },
+                    { 15, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(871), "", 3, "STAT Compiler", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(872), "https://statcompiler.com/en/" },
+                    { 17, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(876), "", 3, "Global Health Data", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(877), "http://apps.who.int/gho/data/node.home" },
+                    { 13, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(865), "", 3, "Monthly Portal", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(866), "http://hmis.reachproject.or.tz/MonthlyReporting/" },
+                    { 12, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(863), "", 3, "Partner Performance Report", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(864), "https://www.pepfar.net/OGAC-HQ/icpi/Products/Forms/AllItems.aspx" },
+                    { 11, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(860), "", 3, "OHA Dashboard", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(861), "https://sites.google.com/a/usaid.gov/gh-oha/home/reports-resources/quarterly-reporting-guidance-and-resources" },
+                    { 10, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(857), "", 3, "Panaroma Dashboard", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(858), "https://pepfar-panorama.org/" },
+                    { 9, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(853), "", 3, "DATIM", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(854), "https://www.datim.org/dhis" },
+                    { 14, new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(868), "", 3, "IP Reporting System", new DateTime(2021, 1, 13, 23, 13, 17, 726, DateTimeKind.Local).AddTicks(869), "https://usaidtanzaniaiprs.com/index.cfm" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Lookups",
+                columns: new[] { "Id", "CreatedAt", "LookupType", "Name", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { 6, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2467), 1, "Widow", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2468) },
+                    { 1, new DateTime(2021, 1, 13, 23, 13, 17, 721, DateTimeKind.Local).AddTicks(4174), 0, "Male", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(1886) },
+                    { 2, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2436), 0, "Female", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2450) },
+                    { 3, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2458), 1, "Single", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2460) },
+                    { 4, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2461), 1, "Married", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2462) },
+                    { 5, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2464), 1, "Divorced", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2465) },
+                    { 7, new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2469), 1, "Widower", new DateTime(2021, 1, 13, 23, 13, 17, 722, DateTimeKind.Local).AddTicks(2470) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -308,6 +356,9 @@ namespace GHPRS.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Link");
 
             migrationBuilder.DropTable(
                 name: "Lookups");

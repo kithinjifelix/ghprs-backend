@@ -8,5 +8,14 @@ namespace GHPRS.Core.Entities
         public string Description { get; set; }
         public Byte[] File { get; set; }
         public string ContentType { get; set; }
+        public decimal Version { get; set; }
+        public TemplateStatus Status { get; set; }
+
+        public enum TemplateStatus
+        {
+            Active,
+            Archived
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using static GHPRS.Core.Entities.Template;
 
 namespace GHPRS.Core.Services
 {
@@ -16,18 +17,13 @@ namespace GHPRS.Core.Services
         }
         public async Task<Template> Initialize(TemplateModel templateModel)
         {
-            //Getting FileName
-            var fileName = Path.GetFileName(templateModel.File.FileName);
-            //Getting file Extension
-            var fileExtension = Path.GetExtension(fileName);
-            // fileName to save
-            var newFileName = String.Concat(templateModel.Name, fileExtension);
-
             var initializedTemplate = new Template()
             {
-                Name = newFileName,
+                Name = templateModel.Name,
                 Description = templateModel.Description,
+                Version = templateModel.Version,
                 ContentType = templateModel.File.ContentType,
+                Status = TemplateStatus.Active
             };
 
             using (var target = new MemoryStream())

@@ -86,6 +86,8 @@ namespace GHPRS.Controllers
                 GenderId = model.GenderId,
                 MaritalStatusId = model.MaritalStatusId,
                 DateOfBirth = model.DateOfBirth,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
 
             User user = new User()

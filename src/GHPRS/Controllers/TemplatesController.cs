@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static GHPRS.Core.Entities.Template;
 
 namespace GHPRS.Controllers
 {
@@ -19,19 +22,28 @@ namespace GHPRS.Controllers
 
         private readonly ILogger<TemplatesController> _logger;
         private readonly ITemplateService _templateService;
-        private readonly ITemplateRepository  _templateRepository;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly UserManager<User> _userManager;
 
-        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository)
+        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _templateService = templateService;
             _templateRepository = templateRepository;
+            _userManager = userManager;
+        }
+
+        [HttpGet("{id}")]
+        public object GetById(int id)
+        {
+            return _templateRepository.GetDetailsById(id);
         }
 
         [HttpGet]
         public IEnumerable<object> GetList()
         {
-            return _templateRepository.GetList();
+            var role = this.User.FindFirstValue(ClaimTypes.Role);
+            return _templateRepository.GetList(role);
         }
 
         [HttpGet("DOWNLOAD/{id}")]
@@ -66,6 +78,24 @@ namespace GHPRS.Controllers
                 return Ok(result);
             }
             catch(Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpPut("{id}/STATUS/{status}")]
+        public IActionResult Review(int id, int status)
+        {
+            try
+            {
+                var template = _templateRepository.GetById(id);
+
+                template.Status = (TemplateStatus)status;
+
+                _templateRepository.Update(template);
+                return Ok(template);
+            }
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }

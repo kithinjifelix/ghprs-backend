@@ -8,6 +8,7 @@ namespace GHPRS.Core.Interfaces
 {
     public interface ITemplateRepository : IRepository<Template>
     {
-        IEnumerable<object> GetList();
+        IEnumerable<object> GetList(string role);
+        object GetDetailsById(int id);
     }
 }

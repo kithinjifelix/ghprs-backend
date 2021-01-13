@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
@@ -12,14 +7,11 @@ using GHPRS.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -51,7 +43,7 @@ namespace GHPRS
                     });
             });
 
-            //configure EF Core sql server
+            //configure EF Core Postgres SQL
             services.AddDbContext<GhprsContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("defaultConnection")));
 
@@ -98,6 +90,7 @@ namespace GHPRS
             services.AddScoped<ITemplateService, TemplateService>();
             services.AddScoped<IUploadRepository, UploadRepository>();
             services.AddScoped<IUploadService, UploadService>();
+            services.AddScoped<ILinkRepository, LinkRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
