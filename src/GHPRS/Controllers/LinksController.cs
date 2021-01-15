@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
+using GHPRS.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,27 @@ namespace GHPRS.Controllers
         {
             _logger = logger;
             _linkRepository = linkRepository;
+        }
+
+        [HttpPost]
+        public IActionResult Add([FromBody] LinkModel model)
+        {
+            try
+            {
+                var link = new Link()
+                {
+                    Name = model.Name,
+                    Url = model.Url,
+                    LinkType = (LinkType)model.LinkType,
+                    Key = model.Key,
+                };
+                var result = _linkRepository.Insert(link);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
 
         [HttpGet]

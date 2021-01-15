@@ -51,7 +51,7 @@ namespace GHPRS.Controllers
         public FileResult Download(int id)
         {
             var fileDetails = _templateRepository.GetById(id);
-            return File(fileDetails.File, fileDetails.ContentType, fileDetails.Name);
+            return File(fileDetails.File, fileDetails.ContentType, fileDetails.Name + fileDetails.FileExtension);
         }
 
         [HttpPost("INITIALIZE")]

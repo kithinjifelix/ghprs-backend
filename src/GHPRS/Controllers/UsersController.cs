@@ -36,5 +36,11 @@ namespace GHPRS.Controllers
             return await _userManager.FindByNameAsync(userName);
         }
 
+        [HttpGet("{id}")]
+        public async Task<User> Get(string id)
+        {
+            return await _userManager.FindByIdAsync(id);
+        }
+
     }
 }

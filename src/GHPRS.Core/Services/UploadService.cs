@@ -25,6 +25,7 @@ namespace GHPRS.Core.Services
             var initializedUpload = new Upload()
             {
                 Name = template.Name,
+                FileExtension = template.FileExtension,
                 ContentType = upload.File.ContentType,
                 Status = UploadStatus.pending,
                 User = user

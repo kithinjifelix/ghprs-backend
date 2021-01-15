@@ -17,9 +17,15 @@ namespace GHPRS.Core.Services
         }
         public async Task<Template> Initialize(TemplateModel templateModel)
         {
+            //Getting FileName
+            var fileName = Path.GetFileName(templateModel.File.FileName);
+            //Getting file Extension
+            var fileExtension = Path.GetExtension(fileName);
+
             var initializedTemplate = new Template()
             {
                 Name = templateModel.Name,
+                FileExtension = fileExtension,
                 Description = templateModel.Description,
                 Version = templateModel.Version,
                 ContentType = templateModel.File.ContentType,
