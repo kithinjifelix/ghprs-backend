@@ -16,25 +16,25 @@ namespace GHPRS.Persistence.Repositories
 
         public object GetDetailsById(int id)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
             return result;
         }
 
         public IEnumerable<object> GetList()
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments , s.Status, s.ContentType, s.User, s.CreatedAt }).ToList();
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments , s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).ToList();
             return result;
         }
 
         public IEnumerable<object> GetListByStatus(UploadStatus status)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.CreatedAt }).Where(x => x.Status == status).ToList();
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).Where(x => x.Status == status).ToList();
             return result;
         }
 
         public IEnumerable<object> GetListByUser(User user)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.CreatedAt }).Where(x => x.User == user).ToList();
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).Where(x => x.User == user).ToList();
             return result;
         }
     }

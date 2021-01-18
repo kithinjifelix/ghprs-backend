@@ -27,6 +27,7 @@ namespace GHPRS.Core.Services
                 Name = templateModel.Name,
                 FileExtension = fileExtension,
                 Description = templateModel.Description,
+                Frequency = (ReportingFrequency)templateModel.Frequency,
                 Version = templateModel.Version,
                 ContentType = templateModel.File.ContentType,
                 Status = TemplateStatus.Active

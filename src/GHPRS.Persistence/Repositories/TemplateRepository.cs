@@ -18,7 +18,7 @@ namespace GHPRS.Persistence.Repositories
 
         public object GetDetailsById(int id)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Status, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Frequency, s.Status, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
             return result;
         }
 
@@ -26,11 +26,11 @@ namespace GHPRS.Persistence.Repositories
         {
             if (role == "Administrator")
             {
-                return _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Status, s.CreatedAt }).ToList();
+                return _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Frequency, s.Status, s.CreatedAt }).ToList();
             }
             else
             {
-                return _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Status, s.CreatedAt }).Where(x => x.Status == TemplateStatus.Active).ToList();
+                return _entities.Select(s => new { s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Frequency, s.Status, s.CreatedAt }).Where(x => x.Status == TemplateStatus.Active).ToList();
             }
             
         }
