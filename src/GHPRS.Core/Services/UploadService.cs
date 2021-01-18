@@ -28,7 +28,10 @@ namespace GHPRS.Core.Services
                 FileExtension = template.FileExtension,
                 ContentType = upload.File.ContentType,
                 Status = UploadStatus.pending,
-                User = user
+                StartDate = upload.StartDate,
+                EndDate = upload.EndDate,
+                User = user,
+                Template = template
             };
 
             using (var target = new MemoryStream())

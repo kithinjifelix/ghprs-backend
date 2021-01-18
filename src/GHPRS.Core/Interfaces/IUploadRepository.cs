@@ -7,6 +7,7 @@ namespace GHPRS.Core.Interfaces
     {
         IEnumerable<object> GetList();
         IEnumerable<object> GetListByUser(User user);
+        IEnumerable<object> GetListByStatus(UploadStatus status);
         object GetDetailsById(int id);
     }
 }

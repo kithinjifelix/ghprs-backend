@@ -11,11 +11,21 @@ namespace GHPRS.Core.Entities
         public string ContentType { get; set; }
         public decimal Version { get; set; }
         public TemplateStatus Status { get; set; }
+        public ReportingFrequency Frequency { get; set; }
 
         public enum TemplateStatus
         {
             Active,
             Archived
+        }
+
+        public enum ReportingFrequency
+        {
+            Weekly,
+            Monthly,
+            Querterly,
+            Yearly,
+            Adhoc
         }
 
     }

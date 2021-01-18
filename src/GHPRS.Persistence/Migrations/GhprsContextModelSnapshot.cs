@@ -52,131 +52,131 @@ namespace GHPRS.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7551),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(340),
                             Key = "",
                             LinkType = 3,
                             Name = "Document Manager",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7574),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(367),
                             Url = "/documents"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7631),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(579),
                             Key = "",
                             LinkType = 3,
                             Name = "DATIM",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7633),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(581),
                             Url = "https://www.datim.org/dhis"
                         },
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7635),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(583),
                             Key = "",
                             LinkType = 3,
                             Name = "Panaroma Dashboard",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7636),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(584),
                             Url = "https://pepfar-panorama.org/"
                         },
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7638),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(585),
                             Key = "",
                             LinkType = 3,
                             Name = "OHA Dashboard",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7639),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(587),
                             Url = "https://sites.google.com/a/usaid.gov/gh-oha/home/reports-resources/quarterly-reporting-guidance-and-resources"
                         },
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7641),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(588),
                             Key = "",
                             LinkType = 3,
                             Name = "Partner Performance Report",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7642),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(589),
                             Url = "https://www.pepfar.net/OGAC-HQ/icpi/Products/Forms/AllItems.aspx"
                         },
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7643),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(591),
                             Key = "",
                             LinkType = 3,
                             Name = "Monthly Portal",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7644),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(592),
                             Url = "http://hmis.reachproject.or.tz/MonthlyReporting/"
                         },
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7646),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(594),
                             Key = "",
                             LinkType = 3,
                             Name = "IP Reporting System",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7647),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(595),
                             Url = "https://usaidtanzaniaiprs.com/index.cfm"
                         },
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7649),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(596),
                             Key = "",
                             LinkType = 3,
                             Name = "STAT Compiler",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7649),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(597),
                             Url = "https://statcompiler.com/en/"
                         },
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7651),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(598),
                             Key = "",
                             LinkType = 3,
                             Name = "UNICEF (MICS)",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7652),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(599),
                             Url = "https://data.unicef.org/"
                         },
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7654),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(601),
                             Key = "",
                             LinkType = 3,
                             Name = "Global Health Data",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7655),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(602),
                             Url = "http://apps.who.int/gho/data/node.home"
                         },
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7656),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(603),
                             Key = "",
                             LinkType = 3,
                             Name = "World Bank",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7657),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(604),
                             Url = "https://data.worldbank.org/"
                         },
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7659),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(606),
                             Key = "",
                             LinkType = 3,
                             Name = "World Bank Service Delivery Indicators",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7660),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(607),
                             Url = "http://datatopics.worldbank.org/sdi/"
                         },
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7661),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(608),
                             Key = "",
                             LinkType = 3,
                             Name = "WHO Global Health Observatory",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 272, DateTimeKind.Local).AddTicks(7662),
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 92, DateTimeKind.Local).AddTicks(609),
                             Url = "/Observatory"
                         });
                 });
@@ -208,58 +208,58 @@ namespace GHPRS.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 268, DateTimeKind.Local).AddTicks(1483),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(675),
                             LookupType = 0,
                             Name = "Male",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 268, DateTimeKind.Local).AddTicks(9986)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(8490)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(530),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9285),
                             LookupType = 0,
                             Name = "Female",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(541)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9301)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(549),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9309),
                             LookupType = 1,
                             Name = "Single",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(550)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9310)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(552),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9312),
                             LookupType = 1,
                             Name = "Married",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(553)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9313)
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(554),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9314),
                             LookupType = 1,
                             Name = "Divorced",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(555)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9316)
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(557),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9317),
                             LookupType = 1,
                             Name = "Widow",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(558)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9319)
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(559),
+                            CreatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9320),
                             LookupType = 1,
                             Name = "Widower",
-                            UpdatedAt = new DateTime(2021, 1, 15, 16, 2, 54, 269, DateTimeKind.Local).AddTicks(560)
+                            UpdatedAt = new DateTime(2021, 1, 17, 13, 20, 23, 87, DateTimeKind.Local).AddTicks(9321)
                         });
                 });
 
@@ -315,6 +315,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("FileExtension")
                         .HasColumnType("text");
 
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -348,6 +351,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<byte[]>("File")
                         .HasColumnType("bytea");
 
@@ -357,7 +363,13 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TemplateId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -367,6 +379,8 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
 
                     b.HasIndex("UserId");
 
@@ -574,9 +588,15 @@ namespace GHPRS.Persistence.Migrations
 
             modelBuilder.Entity("GHPRS.Core.Entities.Upload", b =>
                 {
+                    b.HasOne("GHPRS.Core.Entities.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId");
+
                     b.HasOne("GHPRS.Core.Entities.User", "User")
                         .WithMany("Uploads")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Template");
 
                     b.Navigation("User");
                 });

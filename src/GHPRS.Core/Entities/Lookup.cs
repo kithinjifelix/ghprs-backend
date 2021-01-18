@@ -11,10 +11,5 @@ namespace GHPRS.Core.Entities
     {
         Gender,
         MaritalStatus,
-        County,
-        Role,
-        Relationship,
-        FacilityLevel,
-        AppointmentStatus
     }
 }

@@ -44,6 +44,12 @@ namespace GHPRS.Controllers
             return _uploadRepository.GetListByUser(user);
         }
 
+        [HttpGet("STATUS/{status}")]
+        public IEnumerable<object> GetListByStatus(int status)
+        {
+            return _uploadRepository.GetListByStatus((UploadStatus)status);
+        }
+
         [HttpGet("{id}")]
         public object GetById(int id)
         {

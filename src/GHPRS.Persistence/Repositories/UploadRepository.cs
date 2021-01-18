@@ -26,6 +26,12 @@ namespace GHPRS.Persistence.Repositories
             return result;
         }
 
+        public IEnumerable<object> GetListByStatus(UploadStatus status)
+        {
+            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.CreatedAt }).Where(x => x.Status == status).ToList();
+            return result;
+        }
+
         public IEnumerable<object> GetListByUser(User user)
         {
             var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.CreatedAt }).Where(x => x.User == user).ToList();
