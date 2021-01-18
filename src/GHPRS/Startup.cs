@@ -91,6 +91,7 @@ namespace GHPRS
             services.AddScoped<IUploadRepository, UploadRepository>();
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
+            services.AddScoped<IExcelService, ExcelService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
