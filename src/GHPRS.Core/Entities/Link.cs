@@ -6,6 +6,7 @@ namespace GHPRS.Core.Entities
         public string Name { get; set; }
         public string Url { get; set; }
         public LinkType LinkType { get; set; }
+        public int Number { get; set; }
         public string Key { get; set; }
     }
 

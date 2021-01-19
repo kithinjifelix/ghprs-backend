@@ -10,7 +10,7 @@ namespace GHPRS.Core.Services
 {
     public class ExcelService : IExcelService
     {
-        public object ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow)
+        public DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow)
         {
             using (var excelPack = new ExcelPackage())
             {
@@ -47,8 +47,8 @@ namespace GHPRS.Core.Services
                     }
 
                     //Get everything as generics and let end user decides on casting to required type
-                    var generatedType = JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(excelAsTable));
-                    return generatedType;
+                    //var generatedType = JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(excelAsTable));
+                    return excelAsTable;
                     //return (T)Convert.ChangeType(generatedType, typeof(T));
                 }
                 else

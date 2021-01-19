@@ -1,11 +1,9 @@
 ﻿using GHPRS.Core.Entities;
 using GHPRS.Persistence.Seed;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GHPRS.Persistence
 {
@@ -46,10 +44,9 @@ namespace GHPRS.Persistence
         }
 
         public DbSet<Lookup> Lookups { get; set; }
-
         public DbSet<Template> Templates { get; set; }
-
         public DbSet<Upload> Uploads { get; set; }
+        public DbSet<Column> Columns { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +55,10 @@ namespace GHPRS.Persistence
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Uploads)
                 .WithOne(e => e.User);
+
+            modelBuilder.Entity<Template>()
+                .HasMany(c => c.Columns)
+                .WithOne(e => e.Template);
 
             modelBuilder.Seed();
         }

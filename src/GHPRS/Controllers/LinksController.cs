@@ -34,6 +34,7 @@ namespace GHPRS.Controllers
                     Name = model.Name,
                     Url = model.Url,
                     LinkType = (LinkType)model.LinkType,
+                    Number = model.Number,
                     Key = model.Key,
                 };
                 var result = _linkRepository.Insert(link);
@@ -97,7 +98,7 @@ namespace GHPRS.Controllers
          }
 
         [HttpPut("{id}")]
-        public IActionResult Review([FromBody] Link link)
+        public IActionResult Update([FromBody] Link link)
         {
             try
             {

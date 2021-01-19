@@ -9,6 +9,7 @@ namespace GHPRS.Core.Models
         public string Name { get; set; }
         public string Url { get; set; }
         public int LinkType { get; set; }
+        public int Number { get; set; }
         public string Key { get; set; }
     }
 }
