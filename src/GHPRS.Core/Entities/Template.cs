@@ -5,10 +5,6 @@ namespace GHPRS.Core.Entities
 {
     public class Template : Entity
     {
-        public Template()
-        {
-            TableName = GenerateDatabaseTableName(Name);
-        }
         public string Name { get; set; }
         public string FileExtension { get; set; }
         public string Description { get; set; }
@@ -17,9 +13,6 @@ namespace GHPRS.Core.Entities
         public decimal Version { get; set; }
         public TemplateStatus Status { get; set; }
         public ReportingFrequency Frequency { get; set; }
-
-        public string TableName { get; set; }
-        public virtual ICollection<Column> Columns { get; set; }
 
         public enum TemplateStatus
         {
@@ -35,12 +28,5 @@ namespace GHPRS.Core.Entities
             Yearly,
             Adhoc
         }
-
-        private string GenerateDatabaseTableName(string name)
-        {
-            string TableName = name.Replace(" ", "").Replace("-", "_");
-            return TableName;
-        }
-
     }
 }

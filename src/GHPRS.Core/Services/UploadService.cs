@@ -17,6 +17,11 @@ namespace GHPRS.Core.Services
             _templateRepository = templateRepository;
         }
 
+        public void InsertUploadData(Upload upload)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Upload> Upload(UploadModel upload, User user)
         {
             // fileName to save

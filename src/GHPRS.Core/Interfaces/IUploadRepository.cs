@@ -10,6 +10,6 @@ namespace GHPRS.Core.Interfaces
         IEnumerable<object> GetListByUser(User user);
         IEnumerable<object> GetListByStatus(UploadStatus status);
         object GetDetailsById(int id);
-        void InsertToTable(Template template, DataTable data);
+        void InsertToTable(WorkSheet workSheet, DataTable data);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Hangfire;
 
 namespace GHPRS.Controllers
 {
@@ -22,13 +24,17 @@ namespace GHPRS.Controllers
         private readonly IUploadService _uploadService;
         private readonly IUploadRepository _uploadRepository;
         private readonly UserManager<User> _userManager;
+        private readonly IExcelService _excelService;
+        private readonly ITemplateRepository _templateRepository;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository, UserManager<User> userManager)
+        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository, UserManager<User> userManager, IExcelService excelService, ITemplateRepository templateRepository)
         {
             _logger = logger;
             _uploadService = templateService;
             _uploadRepository = uploadRepository;
             _userManager = userManager;
+            _excelService = excelService;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet]
@@ -105,12 +111,30 @@ namespace GHPRS.Controllers
                 upload.Comments = review.Comments;
 
                 _uploadRepository.Update(upload);
+
+                //Extract data from aproved Tempalates
+                if ((UploadStatus)review.Status == UploadStatus.Approved)
+                {
+                    //BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload));
+                }
+
                 return Ok(upload);
             }
             catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        [HttpGet("READ/{id}")]
+        [AllowAnonymous]
+        public IActionResult Read(int id)
+        {
+            var fileDetails = _uploadRepository.GetById(id);
+            MemoryStream memoryStream = new MemoryStream(fileDetails.File);
+            var result = _excelService.ReadExcelWorkSheet(memoryStream, "Sheet1", 1);
+            _templateRepository.CreateTemplateTable("Test", result);
+            return Ok(result);
         }
 
         private async Task<User> GetUser()

@@ -42,7 +42,7 @@ namespace GHPRS.Persistence.Repositories
             return result;
         }
 
-        public void InsertToTable(Template template, DataTable data)
+        public void InsertToTable(WorkSheet workSheet, DataTable data)
         {
             var insertScript = String.Empty;
             var insert = String.Empty;
@@ -50,7 +50,7 @@ namespace GHPRS.Persistence.Repositories
             {
                 string columns = String.Empty;
                 string rows = String.Empty;
-                foreach (var column in template.Columns)
+                foreach (var column in workSheet.Columns)
                 {
                     if (column.Name != "Id")
                     {
@@ -58,7 +58,7 @@ namespace GHPRS.Persistence.Repositories
                         rows += $"\"{row[column.Name]}\", ";
                     } 
                 }
-                insert = $"INSERT INTO public.\"{template.TableName}\" (\"{columns}\") VALUES (\"{rows}\");";
+                insert = $"INSERT INTO public.\"{workSheet.TableName}\" (\"{columns}\") VALUES (\"{rows}\");";
             }
             insertScript += insert;
             FormattableString formattableinsertScript = $"{insertScript}";

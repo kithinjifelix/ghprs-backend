@@ -11,14 +11,11 @@ namespace GHPRS.Persistence.Repositories
 {
     public class TemplateRepository : Repository<Template>, ITemplateRepository
     {
-        private readonly IQueryable<Template> _entities;
+        private readonly DbSet<Template> _entities;
         private readonly GhprsContext _context;
         public TemplateRepository(GhprsContext context) : base(context)
         {
-            _entities = context.Templates
-                .Include(i => i.Columns)
-                .AsNoTracking();
-
+            _entities = context.Set<Template>();
             _context = context;
         }
 

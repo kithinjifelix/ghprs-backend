@@ -8,6 +8,6 @@ namespace GHPRS.Core.Entities
     {
         public string Name { get; set; }
         public string Type { get; set; }
-        public virtual Template Template { get; set; }
+        public virtual WorkSheet WorkSheet { get; set; }
     }
 }

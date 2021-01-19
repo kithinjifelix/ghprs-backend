@@ -56,9 +56,9 @@ namespace GHPRS.Persistence
                 .HasMany(c => c.Uploads)
                 .WithOne(e => e.User);
 
-            modelBuilder.Entity<Template>()
+            modelBuilder.Entity<WorkSheet>()
                 .HasMany(c => c.Columns)
-                .WithOne(e => e.Template);
+                .WithOne(e => e.WorkSheet);
 
             modelBuilder.Seed();
         }
