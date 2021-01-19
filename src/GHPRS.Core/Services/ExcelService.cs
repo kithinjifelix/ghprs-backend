@@ -26,7 +26,7 @@ namespace GHPRS.Core.Services
                 if (worksheet != null)
                 {
                     DataTable excelAsTable = new DataTable();
-                    foreach (var firstRowCell in worksheet.Cells[startRow, startRow, startRow, worksheet.Dimension.End.Column])
+                    foreach (var firstRowCell in worksheet.Cells[startRow, 1, startRow, worksheet.Dimension.End.Column])
                     {
                         //Get colummn details
                         if (!string.IsNullOrEmpty(firstRowCell.Text))

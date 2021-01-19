@@ -19,7 +19,7 @@ namespace GHPRS.Core.Services
 
         public void InsertUploadData(Upload upload)
         {
-            throw new NotImplementedException();
+            
         }
 
         public async Task<Upload> Upload(UploadModel upload, User user)

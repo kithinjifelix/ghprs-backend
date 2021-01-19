@@ -115,7 +115,7 @@ namespace GHPRS.Controllers
                 //Extract data from aproved Tempalates
                 if ((UploadStatus)review.Status == UploadStatus.Approved)
                 {
-                    //BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload));
+                    BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload));
                 }
 
                 return Ok(upload);
@@ -130,10 +130,10 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public IActionResult Read(int id)
         {
-            var fileDetails = _uploadRepository.GetById(id);
+            var fileDetails = _templateRepository.GetById(id);
             MemoryStream memoryStream = new MemoryStream(fileDetails.File);
-            var result = _excelService.ReadExcelWorkSheet(memoryStream, "Sheet1", 1);
-            _templateRepository.CreateTemplateTable("Test", result);
+            var result = _excelService.ReadExcelWorkSheet(memoryStream, "Configuration", 4);
+            //_templateRepository.CreateTemplateTable("Test", result);
             return Ok(result);
         }
 

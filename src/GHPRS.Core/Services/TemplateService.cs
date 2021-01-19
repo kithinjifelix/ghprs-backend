@@ -6,6 +6,7 @@ using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using static GHPRS.Core.Entities.Template;
 using Hangfire;
+using System.Collections.Generic;
 
 namespace GHPRS.Core.Services
 {
@@ -19,7 +20,7 @@ namespace GHPRS.Core.Services
 
         public void CreateTemplateTable(Template template)
         {
-            throw new NotImplementedException();
+            
         }
 
         public async Task<Template> Initialize(TemplateModel templateModel)
@@ -49,11 +50,14 @@ namespace GHPRS.Core.Services
             var result = _templateRepository.Insert(initializedTemplate);
 
             // extract template schema in the background
-            //BackgroundJob.Enqueue(() => CreateTemplateTable(result));
+            BackgroundJob.Enqueue(() => CreateTemplateTable(result));
 
             return result;
         }
 
-
+        private IEnumerable<WorkSheet> ReadConfigurationFile(Template template)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
