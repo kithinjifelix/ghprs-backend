@@ -32,7 +32,12 @@ namespace GHPRS.Persistence.Seed
                 new Link { Id = 17, Name = "Global Health Data", Url = "http://apps.who.int/gho/data/node.home", LinkType = LinkType.External, Key = "", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Link { Id = 18, Name = "World Bank", Url = "https://data.worldbank.org/", LinkType = LinkType.External, Key = "", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Link { Id = 19, Name = "World Bank Service Delivery Indicators", Url = "http://datatopics.worldbank.org/sdi/", LinkType = LinkType.External, Key = "", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Link { Id = 20, Name = "WHO Global Health Observatory", Url = "/Observatory", LinkType = LinkType.External, Key = "", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+                new Link { Id = 20, Name = "WHO Global Health Observatory", Url = "/Observatory", LinkType = LinkType.External, Key = "", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Link { Id = 21, Name = "Pediatric ARV Optimization", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 5,Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Link { Id = 22, Name = "TX New", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 9, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Link { Id = 23, Name = "HTS Testing Monthly Reporting", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 3, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Link { Id = 24, Name = "TX Curr and TX MMD", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 4, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Link { Id = 25, Name = "TX ML", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 8, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
                );
         }
     }
