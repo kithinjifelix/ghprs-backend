@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using GHPRS.Core.Utilities;
 using static GHPRS.Core.Entities.Template;
 using Hangfire;
 using System.Collections.Generic;
@@ -105,26 +106,9 @@ namespace GHPRS.Core.Services
         private Tuple<int, int> ExcelRowAndColumn(string excelAddress)
         {
             int startIndex = excelAddress.IndexOfAny("0123456789".ToCharArray());
-            int column = ExcelColumnNameToNumber(excelAddress.Substring(0, startIndex));
+            int column = Utility.ExcelColumnNameToNumber(excelAddress.Substring(0, startIndex));
             int row = Int32.Parse(excelAddress.Substring(startIndex));
             return new Tuple<int, int>( row, column );
-        }
-
-        private int ExcelColumnNameToNumber(string columnName)
-        {
-            if (string.IsNullOrEmpty(columnName)) throw new ArgumentNullException("columnName");
-
-            columnName = columnName.ToUpperInvariant();
-
-            int sum = 0;
-
-            for (int i = 0; i < columnName.Length; i++)
-            {
-                sum *= 26;
-                sum += (columnName[i] - 'A' + 1);
-            }
-
-            return sum;
         }
 
         private string SaveWorkSheetDetails(WorkSheet workSheet, DataTable dataTable, Template template)
@@ -132,9 +116,14 @@ namespace GHPRS.Core.Services
             var columns = new List<Column>();
             foreach (var item in dataTable.Columns)
             {
+                var columnName = item.ToString();
+                if (columnName.Length > 63)
+                {
+                    columnName = Utility.TruncateLongString(columnName, 63);
+                }
                 var column = new Column()
                 {
-                    Name = item.ToString(),
+                    Name = columnName,
                     Type = "TEXT"
                 };
                 columns.Add(column);
@@ -143,17 +132,12 @@ namespace GHPRS.Core.Services
             {
                 Name = workSheet.Name,
                 Range = workSheet.Range,
-                Template = template,
+                TemplateId = template.Id,
                 Columns = columns
             };
             newWorkSheet.GenerateDatabaseTableName(workSheet.Name, template.Name, template.Version);
             _workSheetRepository.Insert(newWorkSheet);
             return newWorkSheet.TableName;
-        }
-
-        private dynamic ConvertToType(object obj)
-        {
-            return Convert.ChangeType(obj, obj.GetType());
         }
     }
 }

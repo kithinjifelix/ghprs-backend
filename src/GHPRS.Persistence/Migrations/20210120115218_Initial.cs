@@ -159,7 +159,7 @@ namespace GHPRS.Persistence.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Range = table.Column<string>(type: "text", nullable: true),
                     TableName = table.Column<string>(type: "text", nullable: true),
-                    TemplateId = table.Column<int>(type: "integer", nullable: true),
+                    TemplateId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
@@ -171,7 +171,7 @@ namespace GHPRS.Persistence.Migrations
                         column: x => x.TemplateId,
                         principalTable: "Templates",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -323,24 +323,24 @@ namespace GHPRS.Persistence.Migrations
                 columns: new[] { "Id", "CreatedAt", "Key", "LinkType", "Name", "Number", "UpdatedAt", "Url" },
                 values: new object[,]
                 {
-                    { 8, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(655), "", 3, "Document Manager", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(676), "/documents" },
-                    { 25, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1148), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX ML", 8, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1149), "http://52.251.58.64:3000" },
-                    { 24, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1146), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX Curr and TX MMD", 4, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1147), "http://52.251.58.64:3000" },
-                    { 23, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1143), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "HTS Testing Monthly Reporting", 3, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1144), "http://52.251.58.64:3000" },
-                    { 22, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1140), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX New", 9, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1141), "http://52.251.58.64:3000" },
-                    { 21, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1112), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "Pediatric ARV Optimization", 5, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(1116), "http://52.251.58.64:3000" },
-                    { 19, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(755), "", 3, "World Bank Service Delivery Indicators", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(756), "http://datatopics.worldbank.org/sdi/" },
-                    { 18, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(752), "", 3, "World Bank", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(754), "https://data.worldbank.org/" },
-                    { 17, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(750), "", 3, "Global Health Data", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(751), "http://apps.who.int/gho/data/node.home" },
-                    { 20, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(758), "", 3, "WHO Global Health Observatory", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(759), "/Observatory" },
-                    { 15, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(745), "", 3, "STAT Compiler", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(746), "https://statcompiler.com/en/" },
-                    { 14, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(742), "", 3, "IP Reporting System", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(743), "https://usaidtanzaniaiprs.com/index.cfm" },
-                    { 13, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(739), "", 3, "Monthly Portal", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(740), "http://hmis.reachproject.or.tz/MonthlyReporting/" },
-                    { 12, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(737), "", 3, "Partner Performance Report", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(738), "https://www.pepfar.net/OGAC-HQ/icpi/Products/Forms/AllItems.aspx" },
-                    { 11, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(734), "", 3, "OHA Dashboard", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(735), "https://sites.google.com/a/usaid.gov/gh-oha/home/reports-resources/quarterly-reporting-guidance-and-resources" },
-                    { 10, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(731), "", 3, "Panaroma Dashboard", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(732), "https://pepfar-panorama.org/" },
-                    { 9, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(727), "", 3, "DATIM", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(729), "https://www.datim.org/dhis" },
-                    { 16, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(747), "", 3, "UNICEF (MICS)", 0, new DateTime(2021, 1, 19, 15, 57, 58, 96, DateTimeKind.Local).AddTicks(748), "https://data.unicef.org/" }
+                    { 8, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1171), "", 3, "Document Manager", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1189), "/documents" },
+                    { 25, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1672), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX ML", 8, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1673), "http://52.251.58.64:3000" },
+                    { 24, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1669), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX Curr and TX MMD", 4, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1670), "http://52.251.58.64:3000" },
+                    { 23, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1665), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "HTS Testing Monthly Reporting", 3, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1667), "http://52.251.58.64:3000" },
+                    { 22, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1660), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX New", 9, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1662), "http://52.251.58.64:3000" },
+                    { 21, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1634), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "Pediatric ARV Optimization", 5, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1638), "http://52.251.58.64:3000" },
+                    { 19, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1272), "", 3, "World Bank Service Delivery Indicators", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1275), "http://datatopics.worldbank.org/sdi/" },
+                    { 18, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1268), "", 3, "World Bank", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1269), "https://data.worldbank.org/" },
+                    { 17, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1265), "", 3, "Global Health Data", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1266), "http://apps.who.int/gho/data/node.home" },
+                    { 20, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1277), "", 3, "WHO Global Health Observatory", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1278), "/Observatory" },
+                    { 15, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1260), "", 3, "STAT Compiler", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1261), "https://statcompiler.com/en/" },
+                    { 14, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1257), "", 3, "IP Reporting System", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1258), "https://usaidtanzaniaiprs.com/index.cfm" },
+                    { 13, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1255), "", 3, "Monthly Portal", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1256), "http://hmis.reachproject.or.tz/MonthlyReporting/" },
+                    { 12, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1251), "", 3, "Partner Performance Report", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1252), "https://www.pepfar.net/OGAC-HQ/icpi/Products/Forms/AllItems.aspx" },
+                    { 11, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1248), "", 3, "OHA Dashboard", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1249), "https://sites.google.com/a/usaid.gov/gh-oha/home/reports-resources/quarterly-reporting-guidance-and-resources" },
+                    { 10, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1246), "", 3, "Panaroma Dashboard", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1247), "https://pepfar-panorama.org/" },
+                    { 9, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1242), "", 3, "DATIM", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1244), "https://www.datim.org/dhis" },
+                    { 16, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1263), "", 3, "UNICEF (MICS)", 0, new DateTime(2021, 1, 20, 14, 52, 17, 686, DateTimeKind.Local).AddTicks(1264), "https://data.unicef.org/" }
                 });
 
             migrationBuilder.InsertData(
@@ -348,13 +348,13 @@ namespace GHPRS.Persistence.Migrations
                 columns: new[] { "Id", "CreatedAt", "LookupType", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 6, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2583), 1, "Widow", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2585) },
-                    { 1, new DateTime(2021, 1, 19, 15, 57, 58, 91, DateTimeKind.Local).AddTicks(3874), 0, "Male", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2019) },
-                    { 2, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2551), 0, "Female", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2566) },
-                    { 3, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2576), 1, "Single", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2577) },
-                    { 4, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2578), 1, "Married", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2579) },
-                    { 5, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2581), 1, "Divorced", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2582) },
-                    { 7, new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2586), 1, "Widower", new DateTime(2021, 1, 19, 15, 57, 58, 92, DateTimeKind.Local).AddTicks(2587) }
+                    { 6, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3798), 1, "Widow", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3799) },
+                    { 1, new DateTime(2021, 1, 20, 14, 52, 17, 681, DateTimeKind.Local).AddTicks(4782), 0, "Male", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3242) },
+                    { 2, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3772), 0, "Female", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3783) },
+                    { 3, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3791), 1, "Single", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3792) },
+                    { 4, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3793), 1, "Married", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3794) },
+                    { 5, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3796), 1, "Divorced", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3797) },
+                    { 7, new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3800), 1, "Widower", new DateTime(2021, 1, 20, 14, 52, 17, 682, DateTimeKind.Local).AddTicks(3801) }
                 });
 
             migrationBuilder.CreateIndex(

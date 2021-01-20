@@ -12,6 +12,7 @@ namespace GHPRS.Core.Entities
         public string Range { get; set; }
         public string TableName { get; set; }
         public virtual Template Template { get; set; }
+        public int TemplateId { get; set; }
         public virtual ICollection<Column> Columns { get; set; }
 
         public void GenerateDatabaseTableName(string name, string templateName, decimal templateVersion)
