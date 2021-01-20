@@ -5,6 +5,6 @@ namespace GHPRS.Core.Interfaces
 {
     public interface IExcelService
     {
-        DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow);
+        DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow, int startColumn);
     }
 }

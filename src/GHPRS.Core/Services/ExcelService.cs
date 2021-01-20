@@ -1,4 +1,5 @@
 ﻿using GHPRS.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using System;
@@ -10,7 +11,13 @@ namespace GHPRS.Core.Services
 {
     public class ExcelService : IExcelService
     {
-        public DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow)
+        private readonly ILogger<ExcelService> _logger;
+
+        public ExcelService(ILogger<ExcelService> logger)
+        {
+            _logger = logger;
+        }
+        public DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow, int startColumn)
         {
             using (var excelPack = new ExcelPackage())
             {
@@ -26,7 +33,7 @@ namespace GHPRS.Core.Services
                 if (worksheet != null)
                 {
                     DataTable excelAsTable = new DataTable();
-                    foreach (var firstRowCell in worksheet.Cells[startRow, 1, startRow, worksheet.Dimension.End.Column])
+                    foreach (var firstRowCell in worksheet.Cells[startRow, startColumn, startRow, worksheet.Dimension.End.Column])
                     {
                         //Get colummn details
                         if (!string.IsNullOrEmpty(firstRowCell.Text))
@@ -53,6 +60,7 @@ namespace GHPRS.Core.Services
                 }
                 else
                 {
+                    _logger.LogError("Worksheet does not exist!");
                     throw new Exception("Worksheet does not exist!");
                 }
             }

@@ -24,16 +24,16 @@ namespace GHPRS.Controllers
         private readonly IUploadService _uploadService;
         private readonly IUploadRepository _uploadRepository;
         private readonly UserManager<User> _userManager;
-        private readonly IExcelService _excelService;
+        private readonly ITemplateService _templateService;
         private readonly ITemplateRepository _templateRepository;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService templateService, IUploadRepository uploadRepository, UserManager<User> userManager, IExcelService excelService, ITemplateRepository templateRepository)
+        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService, IUploadRepository uploadRepository, UserManager<User> userManager, ITemplateService templateService, ITemplateRepository templateRepository)
         {
             _logger = logger;
-            _uploadService = templateService;
+            _uploadService = uploadService;
             _uploadRepository = uploadRepository;
             _userManager = userManager;
-            _excelService = excelService;
+            _templateService = templateService;
             _templateRepository = templateRepository;
         }
 
@@ -130,11 +130,9 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public IActionResult Read(int id)
         {
-            var fileDetails = _templateRepository.GetById(id);
-            MemoryStream memoryStream = new MemoryStream(fileDetails.File);
-            var result = _excelService.ReadExcelWorkSheet(memoryStream, "Configuration", 4);
-            //_templateRepository.CreateTemplateTable("Test", result);
-            return Ok(result);
+            var template = _templateRepository.GetById(id);
+            _templateService.CreateTemplateTables(template);
+            return Ok();
         }
 
         private async Task<User> GetUser()

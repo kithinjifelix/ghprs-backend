@@ -58,7 +58,7 @@ namespace GHPRS.Persistence.Repositories
                         rows += $"\"{row[column.Name]}\", ";
                     } 
                 }
-                insert = $"INSERT INTO public.\"{workSheet.TableName}\" (\"{columns}\") VALUES (\"{rows}\");";
+                insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" (\"{columns}\") VALUES (\"{rows}\");";
             }
             insertScript += insert;
             FormattableString formattableinsertScript = $"{insertScript}";

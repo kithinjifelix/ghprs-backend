@@ -7,6 +7,6 @@ namespace GHPRS.Core.Interfaces
     public interface ITemplateService
     {
         Task<Template> Initialize(TemplateModel templateModel);
-        void CreateTemplateTable(Template template);
+        void CreateTemplateTables(Template template);
     }
 }

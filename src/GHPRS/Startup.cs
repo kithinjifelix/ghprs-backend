@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Microsoft.Extensions.Logging;
+
 namespace GHPRS
 {
     public class Startup
@@ -92,6 +94,7 @@ namespace GHPRS
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();
+            services.AddScoped<IWorkSheetRepository, WorkSheetRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -99,7 +102,7 @@ namespace GHPRS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -123,6 +126,7 @@ namespace GHPRS
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();
+            loggerFactory.AddFile("Logs/GHPRS-{Date}.txt");
         }
     }
 }
