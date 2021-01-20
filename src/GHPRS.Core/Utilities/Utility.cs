@@ -32,5 +32,13 @@ namespace GHPRS.Core.Utilities
 
             return sum;
         }
+
+        public static Tuple<int, int> ExcelRowAndColumn(string excelAddress)
+        {
+            int startIndex = excelAddress.IndexOfAny("0123456789".ToCharArray());
+            int column = Utility.ExcelColumnNameToNumber(excelAddress.Substring(0, startIndex));
+            int row = Int32.Parse(excelAddress.Substring(startIndex));
+            return new Tuple<int, int>(row, column);
+        }
     }
 }

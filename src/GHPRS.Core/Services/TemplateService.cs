@@ -39,7 +39,7 @@ namespace GHPRS.Core.Services
                     var range = worksheet.Range;
                     int startIndex = range.IndexOf(":");
                     var startAddress = range.Substring(0, startIndex);
-                    var rowColumn = ExcelRowAndColumn(startAddress);
+                    var rowColumn = Utility.ExcelRowAndColumn(startAddress);
                     MemoryStream memoryStream = new MemoryStream(template.File);
                     var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1, rowColumn.Item2);
                     var tableName = SaveWorkSheetDetails(worksheet, data, template);
@@ -101,14 +101,6 @@ namespace GHPRS.Core.Services
                 _logger.LogError(e.Message, e);
                 throw e;
             }
-        }
-
-        private Tuple<int, int> ExcelRowAndColumn(string excelAddress)
-        {
-            int startIndex = excelAddress.IndexOfAny("0123456789".ToCharArray());
-            int column = Utility.ExcelColumnNameToNumber(excelAddress.Substring(0, startIndex));
-            int row = Int32.Parse(excelAddress.Substring(startIndex));
-            return new Tuple<int, int>( row, column );
         }
 
         private string SaveWorkSheetDetails(WorkSheet workSheet, DataTable dataTable, Template template)

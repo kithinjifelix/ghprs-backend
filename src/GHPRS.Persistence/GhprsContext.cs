@@ -46,6 +46,7 @@ namespace GHPRS.Persistence
         public DbSet<Lookup> Lookups { get; set; }
         public DbSet<Template> Templates { get; set; }
         public DbSet<Upload> Uploads { get; set; }
+        public DbSet<WorkSheet> WorkSheets { get; set; }
         public DbSet<Column> Columns { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,6 +60,9 @@ namespace GHPRS.Persistence
             modelBuilder.Entity<WorkSheet>()
                 .HasMany(c => c.Columns)
                 .WithOne(e => e.WorkSheet);
+
+            modelBuilder.Entity<WorkSheet>()
+                .HasOne(c => c.Template);
 
             modelBuilder.Seed();
         }

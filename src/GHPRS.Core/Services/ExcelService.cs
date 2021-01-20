@@ -52,11 +52,7 @@ namespace GHPRS.Core.Services
                             row[cell.Start.Column - 1] = cell.Text;
                         }
                     }
-
-                    //Get everything as generics and let end user decides on casting to required type
-                    //var generatedType = JsonConvert.DeserializeObject<object>(JsonConvert.SerializeObject(excelAsTable));
                     return excelAsTable;
-                    //return (T)Convert.ChangeType(generatedType, typeof(T));
                 }
                 else
                 {

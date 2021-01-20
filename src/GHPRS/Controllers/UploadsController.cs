@@ -24,17 +24,13 @@ namespace GHPRS.Controllers
         private readonly IUploadService _uploadService;
         private readonly IUploadRepository _uploadRepository;
         private readonly UserManager<User> _userManager;
-        private readonly ITemplateService _templateService;
-        private readonly ITemplateRepository _templateRepository;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService, IUploadRepository uploadRepository, UserManager<User> userManager, ITemplateService templateService, ITemplateRepository templateRepository)
+        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService, IUploadRepository uploadRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = uploadService;
             _uploadRepository = uploadRepository;
             _userManager = userManager;
-            _templateService = templateService;
-            _templateRepository = templateRepository;
         }
 
         [HttpGet]
@@ -115,7 +111,7 @@ namespace GHPRS.Controllers
                 //Extract data from aproved Tempalates
                 if ((UploadStatus)review.Status == UploadStatus.Approved)
                 {
-                    BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload));
+                    BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
                 }
 
                 return Ok(upload);
@@ -124,15 +120,6 @@ namespace GHPRS.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-        }
-
-        [HttpGet("READ/{id}")]
-        [AllowAnonymous]
-        public IActionResult Read(int id)
-        {
-            var template = _templateRepository.GetById(id);
-            _templateService.CreateTemplateTables(template);
-            return Ok();
         }
 
         private async Task<User> GetUser()
