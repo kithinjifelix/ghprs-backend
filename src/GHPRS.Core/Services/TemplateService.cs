@@ -117,6 +117,7 @@ namespace GHPRS.Core.Services
             foreach (var item in dataTable.Columns)
             {
                 var columnName = item.ToString();
+                // Max table name length is 63 characters therefore truncate if longer
                 if (columnName.Length > 63)
                 {
                     columnName = Utility.TruncateLongString(columnName, 63);
