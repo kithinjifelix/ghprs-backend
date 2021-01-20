@@ -1,6 +1,8 @@
 ﻿using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,10 +14,12 @@ namespace GHPRS.Persistence.Repositories
     {
         private readonly DbSet<Upload> _entities;
         private readonly GhprsContext _context;
-        public UploadRepository(GhprsContext context) : base(context)
+        private readonly ILogger<UploadRepository> _logger;
+        public UploadRepository(GhprsContext context, ILogger<UploadRepository> logger) : base(context)
         {
             _entities = context.Set<Upload>();
             _context = context;
+            _logger = logger;
         }
 
         public object GetDetailsById(int id)
@@ -61,13 +65,23 @@ namespace GHPRS.Persistence.Repositories
                 insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" (\"{columns}\") VALUES (\"{rows}\");";
             }
             insertScript += insert;
-            FormattableString formattableinsertScript = $"{insertScript}";
             try
             {
-                _context.Database.ExecuteSqlInterpolated(formattableinsertScript);
+                var connectionString = _context.Database.GetConnectionString();
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = connection;
+                        cmd.CommandText = insertScript;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 throw e;
             }
         }

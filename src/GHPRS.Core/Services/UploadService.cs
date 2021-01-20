@@ -1,6 +1,7 @@
 ﻿using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace GHPRS.Core.Services
     {
         private readonly IUploadRepository _uploadRepository;
         private readonly ITemplateRepository _templateRepository;
-        public UploadService(IUploadRepository uploadRepository, ITemplateRepository templateRepository)
+        private readonly ILogger<UploadService> _logger;
+        public UploadService(IUploadRepository uploadRepository, ITemplateRepository templateRepository, ILogger<UploadService> logger)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
+            _logger = logger;
         }
 
         public void InsertUploadData(Upload upload)
