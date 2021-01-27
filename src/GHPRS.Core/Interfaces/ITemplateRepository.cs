@@ -10,6 +10,6 @@ namespace GHPRS.Core.Interfaces
         Template GetAllFullById(int id);
         IEnumerable<object> GetList(string role);
         object GetDetailsById(int id);
-        void CreateTemplateTable(string name, DataTable data);
+        void CreateTemplateTable(WorkSheet workSheet);
     }
 }

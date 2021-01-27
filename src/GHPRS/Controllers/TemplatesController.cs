@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Hangfire;
 using static GHPRS.Core.Entities.Template;
+using System.Linq;
 
 namespace GHPRS.Controllers
 {
@@ -23,13 +25,15 @@ namespace GHPRS.Controllers
         private readonly ILogger<TemplatesController> _logger;
         private readonly ITemplateService _templateService;
         private readonly ITemplateRepository _templateRepository;
+        private readonly IWorkSheetRepository _workSheetRepository;
         private readonly UserManager<User> _userManager;
 
-        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, UserManager<User> userManager)
+        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _templateService = templateService;
             _templateRepository = templateRepository;
+            _workSheetRepository = workSheetRepository;
             _userManager = userManager;
         }
 
@@ -59,7 +63,7 @@ namespace GHPRS.Controllers
         {
             try
             {
-                var result = new Template();
+                var result = new List<WorkSheet>();
                 if (template.File != null)
                 {
                     if (template.File.Length > 0)
@@ -78,6 +82,44 @@ namespace GHPRS.Controllers
                 return Ok(result);
             }
             catch(Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpPost("WORKSHEETS/UPDATE")]
+        public IActionResult UpdateWorkSheetTables([FromBody] WorkSheetModel workSheetModel)
+        {
+            try
+            {
+                var workSheet = _workSheetRepository.GetFullWorkSheetById(workSheetModel.Id);
+                foreach (var column in workSheet.Columns)
+                {
+                    var columnModel = workSheetModel.Columns.FirstOrDefault(w => w.Name == column.Name);
+                    column.Type = columnModel.Type;
+                }
+                _workSheetRepository.Update(workSheet);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpPost("TABLES")]
+        public  IActionResult CreateWorkSheetTables([FromBody] List<WorkSheetModel> workSheetModels)
+        {
+            try
+            {
+                foreach (var worksheetModel in workSheetModels)
+                {
+                    var workSheet = _workSheetRepository.GetFullWorkSheetById(worksheetModel.Id);
+                    _templateRepository.CreateTemplateTable(workSheet);
+                }
+                return Ok();
+            }
+            catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }

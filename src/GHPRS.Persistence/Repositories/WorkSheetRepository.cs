@@ -13,6 +13,7 @@ namespace GHPRS.Persistence.Repositories
         {
             _entities = context.WorkSheets
                  .Include(i => i.Columns)
+                 .Include(i => i.Template)
                  .AsNoTracking();
         }
 

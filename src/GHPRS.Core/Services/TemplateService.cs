@@ -29,8 +29,9 @@ namespace GHPRS.Core.Services
             _logger = logger;
         }
 
-        public void CreateTemplateTables(Template template)
+        public List<WorkSheet> CreateWorkSheetDefinitions(Template template)
         {
+            List<WorkSheet> createdWorksheets = new List<WorkSheet>();
             try
             {
                 var configuration = ReadConfigurationFile(template.File);
@@ -42,19 +43,20 @@ namespace GHPRS.Core.Services
                     var rowColumn = Utility.ExcelRowAndColumn(startAddress);
                     MemoryStream memoryStream = new MemoryStream(template.File);
                     var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1, rowColumn.Item2);
-                    var tableName = SaveWorkSheetDetails(worksheet, data, template);
-                    _templateRepository.CreateTemplateTable(tableName, data);
+                    var sheet = SaveWorkSheetDetails(worksheet, data, template);
+                    createdWorksheets.Add(sheet);
+                    //_templateRepository.CreateTemplateTable(sheet.TableName, data);
                 }
+                return createdWorksheets;
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
                 throw e;
             }
-
         }
 
-        public async Task<Template> Initialize(TemplateModel templateModel)
+        public async Task<List<WorkSheet>> Initialize(TemplateModel templateModel)
         {
             //Getting FileName
             var fileName = Path.GetFileName(templateModel.File.FileName);
@@ -78,12 +80,11 @@ namespace GHPRS.Core.Services
                 initializedTemplate.File = target.ToArray();
             }
 
-            var result = _templateRepository.Insert(initializedTemplate);
+            var template = _templateRepository.Insert(initializedTemplate);
 
-            // extract template schema in the background
-            BackgroundJob.Enqueue(() => CreateTemplateTables(result));
+            var worksheets = CreateWorkSheetDefinitions(template);
 
-            return result;
+            return worksheets;
         }
 
         private IEnumerable<WorkSheet> ReadConfigurationFile(byte[] file)
@@ -103,7 +104,7 @@ namespace GHPRS.Core.Services
             }
         }
 
-        private string SaveWorkSheetDetails(WorkSheet workSheet, DataTable dataTable, Template template)
+        private WorkSheet SaveWorkSheetDetails(WorkSheet workSheet, DataTable dataTable, Template template)
         {
             var columns = new List<Column>();
             foreach (var item in dataTable.Columns)
@@ -130,7 +131,7 @@ namespace GHPRS.Core.Services
             };
             newWorkSheet.GenerateDatabaseTableName(workSheet.Name, template.Name, template.Version);
             _workSheetRepository.Insert(newWorkSheet);
-            return newWorkSheet.TableName;
+            return newWorkSheet;
         }
     }
 }
