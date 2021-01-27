@@ -41,5 +41,11 @@ namespace GHPRS.Controllers
         {
             return _lookupRepository.GetByType(LookupType.MaritalStatus);
         }
+
+        [HttpGet("DATATYPE")]
+        public IEnumerable<Lookup> GetDataTypes()
+        {
+            return _lookupRepository.GetByType(LookupType.DataType);
+        }
     }
 }
