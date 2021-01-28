@@ -421,6 +421,17 @@ namespace GHPRS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organisations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "USAID",
+                            Shortname = "USAID",
+                            Status = 0,
+                            UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.Person", b =>
@@ -580,6 +591,9 @@ namespace GHPRS.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int>("OrganisationId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -610,6 +624,8 @@ namespace GHPRS.Persistence.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("OrganisationId");
 
                     b.HasIndex("PersonId");
 
@@ -804,11 +820,19 @@ namespace GHPRS.Persistence.Migrations
 
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
                 {
+                    b.HasOne("GHPRS.Core.Entities.Organisation", "Organisation")
+                        .WithMany("Users")
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GHPRS.Core.Entities.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Organisation");
 
                     b.Navigation("Person");
                 });
@@ -873,6 +897,11 @@ namespace GHPRS.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.Organisation", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>

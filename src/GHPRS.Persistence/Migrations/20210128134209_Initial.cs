@@ -59,6 +59,24 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Organisations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Shortname = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Organisations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Person",
                 columns: table => new
                 {
@@ -125,6 +143,7 @@ namespace GHPRS.Persistence.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     PersonId = table.Column<int>(type: "integer", nullable: false),
+                    OrganisationId = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -143,6 +162,12 @@ namespace GHPRS.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Organisations_OrganisationId",
+                        column: x => x.OrganisationId,
+                        principalTable: "Organisations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Person_PersonId",
                         column: x => x.PersonId,
@@ -328,12 +353,12 @@ namespace GHPRS.Persistence.Migrations
                     { 25, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX ML", 8, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
                     { 24, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX Curr and TX MMD", 4, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
                     { 23, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "HTS Testing Monthly Reporting", 3, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
-                    { 22, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX New", 9, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
+                    { 21, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "Pediatric ARV Optimization", 5, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
                     { 20, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "WHO Global Health Observatory", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "/Observatory" },
                     { 19, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "World Bank Service Delivery Indicators", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://datatopics.worldbank.org/sdi/" },
                     { 18, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "World Bank", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "https://data.worldbank.org/" },
                     { 17, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "Global Health Data", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://apps.who.int/gho/data/node.home" },
-                    { 21, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "Pediatric ARV Optimization", 5, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
+                    { 22, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", 0, "TX New", 9, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://52.251.58.64:3000" },
                     { 15, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "STAT Compiler", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "https://statcompiler.com/en/" },
                     { 14, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "IP Reporting System", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "https://usaidtanzaniaiprs.com/index.cfm" },
                     { 13, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "", 3, "Monthly Portal", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "http://hmis.reachproject.or.tz/MonthlyReporting/" },
@@ -349,17 +374,22 @@ namespace GHPRS.Persistence.Migrations
                 columns: new[] { "Id", "CreatedAt", "LookupType", "Name", "UpdatedAt", "Value" },
                 values: new object[,]
                 {
+                    { 9, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "DATE", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "DATE" },
                     { 8, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "TEXT", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "TEXT" },
                     { 7, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Widower", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
                     { 6, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Widow", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 5, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Divorced", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "Male", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 3, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Single", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
                     { 2, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "Female", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 9, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "DATE", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "DATE" },
                     { 4, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Married", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
-                    { 10, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "NUMBER", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "NUMERIC" }
+                    { 3, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Single", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
+                    { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "Male", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null },
+                    { 10, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "NUMBER", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "NUMERIC" },
+                    { 5, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "Divorced", new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Organisations",
+                columns: new[] { "Id", "CreatedAt", "Description", "Name", "Shortname", "Status", "UpdatedAt" },
+                values: new object[] { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "USAID", "USAID", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -391,6 +421,11 @@ namespace GHPRS.Persistence.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_OrganisationId",
+                table: "AspNetUsers",
+                column: "OrganisationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_PersonId",
@@ -464,6 +499,9 @@ namespace GHPRS.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Templates");
+
+            migrationBuilder.DropTable(
+                name: "Organisations");
 
             migrationBuilder.DropTable(
                 name: "Person");

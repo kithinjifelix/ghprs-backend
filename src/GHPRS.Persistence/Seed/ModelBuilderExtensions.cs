@@ -2,6 +2,7 @@
 using System.Globalization;
 using GHPRS.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using static GHPRS.Core.Entities.Organisation;
 
 namespace GHPRS.Persistence.Seed
 {
@@ -46,6 +47,10 @@ namespace GHPRS.Persistence.Seed
                 new Link { Id = 23, Name = "HTS Testing Monthly Reporting", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 3, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = newDate, UpdatedAt = newDate },
                 new Link { Id = 24, Name = "TX Curr and TX MMD", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 4, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = newDate, UpdatedAt = newDate },
                 new Link { Id = 25, Name = "TX ML", Url = "http://52.251.58.64:3000", LinkType = LinkType.Dashboard, Number = 8, Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751", CreatedAt = newDate, UpdatedAt = newDate }
+               );
+
+            modelBuilder.Entity<Organisation>().HasData(
+                new Organisation { Id = 1, Name = "USAID", Shortname = "USAID", Status = OrganisationStatus.Active, CreatedAt = newDate, UpdatedAt = newDate }
                );
         }
     }

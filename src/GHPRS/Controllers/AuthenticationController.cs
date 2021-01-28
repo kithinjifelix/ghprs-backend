@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using GHPRS.Core.Interfaces;
 
 namespace GHPRS.Controllers
 {
@@ -23,12 +24,14 @@ namespace GHPRS.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IOrganisationRepository _organisationRepository;
 
-        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IOrganisationRepository organisationRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _organisationRepository = organisationRepository;
         }
 
         [HttpPost]
@@ -90,13 +93,15 @@ namespace GHPRS.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var organisation = _organisationRepository.GetById(model.OrganisationId);
             User user = new User()
             {
                 PhoneNumber = model.PhoneNumber,
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username,
-                Person = person
+                Person = person,
+                Organisation = organisation
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

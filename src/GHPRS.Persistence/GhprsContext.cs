@@ -66,6 +66,10 @@ namespace GHPRS.Persistence
             modelBuilder.Entity<WorkSheet>()
                 .HasOne(c => c.Template);
 
+            modelBuilder.Entity<Organisation>()
+                .HasMany(c => c.Users)
+                .WithOne(e => e.Organisation);
+
             modelBuilder.Seed();
         }
     }

@@ -10,6 +10,7 @@ namespace GHPRS.Core.Entities
         public String Shortname { get; set; }
         public String Description { get; set; }
         public OrganisationStatus Status { get; set; }
+        public ICollection<User> Users { get; set; }
 
         public enum OrganisationStatus
         {
