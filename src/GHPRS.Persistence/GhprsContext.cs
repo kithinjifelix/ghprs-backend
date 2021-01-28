@@ -48,6 +48,8 @@ namespace GHPRS.Persistence
         public DbSet<Upload> Uploads { get; set; }
         public DbSet<WorkSheet> WorkSheets { get; set; }
         public DbSet<Column> Columns { get; set; }
+        public DbSet<Organisation> Organisations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
