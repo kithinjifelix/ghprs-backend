@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using GHPRS.Core.Entities;
+using GHPRS.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,32 +12,31 @@ namespace GHPRS.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
+        private readonly IUserRepository _userRepository;
 
-        private readonly UserManager<User> _userManager;
-
-        public UsersController(UserManager<User> userManager)
+        public UsersController(UserManager<User> userManager, IUserRepository userRepository)
         {
-            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsersAsync()
+        public IActionResult GetUsersAsync()
         {
-            var users = await Task.Run(() => _userManager.Users);
+            var users = _userRepository.GetAll();
             return Ok(users);
         }
 
         [HttpGet("USERID")]
-        public async Task<User> GetUser()
+        public User GetUser()
         {
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
-            return await _userManager.FindByNameAsync(userName);
+            return _userRepository.GetByUserName(userName);
         }
 
         [HttpGet("{id}")]
-        public async Task<User> Get(string id)
+        public User Get(string id)
         {
-            return await _userManager.FindByIdAsync(id);
+            return _userRepository.GetById(id);
         }
 
     }
