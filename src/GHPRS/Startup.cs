@@ -99,6 +99,7 @@ namespace GHPRS
             services.AddScoped<IWorkSheetRepository, WorkSheetRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IColumnRepository, ColumnRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore

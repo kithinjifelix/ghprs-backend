@@ -30,9 +30,9 @@ namespace GHPRS.Core.Services
             _logger = logger;
         }
 
-        public List<WorkSheet> CreateWorkSheetDefinitions(Template template)
+        public List<WorkSheetModel> CreateWorkSheetDefinitions(Template template)
         {
-            var createdWorksheets = new List<WorkSheet>();
+            var createdWorksheets = new List<WorkSheetModel>();
             try
             {
                 var configuration = ReadConfigurationFile(template.File);
@@ -46,7 +46,25 @@ namespace GHPRS.Core.Services
                     var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1,
                         rowColumn.Item2);
                     var sheet = SaveWorkSheetDetails(worksheet, data, template);
-                    createdWorksheets.Add(sheet);
+                    var columnModels = new List<ColumnModel>();
+                    foreach (var column in sheet.Columns)
+                    {
+                        var columnModel = new ColumnModel
+                        {
+                            Id = column.Id,
+                            Name = column.Name,
+                            Type = column.Type
+                        };
+                        columnModels.Add(columnModel);
+                    }
+
+                    var model = new WorkSheetModel
+                    {
+                        Name = sheet.Name,
+                        Id = sheet.Id,
+                        Columns = columnModels
+                    };
+                    createdWorksheets.Add(model);
                     //_templateRepository.CreateTemplateTable(sheet.TableName, data);
                 }
 
@@ -59,7 +77,7 @@ namespace GHPRS.Core.Services
             }
         }
 
-        public async Task<List<WorkSheet>> Initialize(TemplateModel templateModel)
+        public async Task<List<WorkSheetModel>> Initialize(TemplateModel templateModel)
         {
             //Getting FileName
             var fileName = Path.GetFileName(templateModel.File.FileName);
