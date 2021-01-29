@@ -26,15 +26,15 @@ namespace GHPRS.Controllers
         private readonly ITemplateService _templateService;
         private readonly ITemplateRepository _templateRepository;
         private readonly IWorkSheetRepository _workSheetRepository;
-        private readonly UserManager<User> _userManager;
+        private readonly IColumnRepository _columnRepository;
 
-        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository, UserManager<User> userManager)
+        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository, IColumnRepository columnRepository)
         {
             _logger = logger;
             _templateService = templateService;
             _templateRepository = templateRepository;
             _workSheetRepository = workSheetRepository;
-            _userManager = userManager;
+            _columnRepository = columnRepository;
         }
 
         [HttpGet("{id}")]
@@ -63,7 +63,7 @@ namespace GHPRS.Controllers
         {
             try
             {
-                var result = new List<WorkSheet>();
+                var result = new List<WorkSheetModel>();
                 if (template.File != null)
                 {
                     if (template.File.Length > 0)
@@ -87,18 +87,18 @@ namespace GHPRS.Controllers
             }
         }
 
-        [HttpPost("WORKSHEETS/UPDATE")]
-        public IActionResult UpdateWorkSheetTables([FromBody] WorkSheetModel workSheetModel)
+        [HttpPut("WORKSHEET/UPDATE/{workSheetId}")]
+        public IActionResult UpdateWorkSheetTables(int workSheetId, [FromBody] List<ColumnModel> columnModels)
         {
             try
             {
-                var workSheet = _workSheetRepository.GetFullWorkSheetById(workSheetModel.Id);
-                foreach (var column in workSheet.Columns)
+                var workSheet = _workSheetRepository.GetFullWorkSheetById(workSheetId);
+                foreach (var columnModel in columnModels)
                 {
-                    var columnModel = workSheetModel.Columns.FirstOrDefault(w => w.Name == column.Name);
+                    var column = _columnRepository.GetById(columnModel.Id);
                     column.Type = columnModel.Type;
+                    _columnRepository.Update(column);
                 }
-                _workSheetRepository.Update(workSheet);
                 return Ok();
             }
             catch (Exception e)

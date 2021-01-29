@@ -7,7 +7,7 @@ namespace GHPRS.Core.Interfaces
 {
     public interface ITemplateService
     {
-        Task<List<WorkSheet>> Initialize(TemplateModel templateModel);
-        List<WorkSheet> CreateWorkSheetDefinitions(Template template);
+        Task<List<WorkSheetModel>> Initialize(TemplateModel templateModel);
+        List<WorkSheetModel> CreateWorkSheetDefinitions(Template template);
     }
 }
