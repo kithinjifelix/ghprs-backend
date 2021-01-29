@@ -1,26 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using GHPRS.Core.Utilities;
-using static GHPRS.Core.Entities.Template;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Data;
+using Newtonsoft.Json;
+using static GHPRS.Core.Entities.Template;
 
 namespace GHPRS.Core.Services
 {
     public class TemplateService : ITemplateService
     {
-        private readonly ITemplateRepository _templateRepository;
-        private readonly IWorkSheetRepository _workSheetRepository;
         private readonly IExcelService _excelService;
         private readonly ILogger<TemplateService> _logger;
-        public TemplateService(ITemplateRepository templateRepository, IExcelService excelService, ILogger<TemplateService> logger, IWorkSheetRepository workSheetRepository)
+        private readonly ITemplateRepository _templateRepository;
+        private readonly IWorkSheetRepository _workSheetRepository;
+
+        public TemplateService(ITemplateRepository templateRepository, IExcelService excelService,
+            ILogger<TemplateService> logger, IWorkSheetRepository workSheetRepository)
         {
             _templateRepository = templateRepository;
             _workSheetRepository = workSheetRepository;
@@ -30,23 +32,24 @@ namespace GHPRS.Core.Services
 
         public List<WorkSheetModel> CreateWorkSheetDefinitions(Template template)
         {
-            List<WorkSheetModel> createdWorksheets = new List<WorkSheetModel>();
+            var createdWorksheets = new List<WorkSheetModel>();
             try
             {
                 var configuration = ReadConfigurationFile(template.File);
                 foreach (var worksheet in configuration)
                 {
                     var range = worksheet.Range;
-                    int startIndex = range.IndexOf(":");
+                    var startIndex = range.IndexOf(":", StringComparison.Ordinal);
                     var startAddress = range.Substring(0, startIndex);
                     var rowColumn = Utility.ExcelRowAndColumn(startAddress);
-                    MemoryStream memoryStream = new MemoryStream(template.File);
-                    var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1, rowColumn.Item2);
+                    var memoryStream = new MemoryStream(template.File);
+                    var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1,
+                        rowColumn.Item2);
                     var sheet = SaveWorkSheetDetails(worksheet, data, template);
                     var columnModels = new List<ColumnModel>();
                     foreach (var column in sheet.Columns)
                     {
-                        var columnModel = new ColumnModel()
+                        var columnModel = new ColumnModel
                         {
                             Id = column.Id,
                             Name = column.Name,
@@ -54,7 +57,8 @@ namespace GHPRS.Core.Services
                         };
                         columnModels.Add(columnModel);
                     }
-                    var model = new WorkSheetModel()
+
+                    var model = new WorkSheetModel
                     {
                         Name = sheet.Name,
                         Id = sheet.Id,
@@ -63,12 +67,13 @@ namespace GHPRS.Core.Services
                     createdWorksheets.Add(model);
                     //_templateRepository.CreateTemplateTable(sheet.TableName, data);
                 }
+
                 return createdWorksheets;
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                throw e;
+                throw;
             }
         }
 
@@ -79,12 +84,12 @@ namespace GHPRS.Core.Services
             //Getting file Extension
             var fileExtension = Path.GetExtension(fileName);
 
-            var initializedTemplate = new Template()
+            var initializedTemplate = new Template
             {
                 Name = templateModel.Name,
                 FileExtension = fileExtension,
                 Description = templateModel.Description,
-                Frequency = (ReportingFrequency)templateModel.Frequency,
+                Frequency = (ReportingFrequency) templateModel.Frequency,
                 Version = templateModel.Version,
                 ContentType = templateModel.File.ContentType,
                 Status = TemplateStatus.Active
@@ -107,16 +112,17 @@ namespace GHPRS.Core.Services
         {
             try
             {
-                MemoryStream memoryStream = new MemoryStream(file);
+                var memoryStream = new MemoryStream(file);
                 var configuration = _excelService.ReadExcelWorkSheet(memoryStream, "Configuration", 4, 1);
-                var generatedType = JsonConvert.DeserializeObject<IEnumerable<WorkSheet>>(JsonConvert.SerializeObject(configuration));
+                var generatedType =
+                    JsonConvert.DeserializeObject<IEnumerable<WorkSheet>>(JsonConvert.SerializeObject(configuration));
                 var result = generatedType.Where(x => x.Name != "");
                 return result;
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                throw e;
+                throw;
             }
         }
 
@@ -127,18 +133,17 @@ namespace GHPRS.Core.Services
             {
                 var columnName = item.ToString();
                 // Max table name length is 63 characters therefore truncate if longer
-                if (columnName.Length > 63)
-                {
-                    columnName = Utility.TruncateLongString(columnName, 63);
-                }
-                var column = new Column()
+                if (columnName.Length > 63) columnName = columnName.TruncateLongString(63);
+
+                var column = new Column
                 {
                     Name = columnName,
                     Type = "TEXT"
                 };
                 columns.Add(column);
             }
-            var newWorkSheet = new WorkSheet()
+
+            var newWorkSheet = new WorkSheet
             {
                 Name = workSheet.Name,
                 Range = workSheet.Range,

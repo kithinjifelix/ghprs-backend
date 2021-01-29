@@ -1,24 +1,26 @@
-﻿using GHPRS.Core.Entities;
-using GHPRS.Core.Interfaces;
-using GHPRS.Core.Models;
-using GHPRS.Core.Utilities;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GHPRS.Core.Entities;
+using GHPRS.Core.Interfaces;
+using GHPRS.Core.Models;
+using GHPRS.Core.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace GHPRS.Core.Services
 {
     public class UploadService : IUploadService
     {
-        private readonly IUploadRepository _uploadRepository;
-        private readonly ITemplateRepository _templateRepository;
-        private readonly IWorkSheetRepository _worksheetRepository;
         private readonly IExcelService _excelService;
         private readonly ILogger<UploadService> _logger;
-        public UploadService(IUploadRepository uploadRepository, ITemplateRepository templateRepository, ILogger<UploadService> logger, IWorkSheetRepository workSheetRepository, IExcelService excelService)
+        private readonly ITemplateRepository _templateRepository;
+        private readonly IUploadRepository _uploadRepository;
+        private readonly IWorkSheetRepository _worksheetRepository;
+
+        public UploadService(IUploadRepository uploadRepository, ITemplateRepository templateRepository,
+            ILogger<UploadService> logger, IWorkSheetRepository workSheetRepository, IExcelService excelService)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -34,18 +36,19 @@ namespace GHPRS.Core.Services
             foreach (var worksheet in worksheets)
             {
                 var range = worksheet.Range;
-                int startIndex = range.IndexOf(":");
+                var startIndex = range.IndexOf(":");
                 var startAddress = range.Substring(0, startIndex);
                 var rowColumn = Utility.ExcelRowAndColumn(startAddress);
-                MemoryStream memoryStream = new MemoryStream(upload.File);
+                var memoryStream = new MemoryStream(upload.File);
                 try
                 {
                     //read uploaded data
-                    var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1, rowColumn.Item2);
+                    var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1,
+                        rowColumn.Item2);
 
                     //remove all rows with columns containing either nothing or white space
-                    data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull 
-                           || string.Compare((field as string).Trim(), string.Empty) == 0)).CopyToDataTable();
+                    data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
+                        || string.Compare((field as string).Trim(), string.Empty) == 0)).CopyToDataTable();
 
                     _uploadRepository.InsertToTable(worksheet, data);
                 }
@@ -62,7 +65,7 @@ namespace GHPRS.Core.Services
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
 
-            var initializedUpload = new Upload()
+            var initializedUpload = new Upload
             {
                 Name = template.Name,
                 FileExtension = template.FileExtension,

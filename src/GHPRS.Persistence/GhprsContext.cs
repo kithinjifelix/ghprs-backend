@@ -48,6 +48,8 @@ namespace GHPRS.Persistence
         public DbSet<Upload> Uploads { get; set; }
         public DbSet<WorkSheet> WorkSheets { get; set; }
         public DbSet<Column> Columns { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,6 +65,10 @@ namespace GHPRS.Persistence
 
             modelBuilder.Entity<WorkSheet>()
                 .HasOne(c => c.Template);
+
+            modelBuilder.Entity<Organization>()
+                .HasMany(c => c.Users)
+                .WithOne(e => e.Organisation);
 
             modelBuilder.Seed();
         }
