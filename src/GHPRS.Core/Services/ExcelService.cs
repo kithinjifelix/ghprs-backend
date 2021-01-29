@@ -1,11 +1,10 @@
-﻿using GHPRS.Core.Interfaces;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using OfficeOpenXml;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using GHPRS.Core.Interfaces;
+using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
 
 namespace GHPRS.Core.Services
 {
@@ -17,6 +16,7 @@ namespace GHPRS.Core.Services
         {
             _logger = logger;
         }
+
         public DataTable ReadExcelWorkSheet(MemoryStream fileStream, string sheet, int startRow, int startColumn)
         {
             using (var excelPack = new ExcelPackage())
@@ -32,33 +32,26 @@ namespace GHPRS.Core.Services
 
                 if (worksheet != null)
                 {
-                    DataTable excelAsTable = new DataTable();
-                    foreach (var firstRowCell in worksheet.Cells[startRow, startColumn, startRow, worksheet.Dimension.End.Column])
-                    {
+                    var excelAsTable = new DataTable();
+                    foreach (var firstRowCell in worksheet.Cells[startRow, startColumn, startRow,
+                            worksheet.Dimension.End.Column])
                         //Get colummn details
                         if (!string.IsNullOrEmpty(firstRowCell.Text))
-                        {
                             excelAsTable.Columns.Add(firstRowCell.Text);
-                        }
-                    }
 
                     //Get row details
-                    for (int rowNum = startRow + 1 ; rowNum <= worksheet.Dimension.End.Row; rowNum++)
+                    for (var rowNum = startRow + 1; rowNum <= worksheet.Dimension.End.Row; rowNum++)
                     {
                         var wsRow = worksheet.Cells[rowNum, 1, rowNum, excelAsTable.Columns.Count];
-                        DataRow row = excelAsTable.Rows.Add();
-                        foreach (var cell in wsRow)
-                        {
-                            row[cell.Start.Column - 1] = cell.Text;
-                        }
+                        var row = excelAsTable.Rows.Add();
+                        foreach (var cell in wsRow) row[cell.Start.Column - 1] = cell.Text;
                     }
+
                     return excelAsTable;
                 }
-                else
-                {
-                    _logger.LogError("Worksheet does not exist!");
-                    throw new Exception("Worksheet does not exist!");
-                }
+
+                _logger.LogError("Worksheet does not exist!");
+                throw new Exception("Worksheet does not exist!");
             }
         }
     }

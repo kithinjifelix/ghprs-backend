@@ -4,6 +4,8 @@ using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,22 +14,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace GHPRS
 {
     public class Startup
     {
+        private readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,19 +37,19 @@ namespace GHPRS
             // configure CORS
             services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
+                options.AddPolicy(MyAllowSpecificOrigins,
                     builder =>
                     {
                         builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
                         //builder.WithOrigins("http://localhost:3000", "https://localhost:3001");
                     });
             });
 
             //configure EF Core Postgres SQL
             services.AddDbContext<GhprsContext>(options =>
-            options.UseNpgsql(Configuration.GetConnectionString("defaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("defaultConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()
@@ -56,18 +58,18 @@ namespace GHPRS
 
             // Adding Authentication  
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
 
                 // Adding Jwt Bearer  
                 .AddJwtBearer(options =>
                 {
                     options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
@@ -95,21 +97,18 @@ namespace GHPRS
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();
             services.AddScoped<IWorkSheetRepository, WorkSheetRepository>();
-            services.AddScoped<IOrganisationRepository, OrganisationRepository>();
+            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseCors(MyAllowSpecificOrigins);
 
@@ -121,10 +120,7 @@ namespace GHPRS
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             app.UseHangfireServer();
             app.UseHangfireDashboard();

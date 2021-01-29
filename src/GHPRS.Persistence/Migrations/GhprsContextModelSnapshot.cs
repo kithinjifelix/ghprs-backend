@@ -393,7 +393,7 @@ namespace GHPRS.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("GHPRS.Core.Entities.Organisation", b =>
+            modelBuilder.Entity("GHPRS.Core.Entities.Organization", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +409,7 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Shortname")
+                    b.Property<string>("ShortName")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
@@ -420,7 +420,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organisations");
+                    b.ToTable("Organizations");
 
                     b.HasData(
                         new
@@ -428,7 +428,7 @@ namespace GHPRS.Persistence.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "USAID",
-                            Shortname = "USAID",
+                            ShortName = "USAID",
                             Status = 0,
                             UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -820,7 +820,7 @@ namespace GHPRS.Persistence.Migrations
 
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
                 {
-                    b.HasOne("GHPRS.Core.Entities.Organisation", "Organisation")
+                    b.HasOne("GHPRS.Core.Entities.Organization", "Organisation")
                         .WithMany("Users")
                         .HasForeignKey("OrganisationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -899,7 +899,7 @@ namespace GHPRS.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GHPRS.Core.Entities.Organisation", b =>
+            modelBuilder.Entity("GHPRS.Core.Entities.Organization", b =>
                 {
                     b.Navigation("Users");
                 });

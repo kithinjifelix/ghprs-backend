@@ -59,13 +59,13 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Organisations",
+                name: "Organizations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    Shortname = table.Column<string>(type: "text", nullable: true),
+                    ShortName = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -73,7 +73,7 @@ namespace GHPRS.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Organisations", x => x.Id);
+                    table.PrimaryKey("PK_Organizations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,9 +163,9 @@ namespace GHPRS.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Organisations_OrganisationId",
+                        name: "FK_AspNetUsers_Organizations_OrganisationId",
                         column: x => x.OrganisationId,
-                        principalTable: "Organisations",
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -387,8 +387,8 @@ namespace GHPRS.Persistence.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Organisations",
-                columns: new[] { "Id", "CreatedAt", "Description", "Name", "Shortname", "Status", "UpdatedAt" },
+                table: "Organizations",
+                columns: new[] { "Id", "CreatedAt", "Description", "Name", "ShortName", "Status", "UpdatedAt" },
                 values: new object[] { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "USAID", "USAID", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
@@ -501,7 +501,7 @@ namespace GHPRS.Persistence.Migrations
                 name: "Templates");
 
             migrationBuilder.DropTable(
-                name: "Organisations");
+                name: "Organizations");
 
             migrationBuilder.DropTable(
                 name: "Person");

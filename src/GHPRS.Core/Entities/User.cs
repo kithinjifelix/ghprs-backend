@@ -9,6 +9,6 @@ namespace GHPRS.Core.Entities
         public virtual Person Person { get; set; }
         public virtual ICollection<Upload> Uploads { get; set; }
         public int OrganisationId { get; set; }
-        public virtual Organisation Organisation { get; set; }
+        public virtual Organization Organisation { get; set; }
     }
 }

@@ -24,14 +24,14 @@ namespace GHPRS.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-        private readonly IOrganisationRepository _organisationRepository;
+        private readonly IOrganizationRepository _organizationRepository;
 
-        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IOrganisationRepository organisationRepository)
+        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IOrganizationRepository organizationRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
-            _organisationRepository = organisationRepository;
+            _organizationRepository = organizationRepository;
         }
 
         [HttpPost]
@@ -93,7 +93,7 @@ namespace GHPRS.Controllers
                 UpdatedAt = DateTime.Now
             };
 
-            var organisation = _organisationRepository.GetById(model.OrganisationId);
+            var organisation = _organizationRepository.GetById(model.OrganisationId);
             User user = new User()
             {
                 PhoneNumber = model.PhoneNumber,
