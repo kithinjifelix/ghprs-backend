@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Hangfire;
 
 namespace GHPRS.Controllers
 {
@@ -21,11 +20,12 @@ namespace GHPRS.Controllers
     public class UploadsController : ControllerBase
     {
         private readonly ILogger<UploadsController> _logger;
-        private readonly IUploadService _uploadService;
         private readonly IUploadRepository _uploadRepository;
+        private readonly IUploadService _uploadService;
         private readonly UserManager<User> _userManager;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService, IUploadRepository uploadRepository, UserManager<User> userManager)
+        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService,
+            IUploadRepository uploadRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = uploadService;
@@ -49,7 +49,7 @@ namespace GHPRS.Controllers
         [HttpGet("STATUS/{status}")]
         public IEnumerable<object> GetListByStatus(int status)
         {
-            return _uploadRepository.GetListByStatus((UploadStatus)status);
+            return _uploadRepository.GetListByStatus((UploadStatus) status);
         }
 
         [HttpGet("{id}")]
@@ -79,7 +79,7 @@ namespace GHPRS.Controllers
         {
             try
             {
-                var result = new Upload();
+                Upload result;
                 if (template.File != null)
                 {
                     if (template.File.Length > 0)
@@ -96,6 +96,7 @@ namespace GHPRS.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
                 }
+
                 return Ok(result);
             }
             catch (Exception e)
@@ -111,16 +112,14 @@ namespace GHPRS.Controllers
             {
                 var upload = _uploadRepository.GetById(id);
 
-                upload.Status = (UploadStatus)review.Status;
+                upload.Status = (UploadStatus) review.Status;
                 upload.Comments = review.Comments;
 
                 _uploadRepository.Update(upload);
 
-                //Extract data from aproved Tempalates
-                if ((UploadStatus)review.Status == UploadStatus.Approved)
-                {
+                //Extract data from approved templates
+                if ((UploadStatus) review.Status == UploadStatus.Approved)
                     BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
-                }
 
                 return Ok(upload);
             }
@@ -132,7 +131,7 @@ namespace GHPRS.Controllers
 
         private async Task<User> GetUser()
         {
-            var userName = this.User.FindFirstValue(ClaimTypes.Name);
+            var userName = User.FindFirstValue(ClaimTypes.Name);
             return await _userManager.FindByNameAsync(userName);
         }
     }
