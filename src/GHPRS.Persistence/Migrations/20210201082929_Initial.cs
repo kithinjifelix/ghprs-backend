@@ -389,7 +389,7 @@ namespace GHPRS.Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "Organizations",
                 columns: new[] { "Id", "CreatedAt", "Description", "Name", "ShortName", "Status", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "USAID", "USAID", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { 1, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "USAID", "USAID", "USAID", 0, new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

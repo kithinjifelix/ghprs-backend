@@ -50,7 +50,7 @@ namespace GHPRS.Persistence.Seed
                );
 
             modelBuilder.Entity<Organization>().HasData(
-                new Organization { Id = 1, Name = "USAID", ShortName = "USAID", Status = OrganizationStatus.Active, CreatedAt = newDate, UpdatedAt = newDate }
+                new Organization { Id = 1, Name = "USAID", ShortName = "USAID", Description = "USAID", Status = OrganizationStatus.Active, CreatedAt = newDate, UpdatedAt = newDate }
                );
         }
     }

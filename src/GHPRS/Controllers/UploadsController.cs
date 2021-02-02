@@ -66,6 +66,14 @@ namespace GHPRS.Controllers
             return File(fileDetails.File, fileDetails.ContentType, fileDetails.Name + fileDetails.FileExtension);
         }
 
+        [HttpGet("VIEW/{id}")]
+        [AllowAnonymous]
+        public IActionResult View(int id)
+        {
+            var result = _uploadService.ReadUploadData(id);
+            return Ok(result);
+        }
+
         [HttpPost("UPLOAD")]
         public async Task<IActionResult> Upload([FromForm] UploadModel template)
         {

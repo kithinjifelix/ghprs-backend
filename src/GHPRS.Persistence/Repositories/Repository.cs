@@ -45,6 +45,5 @@ namespace GHPRS.Persistence.Repositories
             _entities.Remove(entity);
             Context.SaveChanges();
         }
-
     }
 }

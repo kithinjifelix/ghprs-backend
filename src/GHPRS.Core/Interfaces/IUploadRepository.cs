@@ -6,6 +6,7 @@ namespace GHPRS.Core.Interfaces
 {
     public interface IUploadRepository : IRepository<Upload>
     {
+        IEnumerable<Upload> GetFullUploads();
         Upload GetFullUploadById(int id);
         IEnumerable<object> GetList();
         IEnumerable<object> GetListByUser(User user);

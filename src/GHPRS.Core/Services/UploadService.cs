@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace GHPRS.Core.Services
             foreach (var worksheet in worksheets)
             {
                 var range = worksheet.Range;
-                var startIndex = range.IndexOf(":");
+                var startIndex = range.IndexOf(":", StringComparison.Ordinal);
                 var startAddress = range.Substring(0, startIndex);
                 var rowColumn = Utility.ExcelRowAndColumn(startAddress);
                 var memoryStream = new MemoryStream(upload.File);
@@ -48,22 +49,68 @@ namespace GHPRS.Core.Services
 
                     //remove all rows with columns containing either nothing or white space
                     data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
-                        || string.Compare((field as string).Trim(), string.Empty) == 0)).CopyToDataTable();
+                        || String.CompareOrdinal(((string) field).Trim(), string.Empty) == 0)).CopyToDataTable();
 
                     _uploadRepository.InsertToTable(worksheet, data);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e.Message, e);
-                    throw e;
+                    throw;
                 }
             }
+        }
+
+        public List<object> ReadUploadData(int uploadId)
+        {
+            var result = new List<object>();
+            var upload = _uploadRepository.GetFullUploadById(uploadId);
+            var worksheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(upload.Template.Id);
+            foreach (var worksheet in worksheets)
+            {
+                var range = worksheet.Range;
+                var startIndex = range.IndexOf(":", StringComparison.Ordinal);
+                var startAddress = range.Substring(0, startIndex);
+                var rowColumn = Utility.ExcelRowAndColumn(startAddress);
+                var memoryStream = new MemoryStream(upload.File);
+                try
+                {
+                    //read uploaded data
+                    var data = _excelService.ReadExcelWorkSheet(memoryStream, worksheet.Name, rowColumn.Item1,
+                        rowColumn.Item2);
+
+                    //remove all rows with columns containing either nothing or white space
+                    data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
+                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0)).CopyToDataTable();
+
+                    var resultData = new
+                    {
+                        WorkSheet = worksheet.Name,
+                        Data = data
+                    };
+                    result.Add(resultData);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                    throw;
+                }
+            }
+
+            return result;
         }
 
         public async Task<Upload> Upload(UploadModel upload, User user)
         {
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
+
+            //overwrite if existing
+            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x => x.Name == template.Name && x.Status == UploadStatus.pending && x.User.Id == user.Id);
+            if (existing != null)
+            {
+                _uploadRepository.Delete(existing.Id);
+            }
 
             var initializedUpload = new Upload
             {
@@ -77,7 +124,7 @@ namespace GHPRS.Core.Services
                 Template = template
             };
 
-            using (var target = new MemoryStream())
+            await using (var target = new MemoryStream())
             {
                 await upload.File.CopyToAsync(target);
                 initializedUpload.File = target.ToArray();

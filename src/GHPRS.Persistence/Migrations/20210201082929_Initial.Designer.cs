@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    [Migration("20210129121537_Initial")]
+    [Migration("20210201082929_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -429,6 +429,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "USAID",
                             Name = "USAID",
                             ShortName = "USAID",
                             Status = 0,

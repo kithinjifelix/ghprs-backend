@@ -1,4 +1,5 @@
-﻿using GHPRS.Core.Entities;
+﻿using System.Collections.Generic;
+using GHPRS.Core.Entities;
 using GHPRS.Core.Models;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace GHPRS.Core.Interfaces
     {
         Task<Upload> Upload(UploadModel upload, User user);
         void InsertUploadData(int uploadId);
+        List<object> ReadUploadData(int uploadId);
     }
 }

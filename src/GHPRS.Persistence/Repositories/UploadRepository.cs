@@ -25,6 +25,11 @@ namespace GHPRS.Persistence.Repositories
             _logger = logger;
         }
 
+        public IEnumerable<Upload> GetFullUploads()
+        {
+            return _entities;
+        }
+
         public object GetDetailsById(int id)
         {
             var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
