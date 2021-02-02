@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    [Migration("20210201082929_Initial")]
+    [Migration("20210202202427_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -549,6 +549,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("UploadBatch")
+                        .HasColumnType("text");
+
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
@@ -594,7 +597,7 @@ namespace GHPRS.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<int>("OrganisationId")
+                    b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
                     b.Property<string>("PasswordHash")
@@ -628,7 +631,7 @@ namespace GHPRS.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("OrganisationId");
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("PersonId");
 
@@ -823,9 +826,9 @@ namespace GHPRS.Persistence.Migrations
 
             modelBuilder.Entity("GHPRS.Core.Entities.User", b =>
                 {
-                    b.HasOne("GHPRS.Core.Entities.Organization", "Organisation")
+                    b.HasOne("GHPRS.Core.Entities.Organization", "Organization")
                         .WithMany("Users")
-                        .HasForeignKey("OrganisationId")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -835,7 +838,7 @@ namespace GHPRS.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Organisation");
+                    b.Navigation("Organization");
 
                     b.Navigation("Person");
                 });

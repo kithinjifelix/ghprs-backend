@@ -106,7 +106,7 @@ namespace GHPRS.Core.Services
             var template = _templateRepository.GetById(upload.TemplateId);
 
             //overwrite if existing
-            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x => x.Name == template.Name && x.Status == UploadStatus.pending && x.User.Id == user.Id);
+            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x => x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id);
             if (existing != null)
             {
                 _uploadRepository.Delete(existing.Id);
@@ -117,12 +117,13 @@ namespace GHPRS.Core.Services
                 Name = template.Name,
                 FileExtension = template.FileExtension,
                 ContentType = upload.File.ContentType,
-                Status = UploadStatus.pending,
+                Status = UploadStatus.Pending,
                 StartDate = upload.StartDate,
                 EndDate = upload.EndDate,
                 User = user,
                 Template = template
             };
+            initializedUpload.GenerateUploadBatch();
 
             await using (var target = new MemoryStream())
             {

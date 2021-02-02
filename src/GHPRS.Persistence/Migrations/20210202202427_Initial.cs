@@ -143,7 +143,7 @@ namespace GHPRS.Persistence.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     PersonId = table.Column<int>(type: "integer", nullable: false),
-                    OrganisationId = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -163,8 +163,8 @@ namespace GHPRS.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Organizations_OrganisationId",
-                        column: x => x.OrganisationId,
+                        name: "FK_AspNetUsers_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -299,6 +299,7 @@ namespace GHPRS.Persistence.Migrations
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Comments = table.Column<string>(type: "text", nullable: true),
+                    UploadBatch = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     TemplateId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -423,9 +424,9 @@ namespace GHPRS.Persistence.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_OrganisationId",
+                name: "IX_AspNetUsers_OrganizationId",
                 table: "AspNetUsers",
-                column: "OrganisationId");
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_PersonId",

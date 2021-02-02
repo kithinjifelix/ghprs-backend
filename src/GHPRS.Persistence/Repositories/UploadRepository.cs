@@ -105,7 +105,7 @@ namespace GHPRS.Persistence.Repositories
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                throw e;
+                throw;
             }
         }
     }

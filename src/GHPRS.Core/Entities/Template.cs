@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GHPRS.Core.Entities
+﻿namespace GHPRS.Core.Entities
 {
     public class Template : Entity
     {
-        public string Name { get; set; }
-        public string FileExtension { get; set; }
-        public string Description { get; set; }
-        public Byte[] File { get; set; }
-        public string ContentType { get; set; }
-        public decimal Version { get; set; }
-        public TemplateStatus Status { get; set; }
-        public ReportingFrequency Frequency { get; set; }
+        public enum ReportingFrequency
+        {
+            Weekly,
+            Monthly,
+            Quarterly,
+            Yearly,
+            Adhoc
+        }
 
         public enum TemplateStatus
         {
@@ -20,13 +17,13 @@ namespace GHPRS.Core.Entities
             Archived
         }
 
-        public enum ReportingFrequency
-        {
-            Weekly,
-            Monthly,
-            Querterly,
-            Yearly,
-            Adhoc
-        }
+        public string Name { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public byte[] File { get; set; }
+        public string ContentType { get; set; }
+        public decimal Version { get; set; }
+        public TemplateStatus Status { get; set; }
+        public ReportingFrequency Frequency { get; set; }
     }
 }

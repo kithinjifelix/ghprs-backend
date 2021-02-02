@@ -93,7 +93,7 @@ namespace GHPRS.Controllers
                 UpdatedAt = DateTime.Now
             };
 
-            var organization = _organizationRepository.GetById(model.OrganisationId);
+            var organization = _organizationRepository.GetById(model.OrganizationId);
             var user = new User
             {
                 PhoneNumber = model.PhoneNumber,
@@ -101,7 +101,7 @@ namespace GHPRS.Controllers
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username,
                 Person = person,
-                Organisation = organization
+                Organization = organization
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

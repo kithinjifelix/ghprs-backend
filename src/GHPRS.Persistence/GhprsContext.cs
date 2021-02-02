@@ -68,7 +68,7 @@ namespace GHPRS.Persistence
 
             modelBuilder.Entity<Organization>()
                 .HasMany(c => c.Users)
-                .WithOne(e => e.Organisation);
+                .WithOne(e => e.Organization);
 
             modelBuilder.Seed();
         }

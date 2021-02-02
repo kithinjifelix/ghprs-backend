@@ -17,7 +17,7 @@ namespace GHPRS.Core.Model
 
         [Required(ErrorMessage = "Role Id is required")]
         public int RoleId { get; set; }
-        public int OrganisationId { get; set; }
+        public int OrganizationId { get; set; }
         public string PhoneNumber { get; set; }
 
         public string Name { get; set; }

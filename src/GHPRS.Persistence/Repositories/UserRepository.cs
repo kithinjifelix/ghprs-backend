@@ -1,29 +1,33 @@
-﻿using GHPRS.Core.Entities;
-using GHPRS.Core.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GHPRS.Core.Entities;
+using GHPRS.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GHPRS.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        protected readonly GhprsContext Context;
         private readonly IQueryable<User> _entities;
         private readonly DbSet<User> _users;
+        protected readonly GhprsContext Context;
+
         public UserRepository(GhprsContext context)
         {
-            this.Context = context;
+            Context = context;
             _entities = context.Users
-                 .Include(i => i.Person)
-                 .AsNoTracking();
+                .Include(i => i.Person)
+                .Include(x => x.Organization)
+                .AsNoTracking();
             _users = context.Set<User>();
         }
+
         public IEnumerable<User> GetAll()
         {
             return _entities.AsEnumerable();
         }
+
         public User GetById(string id)
         {
             return _entities.SingleOrDefault(s => s.Id == id);
@@ -42,16 +46,18 @@ namespace GHPRS.Persistence.Repositories
             Context.SaveChanges();
             return entity;
         }
+
         public void Update(User entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             Context.SaveChanges();
         }
+
         public void Delete(string id)
         {
-            if (id == "") throw new ArgumentNullException("entity");
+            if (id == "") throw new ArgumentNullException(nameof(id));
 
-            User entity = _entities.SingleOrDefault(s => s.Id == id);
+            var entity = _entities.SingleOrDefault(s => s.Id == id);
             _users.Remove(entity);
             Context.SaveChanges();
         }
