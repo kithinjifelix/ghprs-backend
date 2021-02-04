@@ -13,6 +13,7 @@
 
         public enum TemplateStatus
         {
+            NotConfigured,
             Active,
             Archived
         }

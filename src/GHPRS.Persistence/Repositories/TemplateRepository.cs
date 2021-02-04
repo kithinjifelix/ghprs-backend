@@ -53,6 +53,14 @@ namespace GHPRS.Persistence.Repositories
             }
         }
 
+        public void UpdateStatus(int id, TemplateStatus status)
+        {
+            var template = GetById(id);
+            template.Status = status;
+            _context.SaveChanges();
+
+        }
+
         public IEnumerable<Template> GetAllFull()
         {
             return _entities;

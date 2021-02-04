@@ -47,7 +47,6 @@ namespace GHPRS.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }

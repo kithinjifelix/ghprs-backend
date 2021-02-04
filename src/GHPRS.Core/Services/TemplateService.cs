@@ -92,7 +92,7 @@ namespace GHPRS.Core.Services
                 Frequency = (ReportingFrequency) templateModel.Frequency,
                 Version = templateModel.Version,
                 ContentType = templateModel.File.ContentType,
-                Status = TemplateStatus.Active
+                Status = TemplateStatus.NotConfigured
             };
 
             using (var target = new MemoryStream())

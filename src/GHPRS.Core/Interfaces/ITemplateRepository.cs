@@ -11,5 +11,6 @@ namespace GHPRS.Core.Interfaces
         IEnumerable<object> GetList(string role);
         object GetDetailsById(int id);
         void CreateTemplateTable(WorkSheet workSheet);
+        void UpdateStatus(int id, Template.TemplateStatus status);
     }
 }

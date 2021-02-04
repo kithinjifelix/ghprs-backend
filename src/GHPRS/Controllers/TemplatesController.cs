@@ -7,12 +7,9 @@ using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Hangfire;
 using static GHPRS.Core.Entities.Template;
-using System.Linq;
 
 namespace GHPRS.Controllers
 {
@@ -21,14 +18,16 @@ namespace GHPRS.Controllers
     [Authorize]
     public class TemplatesController : ControllerBase
     {
-
-        private readonly ILogger<TemplatesController> _logger;
-        private readonly ITemplateService _templateService;
-        private readonly ITemplateRepository _templateRepository;
-        private readonly IWorkSheetRepository _workSheetRepository;
         private readonly IColumnRepository _columnRepository;
 
-        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService, ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository, IColumnRepository columnRepository)
+        private readonly ILogger<TemplatesController> _logger;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly ITemplateService _templateService;
+        private readonly IWorkSheetRepository _workSheetRepository;
+
+        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService,
+            ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository,
+            IColumnRepository columnRepository)
         {
             _logger = logger;
             _templateService = templateService;
@@ -46,7 +45,7 @@ namespace GHPRS.Controllers
         [HttpGet]
         public IEnumerable<object> GetList()
         {
-            var role = this.User.FindFirstValue(ClaimTypes.Role);
+            var role = User.FindFirstValue(ClaimTypes.Role);
             return _templateRepository.GetList(role);
         }
 
@@ -63,26 +62,24 @@ namespace GHPRS.Controllers
         {
             try
             {
-                var result = new List<WorkSheetModel>();
+                List<WorkSheetModel> result;
                 if (template.File != null)
                 {
                     if (template.File.Length > 0)
-                    {
                         result = await _templateService.Initialize(template);
-                    }
                     else
-                    {
                         return StatusCode(StatusCodes.Status500InternalServerError, "File contains no data");
-                    }
                 }
                 else
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
                 }
+
                 return Ok(result);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
@@ -99,28 +96,35 @@ namespace GHPRS.Controllers
                     column.Type = columnModel.Type;
                     _columnRepository.Update(column);
                 }
+
                 return Ok();
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
 
         [HttpPost("TABLES")]
-        public  IActionResult CreateWorkSheetTables([FromBody] List<WorkSheetModel> workSheetModels)
+        public IActionResult CreateWorkSheetTables([FromBody] List<WorkSheetModel> workSheetModels)
         {
             try
             {
+                var workSheet = new WorkSheet();
                 foreach (var worksheetModel in workSheetModels)
                 {
-                    var workSheet = _workSheetRepository.GetFullWorkSheetById(worksheetModel.Id);
+                    workSheet = _workSheetRepository.GetFullWorkSheetById(worksheetModel.Id);
                     _templateRepository.CreateTemplateTable(workSheet);
                 }
+
+                _templateRepository.UpdateStatus(workSheet.TemplateId, TemplateStatus.Active);
+
                 return Ok();
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
@@ -132,15 +136,46 @@ namespace GHPRS.Controllers
             {
                 var template = _templateRepository.GetById(id);
 
-                template.Status = (TemplateStatus)status;
+                template.Status = (TemplateStatus) status;
 
                 _templateRepository.Update(template);
                 return Ok(template);
             }
             catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        [HttpGet("CONFIGURE/{id}")]
+        public IActionResult Configure(int id)
+        {
+            var result = new List<WorkSheetModel>();
+            var workSheets = _workSheetRepository.GetFullWorkSheetsByTemplateId(id);
+            foreach (var workSheet in workSheets)
+            {
+                var columns = new List<ColumnModel>();
+                foreach (var col in workSheet.Columns)
+                {
+                    var column = new ColumnModel
+                    {
+                        Id = col.Id,
+                        Name = col.Name
+                    };
+                    columns.Add(column);
+                }
+
+                var item = new WorkSheetModel
+                {
+                    Id = workSheet.Id,
+                    Name = workSheet.Name,
+                    Columns = columns
+                };
+                result.Add(item);
+            }
+
+            return Ok(result);
         }
     }
 }
