@@ -8,6 +8,7 @@ using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using GHPRS.Core.Utilities;
+using Hangfire;
 using Microsoft.Extensions.Logging;
 
 namespace GHPRS.Core.Services
@@ -49,16 +50,12 @@ namespace GHPRS.Core.Services
 
                     //remove all rows with columns containing either nothing or white space
                     var rows = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
-                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0));
+                        || string.CompareOrdinal(((string) field).Trim(), string.Empty) == 0));
                     var dataRows = rows.ToList();
                     if (dataRows.Count > 0)
-                    {
                         data = dataRows.CopyToDataTable();
-                    }
                     else
-                    {
                         data.Rows.Clear();
-                    }
 
                     if (data.Rows.Count > 0)
                         _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch);
@@ -91,12 +88,9 @@ namespace GHPRS.Core.Services
 
                     //remove all rows with columns containing either nothing or white space
                     var rows = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
-                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0));
+                        || string.CompareOrdinal(((string) field).Trim(), string.Empty) == 0));
                     var dataRows = rows.ToList();
-                    if (dataRows.Count > 0)
-                    {
-                        data = dataRows.CopyToDataTable();
-                    }
+                    if (dataRows.Count > 0) data = dataRows.CopyToDataTable();
 
                     var resultData = new
                     {
@@ -120,12 +114,10 @@ namespace GHPRS.Core.Services
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
 
-            //overwrite if existing
-            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x => x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id);
-            if (existing != null)
-            {
-                _uploadRepository.Delete(existing.Id);
-            }
+            //overwrite if existing and still pending
+            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
+                x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id);
+            if (existing != null) _uploadRepository.Delete(existing.Id);
 
             var initializedUpload = new Upload
             {
@@ -148,6 +140,35 @@ namespace GHPRS.Core.Services
 
             var result = _uploadRepository.Insert(initializedUpload);
             return result;
+        }
+
+        public void Review(Upload upload, Review review)
+        {
+            upload.Status = (UploadStatus)review.Status;
+            upload.Comments = review.Comments;
+
+            _uploadRepository.Update(upload);
+
+            //change status to overWritten if existing and approved
+            var overWrite = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
+                x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
+
+            if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
+
+            //Extract data from approved templates
+            if ((UploadStatus)review.Status == UploadStatus.Approved)
+                BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
+        }
+
+        public void OverWriteApproved(int uploadId)
+        {
+            var overWrite = _uploadRepository.GetFullUploadById(uploadId);
+            _uploadRepository.UpdateStatus(overWrite.Id, UploadStatus.OverWritten);
+            var workSheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(overWrite.Template.Id);
+            foreach (var workSheet in workSheets)
+            {
+                _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch);
+            }
         }
     }
 }

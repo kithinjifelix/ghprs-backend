@@ -73,7 +73,6 @@ namespace GHPRS.Persistence.Repositories
         public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch)
         {
             var insertScript = string.Empty;
-            var insert = string.Empty;
             foreach (DataRow row in data.Rows)
             {
                 var columns = string.Empty;
@@ -97,7 +96,7 @@ namespace GHPRS.Persistence.Repositories
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
-                insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
+                var insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
                 insertScript += insert;
             }
 
@@ -111,6 +110,37 @@ namespace GHPRS.Persistence.Repositories
                     {
                         cmd.Connection = connection;
                         cmd.CommandText = insertScript;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+        }
+
+        public void UpdateStatus(int id, UploadStatus status)
+        {
+            var upload = GetById(id);
+            upload.Status = status;
+            _context.SaveChanges();
+        }
+
+        public void DeleteFromTable(string tableName, string uploadBatch)
+        {
+            var deleteScript = $"DELETE FROM uploads.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\'; ";
+            try
+            {
+                var connectionString = _context.Database.GetConnectionString();
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = connection;
+                        cmd.CommandText = deleteScript;
                         cmd.ExecuteNonQuery();
                     }
                 }

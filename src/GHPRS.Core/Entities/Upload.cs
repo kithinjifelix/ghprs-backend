@@ -26,6 +26,7 @@ namespace GHPRS.Core.Entities
     {
         Pending,
         Approved,
-        Rejected
+        Rejected,
+        OverWritten
     }
 }

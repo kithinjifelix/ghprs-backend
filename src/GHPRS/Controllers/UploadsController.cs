@@ -112,16 +112,7 @@ namespace GHPRS.Controllers
             try
             {
                 var upload = _uploadRepository.GetById(id);
-
-                upload.Status = (UploadStatus) review.Status;
-                upload.Comments = review.Comments;
-
-                _uploadRepository.Update(upload);
-
-                //Extract data from approved templates
-                if ((UploadStatus) review.Status == UploadStatus.Approved)
-                    BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
-
+                _uploadService.Review(upload, review);
                 return Ok(upload);
             }
             catch (Exception e)

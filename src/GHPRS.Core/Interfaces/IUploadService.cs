@@ -10,5 +10,7 @@ namespace GHPRS.Core.Interfaces
         Task<Upload> Upload(UploadModel upload, User user);
         void InsertUploadData(int uploadId);
         List<object> ReadUploadData(int uploadId);
+        void OverWriteApproved(int uploadId);
+        void Review(Upload upload, Review review);
     }
 }
