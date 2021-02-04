@@ -1,20 +1,21 @@
-﻿using GHPRS.Core.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace GHPRS.Persistence.Repositories
 {
     public class UploadRepository : Repository<Upload>, IUploadRepository
     {
-        private readonly IQueryable<Upload> _entities;
         private readonly GhprsContext _context;
+        private readonly IQueryable<Upload> _entities;
         private readonly ILogger<UploadRepository> _logger;
+
         public UploadRepository(GhprsContext context, ILogger<UploadRepository> logger) : base(context)
         {
             _entities = context.Uploads
@@ -32,7 +33,9 @@ namespace GHPRS.Persistence.Repositories
 
         public object GetDetailsById(int id)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).FirstOrDefault(x => x.Id == id);
+            var result = _entities.Select(s => new
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                .FirstOrDefault(x => x.Id == id);
             return result;
         }
 
@@ -43,37 +46,44 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<object> GetList()
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments , s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).ToList();
+            var result = _entities.Select(s => new
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                .ToList();
             return result;
         }
 
         public IEnumerable<object> GetListByStatus(UploadStatus status)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).Where(x => x.Status == status).ToList();
+            var result = _entities
+                .Select(s => new
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                .Where(x => x.Status == status).ToList();
             return result;
         }
 
         public IEnumerable<object> GetListByUser(User user)
         {
-            var result = _entities.Select(s => new { s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt }).Where(x => x.User == user).ToList();
+            var result = _entities
+                .Select(s => new
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                .Where(x => x.User == user).ToList();
             return result;
         }
 
-        public void InsertToTable(WorkSheet workSheet, DataTable data)
+        public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch)
         {
-            var insertScript = String.Empty;
-            var insert = String.Empty;
+            var insertScript = string.Empty;
+            var insert = string.Empty;
             foreach (DataRow row in data.Rows)
             {
-                string columns = String.Empty;
-                string rows = String.Empty;
+                var columns = string.Empty;
+                var rows = string.Empty;
                 foreach (var column in workSheet.Columns)
-                {
                     try
                     {
                         if (column.Name != "Id")
                         {
-                            rows += $" \"{row[column.Name]}\",";
+                            rows += $" \'{row[column.Name]}\',";
                             columns += $" \"{column.Name}\",";
                         }
                     }
@@ -81,13 +91,16 @@ namespace GHPRS.Persistence.Repositories
                     {
                         _logger.LogError(e.Message, e);
                     }
-                }
+
+                rows += $" \'{uploadBatch}\',";
+                columns += " \"Upload_Batch\",";
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
                 insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
+                insertScript += insert;
             }
-            insertScript += insert;
+
             try
             {
                 var connectionString = _context.Database.GetConnectionString();

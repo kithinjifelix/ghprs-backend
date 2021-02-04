@@ -48,10 +48,20 @@ namespace GHPRS.Core.Services
                         rowColumn.Item2);
 
                     //remove all rows with columns containing either nothing or white space
-                    data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
-                        || String.CompareOrdinal(((string) field).Trim(), string.Empty) == 0)).CopyToDataTable();
+                    var rows = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
+                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0));
+                    var dataRows = rows.ToList();
+                    if (dataRows.Count > 0)
+                    {
+                        data = dataRows.CopyToDataTable();
+                    }
+                    else
+                    {
+                        data.Rows.Clear();
+                    }
 
-                    _uploadRepository.InsertToTable(worksheet, data);
+                    if (data.Rows.Count > 0)
+                        _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch);
                 }
                 catch (Exception e)
                 {
@@ -80,8 +90,13 @@ namespace GHPRS.Core.Services
                         rowColumn.Item2);
 
                     //remove all rows with columns containing either nothing or white space
-                    data = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
-                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0)).CopyToDataTable();
+                    var rows = data.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull
+                        || String.CompareOrdinal(((string)field).Trim(), string.Empty) == 0));
+                    var dataRows = rows.ToList();
+                    if (dataRows.Count > 0)
+                    {
+                        data = dataRows.CopyToDataTable();
+                    }
 
                     var resultData = new
                     {
