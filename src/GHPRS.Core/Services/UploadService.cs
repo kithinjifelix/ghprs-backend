@@ -144,16 +144,18 @@ namespace GHPRS.Core.Services
 
         public void Review(Upload upload, Review review)
         {
-            upload.Status = (UploadStatus)review.Status;
-            upload.Comments = review.Comments;
-
-            _uploadRepository.Update(upload);
-
             //change status to overWritten if existing and approved
             var overWrite = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
                 x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
 
             if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
+
+            upload.Status = (UploadStatus)review.Status;
+            upload.Comments = review.Comments;
+
+            _uploadRepository.Update(upload);
+
+            
 
             //Extract data from approved templates
             if ((UploadStatus)review.Status == UploadStatus.Approved)

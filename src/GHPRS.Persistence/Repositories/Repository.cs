@@ -39,7 +39,7 @@ namespace GHPRS.Persistence.Repositories
         }
         public void Delete(int id)
         {
-            if (id == 0) throw new ArgumentNullException("entity");
+            if (id == 0) throw new ArgumentNullException(nameof(id));
 
             T entity = _entities.SingleOrDefault(s => s.Id == id);
             _entities.Remove(entity);
