@@ -13,16 +13,18 @@ namespace GHPRS.Persistence.Repositories
     public class UploadRepository : Repository<Upload>, IUploadRepository
     {
         private readonly GhprsContext _context;
+        private readonly DataContext _dataContext;
         private readonly IQueryable<Upload> _entities;
         private readonly ILogger<UploadRepository> _logger;
 
-        public UploadRepository(GhprsContext context, ILogger<UploadRepository> logger) : base(context)
+        public UploadRepository(GhprsContext context, DataContext dataContext, ILogger<UploadRepository> logger) : base(context)
         {
             _entities = context.Uploads
                 .Include(i => i.Template)
                 .Include(i => i.User)
                 .AsNoTracking();
             _context = context;
+            _dataContext = dataContext;
             _logger = logger;
         }
 
@@ -96,13 +98,13 @@ namespace GHPRS.Persistence.Repositories
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
-                var insert = $"INSERT INTO uploads.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
+                var insert = $"INSERT INTO public.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
                 insertScript += insert;
             }
 
             try
             {
-                var connectionString = _context.Database.GetConnectionString();
+                var connectionString = _dataContext.Database.GetConnectionString();
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
@@ -130,10 +132,10 @@ namespace GHPRS.Persistence.Repositories
 
         public void DeleteFromTable(string tableName, string uploadBatch)
         {
-            var deleteScript = $"DELETE FROM uploads.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\'; ";
+            var deleteScript = $"DELETE FROM public.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\'; ";
             try
             {
-                var connectionString = _context.Database.GetConnectionString();
+                var connectionString = _dataContext.Database.GetConnectionString();
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();

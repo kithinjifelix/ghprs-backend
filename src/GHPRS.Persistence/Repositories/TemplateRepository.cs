@@ -13,13 +13,15 @@ namespace GHPRS.Persistence.Repositories
     public class TemplateRepository : Repository<Template>, ITemplateRepository
     {
         private readonly GhprsContext _context;
+        private readonly DataContext _dataContext;
         private readonly DbSet<Template> _entities;
         private readonly ILogger<TemplateRepository> _logger;
 
-        public TemplateRepository(GhprsContext context, ILogger<TemplateRepository> logger) : base(context)
+        public TemplateRepository(GhprsContext context, DataContext dataContext, ILogger<TemplateRepository> logger) : base(context)
         {
             _entities = context.Set<Template>();
             _context = context;
+            _dataContext = dataContext;
             _logger = logger;
         }
 
@@ -32,15 +34,13 @@ namespace GHPRS.Persistence.Repositories
 
             try
             {
-                var connectionString = _context.Database.GetConnectionString();
+                var connectionString = _dataContext.Database.GetConnectionString();
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = connection;
-                        cmd.CommandText = "CREATE SCHEMA if not exists uploads;";
-                        cmd.ExecuteNonQuery();
                         cmd.CommandText = createScript;
                         cmd.ExecuteNonQuery();
                     }
@@ -49,7 +49,7 @@ namespace GHPRS.Persistence.Repositories
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                throw e;
+                throw;
             }
         }
 

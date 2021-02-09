@@ -49,7 +49,10 @@ namespace GHPRS
 
             //configure EF Core Postgres SQL
             services.AddDbContext<GhprsContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("defaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<DataContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DataConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()
@@ -107,10 +110,8 @@ namespace GHPRS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, GhprsContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            context.Database.Migrate();
-
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseCors(MyAllowSpecificOrigins);
