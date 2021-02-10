@@ -116,7 +116,7 @@ namespace GHPRS.Core.Services
                 var configuration = _excelService.ReadExcelWorkSheet(memoryStream, "Configuration", 4, 1);
                 var generatedType =
                     JsonConvert.DeserializeObject<IEnumerable<WorkSheet>>(JsonConvert.SerializeObject(configuration));
-                var result = generatedType.Where(x => x.Name != "");
+                var result = generatedType.Where(x => x.Name.Trim() != "");
                 return result;
             }
             catch (Exception e)
