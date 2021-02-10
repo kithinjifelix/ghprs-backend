@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    [Migration("20210202202427_Initial")]
+    [Migration("20210210104340_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,8 +243,8 @@ namespace GHPRS.Persistence.Migrations
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
-                            Name = "TX New",
-                            Number = 9,
+                            Name = "D5 USAID Monthly Reporting",
+                            Number = 12,
                             UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Url = "http://52.251.58.64:3000"
                         },
@@ -254,8 +254,8 @@ namespace GHPRS.Persistence.Migrations
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
-                            Name = "HTS Testing Monthly Reporting",
-                            Number = 3,
+                            Name = "D5 USAID Monthly Reporting - Site Level",
+                            Number = 13,
                             UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Url = "http://52.251.58.64:3000"
                         },
@@ -265,8 +265,8 @@ namespace GHPRS.Persistence.Migrations
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
-                            Name = "TX Curr and TX MMD",
-                            Number = 4,
+                            Name = "MCH FP Performance Dashboard",
+                            Number = 14,
                             UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Url = "http://52.251.58.64:3000"
                         },
@@ -276,8 +276,8 @@ namespace GHPRS.Persistence.Migrations
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
-                            Name = "TX ML",
-                            Number = 8,
+                            Name = "Boresha Afya Facilities",
+                            Number = 36,
                             UpdatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Url = "http://52.251.58.64:3000"
                         });
