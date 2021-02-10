@@ -161,7 +161,8 @@ namespace GHPRS.Controllers
                     var column = new ColumnModel
                     {
                         Id = col.Id,
-                        Name = col.Name
+                        Name = col.Name,
+                        Type = col.Type
                     };
                     columns.Add(column);
                 }
