@@ -53,6 +53,13 @@ namespace GHPRS.Controllers
             return _linkRepository.GetAll();
         }
 
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var result = _linkRepository.GetById(id);
+            return Ok(result);
+        }
+
         [HttpGet("TYPE/{type}")]
         public IEnumerable<Link> GetByType(int type)
         {
