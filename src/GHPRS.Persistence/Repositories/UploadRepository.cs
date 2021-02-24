@@ -95,6 +95,9 @@ namespace GHPRS.Persistence.Repositories
 
                 rows += $" \'{uploadBatch}\',";
                 columns += " \"Upload_Batch\",";
+                var reportDate = CreateReportDate(row);
+                rows += $" \'{reportDate}\',";
+                columns += " \"Report Date\",";
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
@@ -152,6 +155,41 @@ namespace GHPRS.Persistence.Repositories
                 _logger.LogError(e.Message, e);
                 throw;
             }
+        }
+
+        private DateTime ? CreateReportDate(DataRow row)
+        {
+            var month = row["Month"];
+            var monthNumber = row["Month_Num"];
+            var year = row["Year"];
+            if (year != null && monthNumber != null)
+            {
+                try
+                {
+                    var dateString = $"{year}-{monthNumber}-01";
+                    return DateTime.Parse(dateString);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                    return null;
+                }
+            }
+            if (year != null && month != null)
+            {
+                try
+                {
+                    var dateString = $"{year}-{month}-01";
+                    return DateTime.Parse(dateString);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                    return null;
+                }
+            }
+
+            return null;
         }
     }
 }
