@@ -157,39 +157,46 @@ namespace GHPRS.Persistence.Repositories
             }
         }
 
-        private DateTime ? CreateReportDate(DataRow row)
+        private DateTime CreateReportDate(DataRow row)
         {
-            var month = row["Month"];
-            var monthNumber = row["Month_Num"];
-            var year = row["Year"];
-            if (year != null && monthNumber != null)
+            try
             {
-                try
+                var month = row["Month"];
+                var monthNumber = row["Month_Num"];
+                var year = row["Year"];
+                if (year != null && monthNumber != null)
                 {
-                    var dateString = $"{year}-{monthNumber}-01";
-                    return DateTime.Parse(dateString);
+                    try
+                    {
+                        var dateString = $"{year}-{monthNumber}-01";
+                        return DateTime.Parse(dateString);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e.Message, e);
+                        return new DateTime();
+                    }
                 }
-                catch (Exception e)
+                if (year != null && month != null)
                 {
-                    _logger.LogError(e.Message, e);
-                    return null;
+                    try
+                    {
+                        var dateString = $"{year}-{month}-01";
+                        return DateTime.Parse(dateString);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e.Message, e);
+                        return new DateTime();
+                    }
                 }
             }
-            if (year != null && month != null)
+            catch (Exception)
             {
-                try
-                {
-                    var dateString = $"{year}-{month}-01";
-                    return DateTime.Parse(dateString);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message, e);
-                    return null;
-                }
+                return new DateTime();
             }
 
-            return null;
+            return new DateTime();
         }
     }
 }
