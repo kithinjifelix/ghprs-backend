@@ -1,9 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace GHPRS.Controllers
 {
@@ -13,9 +16,11 @@ namespace GHPRS.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<LinksController> _logger;
 
-        public UsersController(UserManager<User> userManager, IUserRepository userRepository)
+        public UsersController(ILogger<LinksController> logger, UserManager<User> userManager, IUserRepository userRepository)
         {
+            _logger = logger;
             _userRepository = userRepository;
         }
 
@@ -39,5 +44,29 @@ namespace GHPRS.Controllers
             return _userRepository.GetById(id);
         }
 
+        [HttpPut("{id}")]
+        public User Update(string id, [FromBody] Person person)
+        {
+            var user = _userRepository.GetById(id);
+            user.Person = person;
+            _userRepository.Update(user);
+            return user;
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            try
+            {
+                _userRepository.Delete(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+            
+        }
     }
 }

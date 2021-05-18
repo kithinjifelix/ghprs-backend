@@ -50,5 +50,36 @@ namespace GHPRS.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
+
+        [HttpPut]
+        public IActionResult UpdateOrganization([FromBody] Organization organization)
+        {
+            try
+            {
+                _organizationRepository.Update(organization);
+                return Ok(organization);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                _organizationRepository.Delete(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+
+        }
     }
 }
