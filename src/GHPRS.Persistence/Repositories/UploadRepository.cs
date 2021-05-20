@@ -168,7 +168,7 @@ namespace GHPRS.Persistence.Repositories
                 {
                     try
                     {
-                        var dateString = $"{year}-{monthNumber}-01";
+                        var dateString = $"{year}-{monthNumber}-28";
                         return DateTime.Parse(dateString);
                     }
                     catch (Exception e)
@@ -181,7 +181,7 @@ namespace GHPRS.Persistence.Repositories
                 {
                     try
                     {
-                        var dateString = $"{year}-{month}-01";
+                        var dateString = $"{year}-{month}-28";
                         return DateTime.Parse(dateString);
                     }
                     catch (Exception e)
