@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
@@ -84,13 +85,15 @@ namespace GHPRS.Core.Services
             //Getting file Extension
             var fileExtension = Path.GetExtension(fileName);
 
+            var existingTemplate = ExistingTemplateAndLatestVersion(templateModel.Name);
+
             var initializedTemplate = new Template
             {
                 Name = templateModel.Name,
                 FileExtension = fileExtension,
                 Description = templateModel.Description,
                 Frequency = (ReportingFrequency) templateModel.Frequency,
-                Version = templateModel.Version,
+                Version = existingTemplate.Item2 + 1,
                 ContentType = templateModel.File.ContentType,
                 Status = TemplateStatus.NotConfigured
             };
@@ -106,6 +109,16 @@ namespace GHPRS.Core.Services
             var worksheets = CreateWorkSheetDefinitions(template);
 
             return worksheets;
+        }
+
+        public Tuple<bool, decimal> ExistingTemplateAndLatestVersion(string name)
+        {
+            var existingTemplates = _templateRepository.GetAll()
+                .Where(x => x.Name.ToLower() == name.ToLower()).ToList();
+            decimal latestVersion = 0;
+            if(existingTemplates.Any())
+                latestVersion = existingTemplates.Max(x => x.Version);
+            return Tuple.Create(existingTemplates.Any(), latestVersion);
         }
 
         private IEnumerable<WorkSheet> ReadConfigurationFile(byte[] file)

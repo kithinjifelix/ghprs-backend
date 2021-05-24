@@ -178,5 +178,22 @@ namespace GHPRS.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("EXISTS")]
+        public IActionResult CheckExistingTemplate([FromQuery]string template)
+        {
+            try
+            {
+                if (template == null)
+                    return BadRequest();
+                var exists = _templateService.ExistingTemplateAndLatestVersion(template);
+                return Ok(exists);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
     }
 }
