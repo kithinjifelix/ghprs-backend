@@ -84,7 +84,7 @@ namespace GHPRS.Persistence.Repositories
                     {
                         if (column.Name != "Id")
                         {
-                            rows += $" \'{row[column.Name]}\',";
+                            rows += $" \'{EscapeSqlCharacters(row[column.Name].ToString())}\',";
                             columns += $" \"{column.Name}\",";
                         }
                     }
@@ -197,6 +197,20 @@ namespace GHPRS.Persistence.Repositories
             }
 
             return new DateTime();
+        }
+
+        private string EscapeSqlCharacters(string input)
+        {
+            if (input.Contains('\''))
+            {
+                var output = input.Replace("\'", "\'\'");
+                return output;
+            } if (input.Contains('\"'))
+            {
+                var output = input.Replace("\"", "\"\"");
+                return output;
+            }
+            return input;
         }
     }
 }

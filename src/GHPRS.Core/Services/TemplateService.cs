@@ -114,7 +114,7 @@ namespace GHPRS.Core.Services
         public Tuple<bool, decimal> ExistingTemplateAndLatestVersion(string name)
         {
             var existingTemplates = _templateRepository.GetAll()
-                .Where(x => x.Name.ToLower() == name.ToLower()).ToList();
+                .Where(x => String.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase)).ToList();
             decimal latestVersion = 0;
             if(existingTemplates.Any())
                 latestVersion = existingTemplates.Max(x => x.Version);

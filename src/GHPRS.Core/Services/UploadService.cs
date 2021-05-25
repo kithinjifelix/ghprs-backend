@@ -114,9 +114,9 @@ namespace GHPRS.Core.Services
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
 
-            //overwrite if existing and still pending
+            //overwrite if existing and still pending and similar period
             var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
-                x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id);
+                x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id && x.StartDate == upload.StartDate && x.EndDate == upload.EndDate);
             if (existing != null) _uploadRepository.Delete(existing.Id);
 
             var initializedUpload = new Upload

@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="SQL Scripts\" />
     <Folder Include="Seed\" />
   </ItemGroup>
 
