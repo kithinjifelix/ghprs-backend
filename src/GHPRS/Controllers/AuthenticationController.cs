@@ -26,14 +26,16 @@ namespace GHPRS.Controllers
         private readonly IOrganizationRepository _organizationRepository;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
+        private readonly IMetabaseService _metabaseService;
 
         public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration, IOrganizationRepository organizationRepository)
+            IConfiguration configuration, IOrganizationRepository organizationRepository, IMetabaseService metabaseService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _organizationRepository = organizationRepository;
+            _metabaseService = metabaseService;
         }
 
         [HttpPost]
@@ -41,7 +43,8 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email) ?? await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email) ??
+                       await _userManager.FindByNameAsync(model.Email);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
@@ -119,6 +122,19 @@ namespace GHPRS.Controllers
                     new Response
                         {Status = "Error", Message = $"User creation failed! Please Check your details. {errors} !"});
             }
+            var names = model.Name.Split(' ');
+            string firstName = names[0];
+            string lastName = names[1];
+            int[] groupIds = {1, 2};
+
+            var metabaseUser = new MetabaseUser()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = model.Email,
+                Password = model.Password,
+                GroupIds = groupIds
+            };
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Administrator))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
@@ -128,13 +144,13 @@ namespace GHPRS.Controllers
             {
                 if (await _roleManager.RoleExistsAsync(UserRoles.Administrator))
                     await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                await _metabaseService.CreateUser(metabaseUser).ConfigureAwait(false);
             }
             else if (model.RoleId == 1)
             {
                 if (await _roleManager.RoleExistsAsync(UserRoles.User))
                     await _userManager.AddToRoleAsync(user, UserRoles.User);
             }
-
 
             return Ok(new Response {Status = "Success", Message = "User created successfully!"});
         }

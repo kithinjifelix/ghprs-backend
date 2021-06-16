@@ -34,6 +34,9 @@ namespace GHPRS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // add in-memory cache
+            services.AddMemoryCache();
+
             // configure CORS
             services.AddCors(options =>
             {
@@ -103,6 +106,7 @@ namespace GHPRS
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IColumnRepository, ColumnRepository>();
+            services.AddScoped<IMetabaseService, MetabaseService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore

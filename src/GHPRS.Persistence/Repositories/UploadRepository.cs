@@ -17,7 +17,8 @@ namespace GHPRS.Persistence.Repositories
         private readonly IQueryable<Upload> _entities;
         private readonly ILogger<UploadRepository> _logger;
 
-        public UploadRepository(GhprsContext context, DataContext dataContext, ILogger<UploadRepository> logger) : base(context)
+        public UploadRepository(GhprsContext context, DataContext dataContext, ILogger<UploadRepository> logger) :
+            base(context)
         {
             _entities = context.Uploads
                 .Include(i => i.Template)
@@ -84,7 +85,27 @@ namespace GHPRS.Persistence.Repositories
                     {
                         if (column.Name != "Id")
                         {
-                            rows += $" \'{EscapeSqlCharacters(row[column.Name].ToString())}\',";
+                            string r;
+                            if (column.Type == "NUMERIC")
+                            {
+                                if (row[column.Name].ToString()?.Trim() == "" ||
+                                    row[column.Name].ToString()?.Trim() == "-" ||
+                                    row[column.Name].ToString()?.ToLower().Trim() == "o")
+                                {
+                                    r = "0";
+                                }
+                                else
+                                {
+                                    var str = $"{row[column.Name]}";
+                                    r = EscapeSqlCharacters(str);
+                                }
+                            }
+                            else
+                            {
+                                r = EscapeSqlCharacters(row[column.Name].ToString());
+                            }
+
+                            rows += $" \'{r}\',";
                             columns += $" \"{column.Name}\",";
                         }
                     }
@@ -161,11 +182,37 @@ namespace GHPRS.Persistence.Repositories
         {
             try
             {
-                var month = row["Month"];
-                var monthNumber = row["Month_Num"];
-                var year = row["Year"];
-                if (year != null && monthNumber != null)
+                object month = null;
+                try
                 {
+                    month = row["Month"];
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                }
+
+                object monthNumber = null;
+                try
+                {
+                    monthNumber = row["Month_Num"];
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                }
+
+                object year = null;
+                try
+                {
+                    year = row["Year"];
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message, e);
+                }
+
+                if (year != null && monthNumber != null)
                     try
                     {
                         var dateString = $"{year}-{monthNumber}-28";
@@ -176,9 +223,8 @@ namespace GHPRS.Persistence.Repositories
                         _logger.LogError(e.Message, e);
                         return new DateTime();
                     }
-                }
+
                 if (year != null && month != null)
-                {
                     try
                     {
                         var dateString = $"{year}-{month}-28";
@@ -189,9 +235,8 @@ namespace GHPRS.Persistence.Repositories
                         _logger.LogError(e.Message, e);
                         return new DateTime();
                     }
-                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new DateTime();
             }
@@ -205,11 +250,14 @@ namespace GHPRS.Persistence.Repositories
             {
                 var output = input.Replace("\'", "\'\'");
                 return output;
-            } if (input.Contains('\"'))
+            }
+
+            if (input.Contains('\"'))
             {
                 var output = input.Replace("\"", "\"\"");
                 return output;
             }
+
             return input;
         }
     }
