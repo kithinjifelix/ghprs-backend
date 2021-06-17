@@ -37,10 +37,18 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("USERID")]
-        public User GetUser()
+        public async Task<User> GetUser()
         {
             var userName = this.User.FindFirstValue(ClaimTypes.Name);
-            return _userRepository.GetByUserName(userName);
+            var user = _userRepository.GetByUserName(userName);
+            var roles = await _userManager.GetRolesAsync((User)user);
+            user.RoleId = roles.FirstOrDefault() switch
+            {
+                "Administrator" => 0,
+                "User" => 1,
+                _ => user.RoleId
+            };
+            return user;
         }
 
         [HttpGet("{id}")]
