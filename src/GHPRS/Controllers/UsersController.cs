@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using GHPRS.Core.Models;
 
 namespace GHPRS.Controllers
 {
@@ -16,11 +19,13 @@ namespace GHPRS.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<LinksController> _logger;
 
         public UsersController(ILogger<LinksController> logger, UserManager<User> userManager, IUserRepository userRepository)
         {
             _logger = logger;
+            _userManager = userManager;
             _userRepository = userRepository;
         }
 
@@ -39,16 +44,35 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("{id}")]
-        public User Get(string id)
+        public async Task<User> Get(string id)
         {
-            return _userRepository.GetById(id);
+            dynamic user = _userRepository.GetById(id);
+            var roles = await _userManager.GetRolesAsync((User) user);
+            user.RoleId = roles.FirstOrDefault() switch
+            {
+                "Administrator" => 0,
+                "User" => 1,
+                _ => user.RoleId
+            };
+            return user;
         }
 
         [HttpPut("{id}")]
-        public User Update(string id, [FromBody] Person person)
+        public async Task<User> Update(string id, [FromBody] EditUser model)
         {
             var user = _userRepository.GetById(id);
-            user.Person = person;
+            user.Person.Name = model.Name;
+            user.OrganizationId = model.OrganizationId;
+            var roles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+            if (model.RoleId == 0)
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+            }
+            else if (model.RoleId == 1)
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.User);
+            }
             _userRepository.Update(user);
             return user;
         }

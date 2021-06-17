@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace GHPRS.Core.Entities
@@ -10,5 +11,7 @@ namespace GHPRS.Core.Entities
         public virtual ICollection<Upload> Uploads { get; set; }
         public int OrganizationId { get; set; }
         public virtual Organization Organization { get; set; }
+        [NotMapped]
+        public int RoleId { get; set; }
     }
 }
