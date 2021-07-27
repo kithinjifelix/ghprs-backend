@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
@@ -64,31 +65,31 @@ namespace GHPRS.Controllers
         public IEnumerable<Link> GetByType(int type)
         {
             LinkType linkType = (LinkType)type;
-            return _linkRepository.GetByType(linkType);
+            return _linkRepository.GetByType(linkType).OrderBy(x => x.Name);
         }
 
         [HttpGet("EXTERNAL")]
         public IEnumerable<Link> GetExternalLinks()
         {
-            return _linkRepository.GetByType(LinkType.External);
+            return _linkRepository.GetByType(LinkType.External).OrderBy(x => x.Name);
         }
 
         [HttpGet("DASHBOARD")]
         public IEnumerable<Link> GetDashboardLinks()
         {
-            return _linkRepository.GetByType(LinkType.Dashboard);
+            return _linkRepository.GetByType(LinkType.Dashboard).OrderBy(x => x.Name);
         }
 
         [HttpGet("REPORT")]
         public IEnumerable<Link> GetReportLinks()
         {
-            return _linkRepository.GetByType(LinkType.Report);
+            return _linkRepository.GetByType(LinkType.Report).OrderBy(x => x.Name);
         }
 
         [HttpGet("TABLE")]
         public IEnumerable<Link> GetTableLinks()
         {
-            return _linkRepository.GetByType(LinkType.Table);
+            return _linkRepository.GetByType(LinkType.Table).OrderBy(x => x.Name);
         }
 
         [HttpDelete("{id}")]

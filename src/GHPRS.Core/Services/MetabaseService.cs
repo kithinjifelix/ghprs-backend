@@ -63,6 +63,7 @@ namespace GHPRS.Core.Services
             using var client = new HttpClient {BaseAddress = new Uri(_url)};
             // get metabase session token
             var token = await GetSessionToken();
+            client.DefaultRequestHeaders.Add("'Access-Control-Allow-Origin", "*");
             client.DefaultRequestHeaders.Add("X-Metabase-Session", token);
             string jsonString = JsonSerializer.Serialize(user);
             var response = await client.PostAsync("user", new StringContent(jsonString, Encoding.UTF8, "application/json"));
@@ -88,6 +89,7 @@ namespace GHPRS.Core.Services
             using var client = new HttpClient {BaseAddress = new Uri(_url)};
             // get metabase session token
             var token = await GetSessionToken();
+            client.DefaultRequestHeaders.Add("'Access-Control-Allow-Origin", "*");
             client.DefaultRequestHeaders.Add("X-Metabase-Session", token);
             var response = await client.GetAsync("user/current");
             if (response.IsSuccessStatusCode)
@@ -115,6 +117,7 @@ namespace GHPRS.Core.Services
                 Password = _configuration["Metabase:Password"]
             };
             string jsonString = JsonSerializer.Serialize(login);
+            client.DefaultRequestHeaders.Add("'Access-Control-Allow-Origin", "*");
             var response = await client.PostAsync("session", new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (response.IsSuccessStatusCode)
