@@ -31,7 +31,7 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<Upload> GetFullUploads()
         {
-            return _entities;
+            return _entities.OrderBy(n => n.Name);
         }
 
         public object GetDetailsById(int id)
@@ -51,6 +51,7 @@ namespace GHPRS.Persistence.Repositories
         {
             var result = _entities.Select(s => new
                     {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                .OrderBy(n => n.Name)
                 .ToList();
             return result;
         }
@@ -60,7 +61,7 @@ namespace GHPRS.Persistence.Repositories
             var result = _entities
                 .Select(s => new
                     {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
-                .Where(x => x.Status == status).ToList();
+                .Where(x => x.Status == status).OrderBy(n => n.Name).ToList();
             return result;
         }
 
@@ -69,7 +70,7 @@ namespace GHPRS.Persistence.Repositories
             var result = _entities
                 .Select(s => new
                     {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
-                .Where(x => x.User == user).ToList();
+                .Where(x => x.User == user).OrderBy(n => n.Name).ToList();
             return result;
         }
 

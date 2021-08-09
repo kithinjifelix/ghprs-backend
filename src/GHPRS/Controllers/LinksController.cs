@@ -51,7 +51,7 @@ namespace GHPRS.Controllers
         [HttpGet]
         public IEnumerable<Link> GetList()
         {
-            return _linkRepository.GetAll();
+            return _linkRepository.GetAll().OrderBy(n => n.Name);
         }
 
         [HttpGet("{id}")]

@@ -17,7 +17,8 @@ namespace GHPRS.Persistence.Repositories
         private readonly DbSet<Template> _entities;
         private readonly ILogger<TemplateRepository> _logger;
 
-        public TemplateRepository(GhprsContext context, DataContext dataContext, ILogger<TemplateRepository> logger) : base(context)
+        public TemplateRepository(GhprsContext context, DataContext dataContext, ILogger<TemplateRepository> logger) :
+            base(context)
         {
             _entities = context.Set<Template>();
             _context = context;
@@ -58,12 +59,11 @@ namespace GHPRS.Persistence.Repositories
             var template = GetById(id);
             template.Status = status;
             _context.SaveChanges();
-
         }
 
         public IEnumerable<Template> GetAllFull()
         {
-            return _entities;
+            return _entities.OrderBy(n => n.Name);
         }
 
         public Template GetAllFullById(int id)
@@ -84,11 +84,12 @@ namespace GHPRS.Persistence.Repositories
             if (role == "Administrator")
                 return _entities.Select(s => new
                         {s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Frequency, s.Status, s.CreatedAt})
+                    .OrderBy(n => n.Name)
                     .ToList();
             return _entities
                 .Select(s => new
                     {s.Id, s.Name, s.Description, s.ContentType, s.Version, s.Frequency, s.Status, s.CreatedAt})
-                .Where(x => x.Status == TemplateStatus.Active).ToList();
+                .Where(x => x.Status == TemplateStatus.Active).OrderBy(n => n.Name).ToList();
         }
     }
 }

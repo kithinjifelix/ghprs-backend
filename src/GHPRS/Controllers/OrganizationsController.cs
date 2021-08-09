@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +34,7 @@ namespace GHPRS.Controllers
         [HttpGet]
         public IEnumerable<object> GetList()
         {
-            return _organizationRepository.GetAll();
+            return _organizationRepository.GetAll().OrderBy(n => n.Name);
         }
 
         [HttpPost]
