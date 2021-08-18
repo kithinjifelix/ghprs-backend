@@ -37,6 +37,7 @@ namespace GHPRS.Controllers
                     LinkType = (LinkType)model.LinkType,
                     Number = model.Number,
                     Key = model.Key,
+                    Description = model.Description,
                 };
                 var result = _linkRepository.Insert(link);
                 return Ok(result);
