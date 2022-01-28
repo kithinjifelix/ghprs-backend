@@ -44,7 +44,7 @@ namespace GHPRS.Persistence.Repositories
 
         public Upload GetFullUploadById(int id)
         {
-            return _entities.SingleOrDefault(s => s.Id == id);
+            return _entities.SingleOrDefault(s => s.Id == id && !s.IsProcessed);
         }
 
         public IEnumerable<object> GetList()

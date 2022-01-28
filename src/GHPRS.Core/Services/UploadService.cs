@@ -34,6 +34,10 @@ namespace GHPRS.Core.Services
         public void InsertUploadData(int uploadId)
         {
             var upload = _uploadRepository.GetFullUploadById(uploadId);
+            if (upload == null)
+            {
+                return;
+            }
             var worksheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(upload.Template.Id);
             foreach (var worksheet in worksheets)
             {
@@ -66,6 +70,11 @@ namespace GHPRS.Core.Services
                     throw;
                 }
             }
+
+            // set the upload has been processed to prevent re-processing
+            var uploadedTemplate = _uploadRepository.GetById(uploadId);
+            uploadedTemplate.IsProcessed = true;
+            _uploadRepository.Update(uploadedTemplate);
         }
 
         public List<object> ReadUploadData(int uploadId)
