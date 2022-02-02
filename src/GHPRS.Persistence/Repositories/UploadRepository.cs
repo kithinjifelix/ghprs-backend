@@ -37,20 +37,20 @@ namespace GHPRS.Persistence.Repositories
         public object GetDetailsById(int id)
         {
             var result = _entities.Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
                 .FirstOrDefault(x => x.Id == id);
             return result;
         }
 
         public Upload GetFullUploadById(int id)
         {
-            return _entities.SingleOrDefault(s => s.Id == id && !s.IsProcessed);
+            return _entities.SingleOrDefault(s => s.Id == id);
         }
 
         public IEnumerable<object> GetList()
         {
             var result = _entities.Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
                 .OrderBy(n => n.Name)
                 .ToList();
             return result;
@@ -60,7 +60,7 @@ namespace GHPRS.Persistence.Repositories
         {
             var result = _entities
                 .Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
                 .Where(x => x.Status == status).OrderBy(n => n.Name).ToList();
             return result;
         }
@@ -69,12 +69,12 @@ namespace GHPRS.Persistence.Repositories
         {
             var result = _entities
                 .Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
                 .Where(x => x.User == user).OrderBy(n => n.Name).ToList();
             return result;
         }
 
-        public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch)
+        public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch, Guid uploadBatchGuid)
         {
             var insertScript = string.Empty;
             foreach (DataRow row in data.Rows)
@@ -120,6 +120,8 @@ namespace GHPRS.Persistence.Repositories
                 var reportDate = CreateReportDate(row);
                 rows += $" \'{reportDate}\',";
                 columns += " \"Report Date\",";
+                rows += $" \'{uploadBatchGuid}\',";
+                columns += " \"UploadBatchGuid\",";
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
@@ -155,9 +157,9 @@ namespace GHPRS.Persistence.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteFromTable(string tableName, string uploadBatch)
+        public void DeleteFromTable(string tableName, string uploadBatch, Guid uploadBatchGuid)
         {
-            var deleteScript = $"DELETE FROM public.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\'; ";
+            var deleteScript = $"DELETE FROM public.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\' AND \"UploadBatchGuid\" = \'{uploadBatchGuid}\'; ";
             try
             {
                 var connectionString = _dataContext.Database.GetConnectionString();

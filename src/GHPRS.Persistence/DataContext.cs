@@ -2,7 +2,7 @@
 
 namespace GHPRS.Persistence
 {
-    public class DataContext : DbContext
+    public class DataContext : BaseContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
