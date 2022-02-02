@@ -2,8 +2,10 @@ using System.Text;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
+using GHPRS.Core.UnitOfWork;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
+using GHPRS.Persistence.UnitOfWork;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -107,6 +109,7 @@ namespace GHPRS
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IColumnRepository, ColumnRepository>();
             services.AddScoped<IMetabaseService, MetabaseService>();
+            services.AddScoped<IDataUnitOfWork, DataUnitOfWork>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore

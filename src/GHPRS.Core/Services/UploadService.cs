@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
+using GHPRS.Core.UnitOfWork;
 using GHPRS.Core.Utilities;
 using Hangfire;
 using Microsoft.Extensions.Logging;
@@ -20,15 +21,21 @@ namespace GHPRS.Core.Services
         private readonly ITemplateRepository _templateRepository;
         private readonly IUploadRepository _uploadRepository;
         private readonly IWorkSheetRepository _worksheetRepository;
+        private readonly IDataUnitOfWork _dataUnitOfWork;
 
-        public UploadService(IUploadRepository uploadRepository, ITemplateRepository templateRepository,
-            ILogger<UploadService> logger, IWorkSheetRepository workSheetRepository, IExcelService excelService)
+        public UploadService(IUploadRepository uploadRepository, 
+            ITemplateRepository templateRepository,
+            ILogger<UploadService> logger, 
+            IWorkSheetRepository workSheetRepository, 
+            IExcelService excelService,
+            IDataUnitOfWork dataUnitOfWork)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
             _worksheetRepository = workSheetRepository;
             _excelService = excelService;
             _logger = logger;
+            _dataUnitOfWork = dataUnitOfWork;
         }
 
         public void InsertUploadData(int uploadId)
@@ -58,20 +65,34 @@ namespace GHPRS.Core.Services
                         data.Rows.Clear();
 
                     if (data.Rows.Count > 0)
-                        _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch);
+                        _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
                 }
                 catch (Exception e)
                 {
+                    var uploadedTemplateFailed = _uploadRepository.GetById(uploadId);
+                    uploadedTemplateFailed.IsProcessed = true;
+                    uploadedTemplateFailed.UploadStatus = "Failed";
+                    _uploadRepository.Update(uploadedTemplateFailed);
                     _logger.LogError(e.Message, e);
                     throw;
                 }
             }
+
+            // set the upload has been processed to prevent re-processing
+            var uploadedTemplate = _uploadRepository.GetById(uploadId);
+            uploadedTemplate.IsProcessed = true;
+            uploadedTemplate.UploadStatus = "Successful";
+            _uploadRepository.Update(uploadedTemplate);
         }
 
         public List<object> ReadUploadData(int uploadId)
         {
             var result = new List<object>();
             var upload = _uploadRepository.GetFullUploadById(uploadId);
+            if (upload == null)
+            {
+                return new List<object>();
+            }
             var worksheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(upload.Template.Id);
             foreach (var worksheet in worksheets)
             {
@@ -128,7 +149,8 @@ namespace GHPRS.Core.Services
                 StartDate = upload.StartDate,
                 EndDate = upload.EndDate,
                 User = user,
-                Template = template
+                Template = template,
+                UploadBatchGuid = Guid.NewGuid(),
             };
             initializedUpload.GenerateUploadBatch();
 
@@ -138,28 +160,45 @@ namespace GHPRS.Core.Services
                 initializedUpload.File = target.ToArray();
             }
 
+            initializedUpload.UploadStatus = "Pending";
             var result = _uploadRepository.Insert(initializedUpload);
             return result;
         }
 
         public void Review(Upload upload, Review review)
         {
-            //change status to overWritten if existing and approved
-            var overWrite = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
-                x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
+            using (var transaction = _dataUnitOfWork.BeginTransaction(IsolationLevel.Snapshot))
+            {
+                try
+                {
+                    // change status to overWritten if existing and approved
+                    var overWrite = _uploadRepository.GetFullUploads().FirstOrDefault(x =>
+                        x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
 
-            if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
+                    upload.Status = (UploadStatus)review.Status;
+                    upload.Comments = review.Comments;
 
-            upload.Status = (UploadStatus)review.Status;
-            upload.Comments = review.Comments;
+                    _uploadRepository.Update(upload);
 
-            _uploadRepository.Update(upload);
 
-            
-
-            //Extract data from approved templates
-            if ((UploadStatus)review.Status == UploadStatus.Approved)
-                BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
+                    // Extract data from approved templates
+                    if ((UploadStatus)review.Status == UploadStatus.Approved)
+                        BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
+                    
+                    // Overwrite after insert of previous data
+                    if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
+                    
+                    transaction.Commit();
+                    _dataUnitOfWork.Dispose();
+                }
+                catch (Exception e)
+                {
+                    transaction.RollbackAsync();
+                    _dataUnitOfWork.Dispose();
+                    _logger.LogError(e.Message, e);
+                    throw e;
+                }
+            }
         }
 
         public void OverWriteApproved(int uploadId)
@@ -169,7 +208,7 @@ namespace GHPRS.Core.Services
             var workSheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(overWrite.Template.Id);
             foreach (var workSheet in workSheets)
             {
-                _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch);
+                _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch, overWrite.UploadBatchGuid);
             }
         }
     }
