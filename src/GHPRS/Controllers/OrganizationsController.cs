@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +43,14 @@ namespace GHPRS.Controllers
         {
             try
             {
-                _organizationRepository.Insert(organization);
+                if (organization.Id == 0)
+                {
+                    _organizationRepository.Insert(organization);
+                }
+                else
+                {
+                    _organizationRepository.Update(organization);
+                }
                 return Ok(organization);
             }
             catch (Exception e)

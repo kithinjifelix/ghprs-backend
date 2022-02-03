@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GHPRS.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GHPRS.Controllers
 {
@@ -68,21 +69,32 @@ namespace GHPRS.Controllers
         [HttpPut("{id}")]
         public async Task<User> Update(string id, [FromBody] EditUser model)
         {
-            var user = _userRepository.GetById(id);
-            user.Person.Name = model.Name;
-            user.OrganizationId = model.OrganizationId;
-            var roles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
-            if (model.RoleId == 0)
+            try
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                var user = await _userManager.Users
+                    .Include(x => x.Person)
+                    .Include(z => z.Organization)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                var roles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+                if (model.RoleId == 0)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                }
+                else if (model.RoleId == 1)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                }
+                user.Person.Name = model.Name;
+                user.OrganizationId = model.OrganizationId;
+                await _userManager.UpdateAsync(user);
+                return user;
             }
-            else if (model.RoleId == 1)
+            catch (Exception e)
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.User);
+                Console.WriteLine(e);
+                throw;
             }
-            _userRepository.Update(user);
-            return user;
         }
 
         [HttpDelete("{id}")]
