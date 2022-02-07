@@ -84,6 +84,35 @@ namespace GHPRS.Controllers
             }
         }
 
+        [HttpPost("UPDATETEMPLATE/{id}")]
+        public async Task<IActionResult> UpdateTemplate(int id, [FromForm] TemplateModelUpdated templateModelUpdated)
+        {
+            try
+            {
+                if (templateModelUpdated.File != null)
+                {
+                    if (templateModelUpdated.File.Length > 0)
+                    {
+                        await _templateService.UpdateTemplate(id, templateModelUpdated);
+                        return Ok("Successfully updated template");
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "File contains no data");
+                    }
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         [HttpPut("WORKSHEET/UPDATE/{workSheetId}")]
         public IActionResult UpdateWorkSheetTables(int workSheetId, [FromBody] List<ColumnModel> columnModels)
         {
