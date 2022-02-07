@@ -77,6 +77,25 @@ namespace GHPRS.Core.Services
                 throw;
             }
         }
+        
+        public async Task UpdateTemplate(int id, TemplateModelUpdated templateModelUpdated)
+        {
+            try
+            {
+                var template = _templateRepository.GetById(id);
+                using (var target = new MemoryStream())
+                {
+                    await templateModelUpdated.File.CopyToAsync(target);
+                    template.File = target.ToArray();
+                }
+                _templateRepository.Update(template);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw e;
+            }
+        }
 
         public async Task<List<WorkSheetModel>> Initialize(TemplateModel templateModel)
         {
