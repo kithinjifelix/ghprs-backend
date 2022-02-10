@@ -154,5 +154,22 @@ namespace GHPRS.Controllers
 
             return Ok(new Response {Status = "Success", Message = "User created successfully!"});
         }
+
+        [HttpPost]
+        [Route("RESETPASSWORD/{id}")]
+        public async Task<IActionResult> ResetPassword(string id, [FromBody]ResetPassword resetPassword)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                await _userManager.ResetPasswordAsync(user, token, resetPassword.Password);
+                return Ok(new Response {Status = "Success", Message = "Successfully reset user password!"});
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Response {Status = "Error", Message = $"An error occured while resetting user password {e.Message}"});
+            }
+        }
     }
 }
