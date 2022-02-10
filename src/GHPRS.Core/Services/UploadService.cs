@@ -22,13 +22,15 @@ namespace GHPRS.Core.Services
         private readonly IUploadRepository _uploadRepository;
         private readonly IWorkSheetRepository _worksheetRepository;
         private readonly IDataUnitOfWork _dataUnitOfWork;
+        private readonly IOrganizationRepository _organizationRepository;
 
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
             ILogger<UploadService> logger, 
             IWorkSheetRepository workSheetRepository, 
             IExcelService excelService,
-            IDataUnitOfWork dataUnitOfWork)
+            IDataUnitOfWork dataUnitOfWork,
+            IOrganizationRepository organizationRepository)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -36,6 +38,7 @@ namespace GHPRS.Core.Services
             _excelService = excelService;
             _logger = logger;
             _dataUnitOfWork = dataUnitOfWork;
+            _organizationRepository = organizationRepository;
         }
 
         public void InsertUploadData(int uploadId)
@@ -130,7 +133,7 @@ namespace GHPRS.Core.Services
             return result;
         }
 
-        public async Task<Upload> Upload(UploadModel upload, User user)
+        public async Task<Upload> Upload(UploadModel upload, User user, int organizationId)
         {
             // fileName to save
             var template = _templateRepository.GetById(upload.TemplateId);
@@ -151,6 +154,7 @@ namespace GHPRS.Core.Services
                 User = user,
                 Template = template,
                 UploadBatchGuid = Guid.NewGuid(),
+                OrganizationId = organizationId
             };
             initializedUpload.GenerateUploadBatch();
 

@@ -7,7 +7,7 @@ namespace GHPRS.Core.Interfaces
 {
     public interface IUploadService
     {
-        Task<Upload> Upload(UploadModel upload, User user);
+        Task<Upload> Upload(UploadModel upload, User user, int organizationId);
         void InsertUploadData(int uploadId);
         List<object> ReadUploadData(int uploadId);
         void OverWriteApproved(int uploadId);

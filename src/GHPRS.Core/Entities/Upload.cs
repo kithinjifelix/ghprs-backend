@@ -18,6 +18,8 @@ namespace GHPRS.Core.Entities
         public bool IsProcessed { get; set; } = false;
         public Guid UploadBatchGuid { get; set; }
         public string UploadStatus { get; set; }
+        public int OrganizationId { get; set; }
+        public virtual Organization Organization { get; set; }
 
         public void GenerateUploadBatch()
         {

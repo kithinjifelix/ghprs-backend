@@ -74,8 +74,8 @@ namespace GHPRS.Controllers
             return Ok(result);
         }
 
-        [HttpPost("UPLOAD")]
-        public async Task<IActionResult> Upload([FromForm] UploadModel template)
+        [HttpPost("UPLOAD/{organizationId}")]
+        public async Task<IActionResult> Upload(int organizationId, [FromForm] UploadModel template)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace GHPRS.Controllers
                     if (template.File.Length > 0)
                     {
                         var user = await GetUser();
-                        result = await _uploadService.Upload(template, user);
+                        result = await _uploadService.Upload(template, user, organizationId);
                     }
                     else
                     {
