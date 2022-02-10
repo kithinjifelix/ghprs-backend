@@ -93,7 +93,7 @@ namespace GHPRS.Persistence.Repositories
                                     row[column.Name].ToString()?.Trim() == "-" ||
                                     row[column.Name].ToString()?.ToLower().Trim() == "o")
                                 {
-                                    r = "0";
+                                    r = null;
                                 }
                                 else
                                 {
@@ -106,7 +106,7 @@ namespace GHPRS.Persistence.Repositories
                                 r = EscapeSqlCharacters(row[column.Name].ToString());
                             }
 
-                            rows += $" \'{r}\',";
+                            rows += r == null ? $"NULL, " : $" \'{r}\',";
                             columns += $" \"{column.Name}\",";
                         }
                     }
