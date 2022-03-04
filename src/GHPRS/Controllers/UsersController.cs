@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GHPRS.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace GHPRS.Controllers
 {
@@ -22,18 +23,38 @@ namespace GHPRS.Controllers
         private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<LinksController> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(ILogger<LinksController> logger, UserManager<User> userManager, IUserRepository userRepository)
+        public UsersController(ILogger<LinksController> logger, 
+            UserManager<User> userManager, 
+            IUserRepository userRepository,
+            RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
             _userManager = userManager;
             _userRepository = userRepository;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
-        public IActionResult GetUsersAsync()
+        public async Task<IActionResult> GetUsersAsync()
         {
-            var users = _userRepository.GetAll();
+            var users = _userManager.Users.Include(x => x.Person).Include(z => z.Organization).Select(u => new { User = u, Roles = new List<string>() }).ToList();
+            //Fetch all the Roles
+            var roleNames = _roleManager.Roles.Select(r => r.Name).ToList();
+
+            foreach (var roleName in roleNames)
+            {
+                //For each role, fetch the users
+                var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+                //Populate the roles for each user in memory
+                var toUpdate = users.Where(u => usersInRole.Any(ur => ur.Id == u.User.Id));
+                foreach (var user in toUpdate)
+                {
+                    user.Roles.Add(roleName);
+                }
+            }
             return Ok(users);
         }
 
