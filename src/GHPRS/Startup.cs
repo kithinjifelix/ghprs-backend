@@ -45,11 +45,16 @@ namespace GHPRS
                 options.AddPolicy(MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader();
-                        //builder.WithOrigins("http://localhost:3000", "https://localhost:3001");
+                        builder.SetIsOriginAllowed(isOriginAllowed: _ => true).AllowAnyHeader().AllowAnyMethod()
+                            .AllowCredentials();
                     });
+                //builder =>
+                //{
+                //    builder.AllowAnyOrigin()
+                //        .AllowAnyMethod()
+                //        .AllowAnyHeader();
+                //    builder.WithOrigins("http://localhost:3000", "https://localhost:3001");
+                //});
             });
 
             //configure EF Core Postgres SQL
@@ -101,6 +106,8 @@ namespace GHPRS
             services.AddScoped<ITemplateRepository, TemplateRepository>();
             services.AddScoped<ITemplateService, TemplateService>();
             services.AddScoped<IUploadRepository, UploadRepository>();
+            services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+            services.AddScoped<IMerDataRepository, MerDataRepository>();
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();

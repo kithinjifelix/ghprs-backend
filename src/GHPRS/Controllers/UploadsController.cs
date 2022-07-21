@@ -19,17 +19,23 @@ namespace GHPRS.Controllers
     [Authorize]
     public class UploadsController : ControllerBase
     {
+        private const long MaxFileSize = 10L * 1024L * 1024L * 1024L;
         private readonly ILogger<UploadsController> _logger;
         private readonly IUploadRepository _uploadRepository;
+        private readonly IFileUploadRepository _fileRepository;
         private readonly IUploadService _uploadService;
         private readonly UserManager<User> _userManager;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService,
-            IUploadRepository uploadRepository, UserManager<User> userManager)
+        public UploadsController(ILogger<UploadsController> logger, 
+            IUploadService uploadService,
+            IUploadRepository uploadRepository,
+            IFileUploadRepository fileRepository,
+            UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = uploadService;
             _uploadRepository = uploadRepository;
+            _fileRepository = fileRepository;
             _userManager = userManager;
         }
 
@@ -98,6 +104,49 @@ namespace GHPRS.Controllers
                 }
 
                 return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpPost("MER_UPLOAD")]
+        [RequestSizeLimit(MaxFileSize)]
+        [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+        public async Task<IActionResult> Mer_Upload([FromForm] MERUploadModel merUploadModel)
+        {
+            try
+            {
+                if (merUploadModel != null && merUploadModel.File != null)
+                {
+                    if (merUploadModel.File.Length > 0)
+                    {
+                        var user = await GetUser();
+                        await _uploadService.UploadMER(merUploadModel, user);
+                        return StatusCode(StatusCodes.Status200OK, "Successfully Uploaded");
+                    } 
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "File contains no data");
+                    }
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpGet("GetAllFileUploads")]
+        public IActionResult GetAllFileUploads()
+        {
+            try
+            {
+                return Ok(_fileRepository.GetAllFileUploads());
             }
             catch (Exception e)
             {

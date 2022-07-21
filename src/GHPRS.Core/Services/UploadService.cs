@@ -11,6 +11,7 @@ using GHPRS.Core.UnitOfWork;
 using GHPRS.Core.Utilities;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace GHPRS.Core.Services
 {
@@ -23,6 +24,8 @@ namespace GHPRS.Core.Services
         private readonly IWorkSheetRepository _worksheetRepository;
         private readonly IDataUnitOfWork _dataUnitOfWork;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly IFileUploadRepository _fileUploadRepository;
+        private readonly IMerDataRepository _merDataRepository;
 
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
@@ -30,7 +33,10 @@ namespace GHPRS.Core.Services
             IWorkSheetRepository workSheetRepository, 
             IExcelService excelService,
             IDataUnitOfWork dataUnitOfWork,
-            IOrganizationRepository organizationRepository)
+            IOrganizationRepository organizationRepository,
+            IFileUploadRepository fileUploadRepository,
+            IMerDataRepository merDataRepository
+            )
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -39,6 +45,8 @@ namespace GHPRS.Core.Services
             _logger = logger;
             _dataUnitOfWork = dataUnitOfWork;
             _organizationRepository = organizationRepository;
+            _fileUploadRepository = fileUploadRepository;
+            _merDataRepository = merDataRepository;
         }
 
         public void InsertUploadData(int uploadId)
@@ -135,38 +143,75 @@ namespace GHPRS.Core.Services
 
         public async Task<Upload> Upload(UploadModel upload, User user, int organizationId)
         {
-            // fileName to save
-            var template = _templateRepository.GetById(upload.TemplateId);
-
-            //overwrite if existing and still pending and similar period
-            var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
-                x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id && x.StartDate == upload.StartDate && x.EndDate == upload.EndDate);
-            if (existing != null) _uploadRepository.Delete(existing.Id);
-
-            var initializedUpload = new Upload
+            try
             {
-                Name = template.Name,
-                FileExtension = template.FileExtension,
-                ContentType = upload.File.ContentType,
-                Status = UploadStatus.Pending,
-                StartDate = upload.StartDate,
-                EndDate = upload.EndDate,
-                User = user,
-                Template = template,
-                UploadBatchGuid = Guid.NewGuid(),
-                OrganizationId = organizationId
-            };
-            initializedUpload.GenerateUploadBatch();
+                // fileName to save
+                var template = _templateRepository.GetById(upload.TemplateId);
 
-            await using (var target = new MemoryStream())
-            {
-                await upload.File.CopyToAsync(target);
-                initializedUpload.File = target.ToArray();
+                //overwrite if existing and still pending and similar period
+                var existing = _uploadRepository.GetFullUploads().SingleOrDefault(x =>
+                    x.Name == template.Name && x.Status == UploadStatus.Pending && x.User.Id == user.Id && x.StartDate == upload.StartDate && x.EndDate == upload.EndDate);
+                if (existing != null) _uploadRepository.Delete(existing.Id);
+
+                var initializedUpload = new Upload
+                {
+                    Name = template.Name,
+                    FileExtension = template.FileExtension,
+                    ContentType = upload.File.ContentType,
+                    Status = UploadStatus.Pending,
+                    StartDate = upload.StartDate,
+                    EndDate = upload.EndDate,
+                    User = user,
+                    Template = template,
+                    UploadBatchGuid = Guid.NewGuid(),
+                    OrganizationId = organizationId
+                };
+                initializedUpload.GenerateUploadBatch();
+
+                await using (var target = new MemoryStream())
+                {
+                    await upload.File.CopyToAsync(target);
+                    initializedUpload.File = target.ToArray();
+                }
+
+                initializedUpload.UploadStatus = "Pending";
+                var result = _uploadRepository.Insert(initializedUpload);
+                return result;
             }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+            
+        }
 
-            initializedUpload.UploadStatus = "Pending";
-            var result = _uploadRepository.Insert(initializedUpload);
-            return result;
+        public async Task<FileUploads> UploadMER(MERUploadModel merUploadModel, User user)
+        {
+            try
+            {
+                var merData = new FileUploads
+                {
+                    Name = merUploadModel.File.FileName,
+                    ContentType = merUploadModel.File.ContentType,
+                    User = user,
+                    UploadDate = DateTime.Now,
+                    Status = "Processing"
+                };
+                await using (var target = new MemoryStream())
+                {
+                    await merUploadModel.File.CopyToAsync(target);
+                    merData.File = target.ToArray();
+                }
+                var result = _fileUploadRepository.Insert(merData);
+                BackgroundJob.Enqueue<IUploadService>(x => x.InsertMerData());
+                return result;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
 
         public void Review(Upload upload, Review review)
@@ -213,6 +258,47 @@ namespace GHPRS.Core.Services
             foreach (var workSheet in workSheets)
             {
                 _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch, overWrite.UploadBatchGuid);
+            }
+        }
+
+        public async void InsertMerData()
+        {
+            try
+            {
+                DataTable datatable = new DataTable();
+                char[] delimiter = new char[] { '\t' };
+                List<MerData> merData = new List<MerData>();
+                var pendingUpload = _fileUploadRepository.GetPendingUploads();
+                if (pendingUpload != null)
+                {
+                    using (var reader = new StreamReader(new MemoryStream(pendingUpload.File)))
+                    {
+                        string[] columnheaders = reader.ReadLine().Split(delimiter);
+                        foreach (string columnheader in columnheaders)
+                        {
+                            datatable.Columns.Add(columnheader); // I've added the column headers here.
+                        }
+                        while (reader.Peek() >= 0)
+                        {
+                            DataRow datarow = datatable.NewRow();
+                            datarow.ItemArray = reader.ReadLine().Split(delimiter);
+                            datatable.Rows.Add(datarow);
+                        }
+                    }
+
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.Update(pendingUpload);
+
+                    string json = JsonConvert.SerializeObject(datatable, Formatting.Indented);
+                    var deserializedData = JsonConvert.DeserializeObject<MerData[]>(json);
+                    merData.AddRange(deserializedData.ToList());
+                    _merDataRepository.Insert(merData);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw e;
             }
         }
     }

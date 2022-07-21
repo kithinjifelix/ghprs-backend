@@ -1,0 +1,13 @@
+﻿using GHPRS.Core.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace GHPRS.Core.Interfaces
+{
+    public interface IFileUploadRepository : IRepository<FileUploads>
+    {
+        FileUploads GetPendingUploads();
+        IEnumerable<Object> GetAllFileUploads();
+    }
+}
