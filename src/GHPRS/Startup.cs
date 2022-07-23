@@ -1,8 +1,10 @@
+using System;
 using System.Text;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
 using GHPRS.Core.UnitOfWork;
+using GHPRS.EmailService;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
 using GHPRS.Persistence.UnitOfWork;
@@ -36,6 +38,7 @@ namespace GHPRS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             // add in-memory cache
             services.AddMemoryCache();
 
@@ -108,6 +111,7 @@ namespace GHPRS
             services.AddScoped<IUploadRepository, UploadRepository>();
             services.AddScoped<IFileUploadRepository, FileUploadRepository>();
             services.AddScoped<IMerDataRepository, MerDataRepository>();
+            services.AddScoped<IFacilityDataRepository, FacilityDataRepository>();
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();
@@ -121,6 +125,10 @@ namespace GHPRS
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             );
+
+            var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+            services.AddScoped<IEmailSender, EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

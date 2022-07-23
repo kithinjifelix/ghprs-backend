@@ -124,7 +124,15 @@ namespace GHPRS.Controllers
                     if (merUploadModel.File.Length > 0)
                     {
                         var user = await GetUser();
-                        await _uploadService.UploadMER(merUploadModel, user);
+                        if (merUploadModel.UploadTypeId == 1)
+                        {
+                            await _uploadService.UploadMER(merUploadModel, user);
+                        }
+                        else if (merUploadModel.UploadTypeId == 2)
+                        {
+                            await _uploadService.UploadFacilityData(merUploadModel, user);
+                        }
+                        
                         return StatusCode(StatusCodes.Status200OK, "Successfully Uploaded");
                     } 
                     else

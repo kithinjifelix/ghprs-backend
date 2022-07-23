@@ -25,9 +25,9 @@ namespace GHPRS.Persistence.Repositories
             return _context.FileUploads.Select(s => new { s.Id, s.UploadDate, s.ContentType, s.User, s.CreatedAt, s.Name, s.Status, s.UpdatedAt });
         }
 
-        public FileUploads GetPendingUploads()
+        public FileUploads GetPendingUploads(string uploadType)
         {
-            return _entities.Where(x => x.Status == "Processing").FirstOrDefault();
+            return _entities.FirstOrDefault(x => x.Status == "Processing" && x.UploadType == uploadType);
         }
     }
 }

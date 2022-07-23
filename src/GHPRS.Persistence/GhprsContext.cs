@@ -51,6 +51,7 @@ namespace GHPRS.Persistence
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<MerData> MerDatas { get; set; }
         public DbSet<FileUploads> FileUploads { get; set; }
+        public DbSet<FacilityData> FacilityDatas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

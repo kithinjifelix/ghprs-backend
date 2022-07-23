@@ -12,5 +12,6 @@ namespace GHPRS.Core.Entities
         public virtual User User { get; set; }
         public DateTime UploadDate { get; set; }
         public string Status { get; set; }
+        public string UploadType { get; set; }
     }
 }

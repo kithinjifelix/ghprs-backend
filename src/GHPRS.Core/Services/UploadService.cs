@@ -12,6 +12,7 @@ using GHPRS.Core.Utilities;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 
 namespace GHPRS.Core.Services
 {
@@ -26,6 +27,7 @@ namespace GHPRS.Core.Services
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IFileUploadRepository _fileUploadRepository;
         private readonly IMerDataRepository _merDataRepository;
+        private readonly IFacilityDataRepository _facilityDataRepository;
 
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
@@ -35,7 +37,8 @@ namespace GHPRS.Core.Services
             IDataUnitOfWork dataUnitOfWork,
             IOrganizationRepository organizationRepository,
             IFileUploadRepository fileUploadRepository,
-            IMerDataRepository merDataRepository
+            IMerDataRepository merDataRepository,
+            IFacilityDataRepository facilityDataRepository
             )
         {
             _uploadRepository = uploadRepository;
@@ -47,6 +50,7 @@ namespace GHPRS.Core.Services
             _organizationRepository = organizationRepository;
             _fileUploadRepository = fileUploadRepository;
             _merDataRepository = merDataRepository;
+            _facilityDataRepository = facilityDataRepository;
         }
 
         public void InsertUploadData(int uploadId)
@@ -196,7 +200,8 @@ namespace GHPRS.Core.Services
                     ContentType = merUploadModel.File.ContentType,
                     User = user,
                     UploadDate = DateTime.Now,
-                    Status = "Processing"
+                    Status = "Processing",
+                    UploadType = "MER Data"
                 };
                 await using (var target = new MemoryStream())
                 {
@@ -210,7 +215,36 @@ namespace GHPRS.Core.Services
             catch (Exception e)
             {
 
-                throw;
+                throw e;
+            }
+        }
+
+        public async Task<FileUploads> UploadFacilityData(MERUploadModel merUploadModel, User user)
+        {
+            try
+            {
+                var facilityData = new FileUploads()
+                {
+                    Name = merUploadModel.File.Name,
+                    ContentType = merUploadModel.File.ContentType,
+                    User = user,
+                    UploadDate = DateTime.Now,
+                    Status = "Processing",
+                    UploadType = "Facility Data"
+                };
+                await using (var target = new MemoryStream())
+                {
+                    await merUploadModel.File.CopyToAsync(target);
+                    facilityData.File = target.ToArray();
+                }
+
+                var result = _fileUploadRepository.Insert(facilityData);
+                BackgroundJob.Enqueue<IUploadService>(x => x.InsertFacilityData());
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
 
@@ -268,7 +302,7 @@ namespace GHPRS.Core.Services
                 DataTable datatable = new DataTable();
                 char[] delimiter = new char[] { '\t' };
                 List<MerData> merData = new List<MerData>();
-                var pendingUpload = _fileUploadRepository.GetPendingUploads();
+                var pendingUpload = _fileUploadRepository.GetPendingUploads("MER Data");
                 if (pendingUpload != null)
                 {
                     using (var reader = new StreamReader(new MemoryStream(pendingUpload.File)))
@@ -298,6 +332,62 @@ namespace GHPRS.Core.Services
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
+                throw e;
+            }
+        }
+        
+        public void InsertFacilityData()
+        {
+            try
+            {
+                var pendingUpload = _fileUploadRepository.GetPendingUploads("Facility Data");
+                if (pendingUpload != null)
+                {
+                    using (var memoryStream = new MemoryStream(pendingUpload.File))
+                    {
+                        using var excelPack = new ExcelPackage();
+                        //Load excel stream
+                        excelPack.Load(memoryStream);
+
+                        //select worksheet
+                        var worksheet = excelPack.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Facility Data");
+                        //Validate worksheet
+                        if (worksheet != null)
+                        {
+                            var excelAsTable = new DataTable();
+                            List<FacilityData> facilityData = new List<FacilityData>();
+                            foreach (var firstRowCell in worksheet.Cells[5, 1, 5,
+                                         worksheet.Dimension.End.Column])
+                                //Get column details
+                                if (!string.IsNullOrEmpty(firstRowCell.Text))
+                                    excelAsTable.Columns.Add(firstRowCell.Text);
+
+                            //Get row details
+                            for (var rowNum = 6; rowNum <= worksheet.Dimension.End.Row; rowNum++)
+                            {
+                                var wsRow = worksheet.Cells[rowNum, 1, rowNum, excelAsTable.Columns.Count];
+                                var row = excelAsTable.Rows.Add();
+                                foreach (var cell in wsRow) row[cell.Start.Column - 1] = cell.Text;
+                            }
+                            
+                            pendingUpload.Status = "Completed";
+                            _fileUploadRepository.Update(pendingUpload);
+
+                            string json = JsonConvert.SerializeObject(excelAsTable, Formatting.Indented);
+                            var deserializedData = JsonConvert.DeserializeObject<FacilityData[]>(json);
+                            facilityData.AddRange(deserializedData.ToList());
+                            _facilityDataRepository.Insert(facilityData);
+                        }
+                        else
+                        {
+                            // Facility Data not provided
+                        }
+                    }
+                }
+                
+            }
+            catch (Exception e)
+            {
                 throw e;
             }
         }

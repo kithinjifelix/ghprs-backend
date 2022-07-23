@@ -7,7 +7,7 @@ namespace GHPRS.Core.Interfaces
 {
     public interface IFileUploadRepository : IRepository<FileUploads>
     {
-        FileUploads GetPendingUploads();
+        FileUploads GetPendingUploads(string uploadType);
         IEnumerable<Object> GetAllFileUploads();
     }
 }

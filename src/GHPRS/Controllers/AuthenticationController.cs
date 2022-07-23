@@ -144,7 +144,7 @@ namespace GHPRS.Controllers
             {
                 if (await _roleManager.RoleExistsAsync(UserRoles.Administrator))
                     await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
-                await _metabaseService.CreateUser(metabaseUser).ConfigureAwait(false);
+                // await _metabaseService.CreateUser(metabaseUser).ConfigureAwait(false);
             }
             else if (model.RoleId == 1)
             {
