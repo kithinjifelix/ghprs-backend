@@ -27,7 +27,8 @@ namespace GHPRS
     public class Startup
     {
         private readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
+        private static string[] _allowedOrigins;
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -42,22 +43,17 @@ namespace GHPRS
             // add in-memory cache
             services.AddMemoryCache();
 
+            _allowedOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>();
             // configure CORS
             services.AddCors(options =>
             {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
                     {
-                        builder.SetIsOriginAllowed(isOriginAllowed: _ => true).AllowAnyHeader().AllowAnyMethod()
-                            .AllowCredentials();
+                        policy.WithOrigins(_allowedOrigins)
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
                     });
-                //builder =>
-                //{
-                //    builder.AllowAnyOrigin()
-                //        .AllowAnyMethod()
-                //        .AllowAnyHeader();
-                //    builder.WithOrigins("http://localhost:3000", "https://localhost:3001");
-                //});
             });
 
             //configure EF Core Postgres SQL
@@ -112,6 +108,7 @@ namespace GHPRS
             services.AddScoped<IFileUploadRepository, FileUploadRepository>();
             services.AddScoped<IMerDataRepository, MerDataRepository>();
             services.AddScoped<IFacilityDataRepository, FacilityDataRepository>();
+            services.AddScoped<ICommunityDataRepository, CommunityDataRepository>();
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();
