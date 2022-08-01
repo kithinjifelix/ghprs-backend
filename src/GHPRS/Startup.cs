@@ -10,6 +10,7 @@ using GHPRS.Persistence.Repositories;
 using GHPRS.Persistence.UnitOfWork;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -92,8 +93,16 @@ namespace GHPRS
                 });
 
             // Add Hangfire services.
-            services.AddHangfire(config =>
-                config.UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection")));
+            // services.AddHangfire(config =>
+            //     config.UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection")));
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection"), new PostgreSqlStorageOptions
+                {
+                    QueuePollInterval = TimeSpan.FromSeconds(5.0),
+                }));
 
             // Add the processing server as IHostedService
             services.AddHangfireServer();
@@ -144,8 +153,12 @@ namespace GHPRS
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.UseHangfireServer();
+            var options = new BackgroundJobServerOptions
+            {
+                WorkerCount=1    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
+                // For this we are overriding the default value.
+            };
+            app.UseHangfireServer(options);
             app.UseHangfireDashboard();
             loggerFactory.AddFile("Logs/GHPRS-{Date}.txt");
         }

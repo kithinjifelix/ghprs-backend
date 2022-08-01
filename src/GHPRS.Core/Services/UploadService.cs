@@ -9,9 +9,13 @@ using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using GHPRS.Core.UnitOfWork;
 using GHPRS.Core.Utilities;
+using GHPRS.EmailService;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Schema.Generation;
 using OfficeOpenXml;
 
 namespace GHPRS.Core.Services
@@ -28,6 +32,8 @@ namespace GHPRS.Core.Services
         private readonly IFileUploadRepository _fileUploadRepository;
         private readonly IMerDataRepository _merDataRepository;
         private readonly IFacilityDataRepository _facilityDataRepository;
+        private readonly ICommunityDataRepository _communityDataRepository;
+        private readonly IEmailSender _emailSender;
 
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
@@ -38,8 +44,9 @@ namespace GHPRS.Core.Services
             IOrganizationRepository organizationRepository,
             IFileUploadRepository fileUploadRepository,
             IMerDataRepository merDataRepository,
-            IFacilityDataRepository facilityDataRepository
-            )
+            IFacilityDataRepository facilityDataRepository,
+            ICommunityDataRepository communityDataRepository,
+            IEmailSender emailSender)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -51,6 +58,8 @@ namespace GHPRS.Core.Services
             _fileUploadRepository = fileUploadRepository;
             _merDataRepository = merDataRepository;
             _facilityDataRepository = facilityDataRepository;
+            _communityDataRepository = communityDataRepository;
+            _emailSender = emailSender;
         }
 
         public void InsertUploadData(int uploadId)
@@ -225,7 +234,7 @@ namespace GHPRS.Core.Services
             {
                 var facilityData = new FileUploads()
                 {
-                    Name = merUploadModel.File.Name,
+                    Name = merUploadModel.File.FileName,
                     ContentType = merUploadModel.File.ContentType,
                     User = user,
                     UploadDate = DateTime.Now,
@@ -297,12 +306,13 @@ namespace GHPRS.Core.Services
 
         public async void InsertMerData()
         {
+            var pendingUpload = _fileUploadRepository.GetPendingUploads("MER Data");
+            bool errorOccured = false;
             try
             {
                 DataTable datatable = new DataTable();
                 char[] delimiter = new char[] { '\t' };
                 List<MerData> merData = new List<MerData>();
-                var pendingUpload = _fileUploadRepository.GetPendingUploads("MER Data");
                 if (pendingUpload != null)
                 {
                     using (var reader = new StreamReader(new MemoryStream(pendingUpload.File)))
@@ -312,6 +322,7 @@ namespace GHPRS.Core.Services
                         {
                             datatable.Columns.Add(columnheader); // I've added the column headers here.
                         }
+
                         while (reader.Peek() >= 0)
                         {
                             DataRow datarow = datatable.NewRow();
@@ -321,26 +332,66 @@ namespace GHPRS.Core.Services
                     }
 
                     pendingUpload.Status = "Completed";
-                    _fileUploadRepository.Update(pendingUpload);
+                    _fileUploadRepository.UpdateFile(pendingUpload);
 
                     string json = JsonConvert.SerializeObject(datatable, Formatting.Indented);
                     var deserializedData = JsonConvert.DeserializeObject<MerData[]>(json);
                     merData.AddRange(deserializedData.ToList());
-                    _merDataRepository.Insert(merData);
+                    merData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                    if (merData.Any())
+                    {
+                        _merDataRepository.Insert(merData);
+                    }
                 }
             }
             catch (Exception e)
             {
+                errorOccured = true;
                 _logger.LogError(e.Message, e);
-                throw e;
+                if (pendingUpload != null)
+                {
+                    pendingUpload.Status = $"Error - {e.Message}";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                            
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = pendingUpload.User.Email,
+                        DisplayName = pendingUpload.User.Person.Name
+                    });
+                    var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - Error MER Data", emailbody);
+                    _emailSender.SendEmail(message);
+                }
+            }
+            finally
+            {
+                if (pendingUpload != null && !errorOccured)
+                {
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                            
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = pendingUpload.User.Email,
+                        DisplayName = pendingUpload.User.Person.Name
+                    });
+                    var emailbody = EmailTemplates.SuccessfullyUploadedMerData(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - MER Data Processed", emailbody);
+                    _emailSender.SendEmail(message);
+                }
             }
         }
         
         public void InsertFacilityData()
         {
+            var pendingUpload = _fileUploadRepository.GetPendingUploads("Facility Data");
+            bool errorOccured = false;
             try
             {
-                var pendingUpload = _fileUploadRepository.GetPendingUploads("Facility Data");
                 if (pendingUpload != null)
                 {
                     using (var memoryStream = new MemoryStream(pendingUpload.File))
@@ -351,45 +402,163 @@ namespace GHPRS.Core.Services
 
                         //select worksheet
                         var worksheet = excelPack.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Facility Data");
+                        var communityExcelWorksheet =
+                            excelPack.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Community Data");
                         //Validate worksheet
                         if (worksheet != null)
                         {
-                            var excelAsTable = new DataTable();
-                            List<FacilityData> facilityData = new List<FacilityData>();
-                            foreach (var firstRowCell in worksheet.Cells[5, 1, 5,
-                                         worksheet.Dimension.End.Column])
-                                //Get column details
-                                if (!string.IsNullOrEmpty(firstRowCell.Text))
-                                    excelAsTable.Columns.Add(firstRowCell.Text);
-
-                            //Get row details
-                            for (var rowNum = 6; rowNum <= worksheet.Dimension.End.Row; rowNum++)
-                            {
-                                var wsRow = worksheet.Cells[rowNum, 1, rowNum, excelAsTable.Columns.Count];
-                                var row = excelAsTable.Rows.Add();
-                                foreach (var cell in wsRow) row[cell.Start.Column - 1] = cell.Text;
-                            }
-                            
-                            pendingUpload.Status = "Completed";
-                            _fileUploadRepository.Update(pendingUpload);
+                            var excelAsTable = ReadExcelWorkSheet(worksheet);
+                            //validate data from excel
+                            JSchemaGenerator generator = new JSchemaGenerator();
+                            JSchema schema = generator.Generate(typeof(FacilityData));
 
                             string json = JsonConvert.SerializeObject(excelAsTable, Formatting.Indented);
+                            JArray person = JArray.Parse(json);
+
+                            IList<string> messages;
+                            bool valid = person.IsValid(schema, out messages);
+                            
                             var deserializedData = JsonConvert.DeserializeObject<FacilityData[]>(json);
+                            List<FacilityData> facilityData = new List<FacilityData>();
                             facilityData.AddRange(deserializedData.ToList());
-                            _facilityDataRepository.Insert(facilityData);
+                            facilityData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                            if (facilityData.Any())
+                            {
+                                _facilityDataRepository.Insert(facilityData);
+                            }
                         }
                         else
                         {
+                            pendingUpload.Status = "Error - Missing Facility Data Worksheet";
+                            _fileUploadRepository.UpdateFile(pendingUpload);
+
                             // Facility Data not provided
+                            var emailAddresses = new List<EmailAddress>();
+                            emailAddresses.Add(new EmailAddress()
+                            {
+                                Address = pendingUpload.User.Email,
+                                DisplayName = pendingUpload.User.Person.Name
+                            });
+                            var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
+                            var message = new Message(emailAddresses, "Data Portal - Missing Facility Data Worksheet",
+                                emailbody);
+                            _emailSender.SendEmail(message);
+                        }
+
+                        if (communityExcelWorksheet != null)
+                        {
+                            var excelAsTable = ReadExcelWorkSheet(communityExcelWorksheet);
+                            //validate data from excel
+                            JSchemaGenerator generator = new JSchemaGenerator();
+                            JSchema schema = generator.Generate(typeof(CommunityData));
+
+                            string json = JsonConvert.SerializeObject(excelAsTable, Formatting.Indented);
+
+                            var deserializedData = JsonConvert.DeserializeObject<CommunityData[]>(json);
+                            List<CommunityData> communityData = new List<CommunityData>();
+                            communityData.AddRange(deserializedData.ToList());
+                            communityData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                            if (communityData.Any())
+                            {
+                                _communityDataRepository.Insert(communityData);
+                            }
+                        }
+                        else
+                        {
+                            pendingUpload.Status = "Error - Missing Community Data Worksheet";
+                            _fileUploadRepository.UpdateFile(pendingUpload);
+
+                            // Facility Data not provided
+                            var emailAddresses = new List<EmailAddress>();
+                            emailAddresses.Add(new EmailAddress()
+                            {
+                                Address = pendingUpload.User.Email,
+                                DisplayName = pendingUpload.User.Person.Name
+                            });
+                            var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
+                            var message = new Message(emailAddresses, "Data Portal - Missing Community Data Worksheet",
+                                emailbody);
+                            _emailSender.SendEmail(message);
                         }
                     }
                 }
-                
             }
             catch (Exception e)
             {
-                throw e;
+                // send email with exception
+                errorOccured = true;
+                _logger.LogError(e.Message, e);
+                if (pendingUpload != null)
+                {
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = pendingUpload.User.Email,
+                        DisplayName = pendingUpload.User.Person.Name
+                    });
+                    var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - Error Processing Excel", emailbody);
+                    _emailSender.SendEmail(message);
+                    
+                    pendingUpload.Status = $"Error - {e.Message}";
+                    pendingUpload.User = pendingUpload.User;
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                }
             }
+            finally
+            {
+                if (pendingUpload != null && !errorOccured)
+                {
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                            
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = pendingUpload.User.Email,
+                        DisplayName = pendingUpload.User.Person.Name
+                    });
+                    var emailbody = EmailTemplates.SuccessfullyUploadedData(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - Excel sheet Successfully Processed", emailbody);
+                    _emailSender.SendEmail(message);
+                }
+            }
+        }
+
+        private DataTable ReadExcelWorkSheet(ExcelWorksheet worksheet)
+        {
+            var excelAsTable = new DataTable();
+            foreach (var firstRowCell in worksheet.Cells[5, 1, 5,
+                         worksheet.Dimension.End.Column])
+                //Get column details
+                if (!string.IsNullOrEmpty(firstRowCell.Text))
+                    excelAsTable.Columns.Add(firstRowCell.Text);
+
+            //Get row details
+            for (var rowNum = 6; rowNum <= worksheet.Dimension.End.Row; rowNum++)
+            {
+                var wsRow = worksheet.Cells[rowNum, 1, rowNum, excelAsTable.Columns.Count];
+                var row = excelAsTable.Rows.Add();
+                foreach (var cell in wsRow) row[cell.Start.Column - 1] = cell.Text;
+                var rowHasEmptyValuesOnly = true;
+                foreach (var item in row.ItemArray)
+                {
+                    if (item != DBNull.Value && !string.IsNullOrWhiteSpace(item.ToString()))
+                    {
+                        rowHasEmptyValuesOnly = false;
+                        break;
+                    }
+                }
+
+                if (rowHasEmptyValuesOnly)
+                {
+                    excelAsTable.Rows.RemoveAt(excelAsTable.Rows.Count - 1);
+                }
+            }
+            
+            return excelAsTable;
         }
     }
 }

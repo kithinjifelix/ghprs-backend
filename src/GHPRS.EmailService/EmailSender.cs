@@ -1,4 +1,5 @@
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 
 namespace GHPRS.EmailService;
@@ -32,20 +33,6 @@ public class EmailSender : IEmailSender
 
         var bodyBuilder = new BodyBuilder
             { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
-        if (message.Attachments.Any())
-        {
-            byte[] fileBytes;
-            foreach (var attachment in message.Attachments)   
-            {
-                using (var ms = new MemoryStream())
-                {
-                    attachment.CopyTo(ms);
-                    fileBytes = ms.ToArray();
-                }
-
-                bodyBuilder.Attachments.Add(attachment.FileName, fileBytes, ContentType.Parse(attachment.ContentType));
-            }
-        }
 
         emailMessage.Body = bodyBuilder.ToMessageBody();
         return emailMessage;
@@ -57,7 +44,7 @@ public class EmailSender : IEmailSender
         {
             try
             {
-                client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, true);
+                client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, SecureSocketOptions.StartTls);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
                 client.Authenticate(_emailConfiguration.UserName, _emailConfiguration.Password);
 

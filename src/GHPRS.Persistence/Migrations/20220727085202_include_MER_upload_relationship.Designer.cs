@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20220727085202_include_MER_upload_relationship")]
+    partial class include_MER_upload_relationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,7 +109,7 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("District")
                         .HasColumnType("text");
 
-                    b.Property<int>("FileUploadsId")
+                    b.Property<int?>("FileUploadsId")
                         .HasColumnType("integer");
 
                     b.Property<string>("HTS_F_A")
@@ -291,7 +293,7 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("District")
                         .HasColumnType("text");
 
-                    b.Property<int>("FileUploadsId")
+                    b.Property<int?>("FileUploadsId")
                         .HasColumnType("integer");
 
                     b.Property<string>("HTS_2_months")
@@ -1032,7 +1034,7 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("FileUploadsId")
+                    b.Property<int?>("FileUploadsId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1639,9 +1641,7 @@ namespace GHPRS.Persistence.Migrations
                 {
                     b.HasOne("GHPRS.Core.Entities.FileUploads", "FileUploads")
                         .WithMany()
-                        .HasForeignKey("FileUploadsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FileUploadsId");
 
                     b.Navigation("FileUploads");
                 });
@@ -1650,9 +1650,7 @@ namespace GHPRS.Persistence.Migrations
                 {
                     b.HasOne("GHPRS.Core.Entities.FileUploads", "FileUploads")
                         .WithMany()
-                        .HasForeignKey("FileUploadsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FileUploadsId");
 
                     b.Navigation("FileUploads");
                 });
@@ -1670,9 +1668,7 @@ namespace GHPRS.Persistence.Migrations
                 {
                     b.HasOne("GHPRS.Core.Entities.FileUploads", "FileUploads")
                         .WithMany()
-                        .HasForeignKey("FileUploadsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FileUploadsId");
 
                     b.Navigation("FileUploads");
                 });

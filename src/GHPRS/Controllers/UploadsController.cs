@@ -149,12 +149,12 @@ namespace GHPRS.Controllers
             }
         }
 
-        [HttpGet("GetAllFileUploads")]
-        public IActionResult GetAllFileUploads()
+        [HttpGet("GetAllFileUploads/{status}")]
+        public IActionResult GetAllFileUploads(string status)
         {
             try
             {
-                return Ok(_fileRepository.GetAllFileUploads());
+                return Ok(_fileRepository.GetAllFileUploads(status));
             }
             catch (Exception e)
             {

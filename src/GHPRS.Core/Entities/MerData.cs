@@ -58,5 +58,8 @@ namespace GHPRS.Core.Entities
         public string qtr4 { get; set; }
         public string cumulative { get; set; }
         public string source_name { get; set; }
+
+        public int FileUploadsId { get; set; }
+        public virtual FileUploads FileUploads { get; set; }
     }
 }
