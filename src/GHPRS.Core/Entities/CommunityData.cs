@@ -7,6 +7,7 @@ namespace GHPRS.Core.Entities;
 public class CommunityData : Entity
 {
     [JsonProperty("Month")] public string Month { get; set; }
+    [JsonProperty("Year")] public string Year { get; set; }
     [JsonProperty("Partner")] public string Partner { get; set; }
     [JsonProperty("Agency")] public string Agency { get; set; }
     [JsonProperty("Region")] public string Region { get; set; }
