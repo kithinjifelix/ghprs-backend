@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20220815174154_columns_updated")]
+    partial class columns_updated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,15 +197,15 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("NEG_A")
                         .HasColumnType("text")
-                        .HasColumnName("C_NEG_A");
+                        .HasColumnName("NEG_A");
 
                     b.Property<string>("NEG_PEDS")
                         .HasColumnType("text")
-                        .HasColumnName("C_NEG_PEDS");
+                        .HasColumnName("NEG_PEDS");
 
                     b.Property<string>("POS_A")
                         .HasColumnType("text")
-                        .HasColumnName("C_POS_A");
+                        .HasColumnName("POS_A");
 
                     b.Property<string>("POS_F_A")
                         .HasColumnType("text")
@@ -223,7 +225,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("POS_PEDS")
                         .HasColumnType("text")
-                        .HasColumnName("C_POS_PEDS");
+                        .HasColumnName("POS_PEDS");
 
                     b.Property<string>("POS_PWID")
                         .HasColumnType("text")

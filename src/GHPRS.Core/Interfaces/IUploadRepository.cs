@@ -16,5 +16,6 @@ namespace GHPRS.Core.Interfaces
         void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch, Guid uploadBatchGuid);
         void UpdateStatus(int id, UploadStatus status);
         void DeleteFromTable(string tableName, string uploadBatch, Guid uploadBatchGuid);
+        void UpdateUploadStatus(int id, string uploadStatus);
     }
 }

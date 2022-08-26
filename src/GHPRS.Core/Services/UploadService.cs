@@ -9,6 +9,7 @@ using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using GHPRS.Core.UnitOfWork;
 using GHPRS.Core.Utilities;
+using GHPRS.Core.Validations;
 using GHPRS.EmailService;
 using Hangfire;
 using Microsoft.Extensions.Logging;
@@ -27,8 +28,6 @@ namespace GHPRS.Core.Services
         private readonly ITemplateRepository _templateRepository;
         private readonly IUploadRepository _uploadRepository;
         private readonly IWorkSheetRepository _worksheetRepository;
-        private readonly IDataUnitOfWork _dataUnitOfWork;
-        private readonly IOrganizationRepository _organizationRepository;
         private readonly IFileUploadRepository _fileUploadRepository;
         private readonly IMerDataRepository _merDataRepository;
         private readonly IFacilityDataRepository _facilityDataRepository;
@@ -40,8 +39,6 @@ namespace GHPRS.Core.Services
             ILogger<UploadService> logger, 
             IWorkSheetRepository workSheetRepository, 
             IExcelService excelService,
-            IDataUnitOfWork dataUnitOfWork,
-            IOrganizationRepository organizationRepository,
             IFileUploadRepository fileUploadRepository,
             IMerDataRepository merDataRepository,
             IFacilityDataRepository facilityDataRepository,
@@ -53,8 +50,6 @@ namespace GHPRS.Core.Services
             _worksheetRepository = workSheetRepository;
             _excelService = excelService;
             _logger = logger;
-            _dataUnitOfWork = dataUnitOfWork;
-            _organizationRepository = organizationRepository;
             _fileUploadRepository = fileUploadRepository;
             _merDataRepository = merDataRepository;
             _facilityDataRepository = facilityDataRepository;
@@ -64,6 +59,7 @@ namespace GHPRS.Core.Services
 
         public void InsertUploadData(int uploadId)
         {
+            int errors = 0;
             var upload = _uploadRepository.GetFullUploadById(uploadId);
             var worksheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(upload.Template.Id);
             foreach (var worksheet in worksheets)
@@ -88,25 +84,78 @@ namespace GHPRS.Core.Services
                     else
                         data.Rows.Clear();
 
-                    if (data.Rows.Count > 0)
-                        _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
+                    var columns = worksheet.Columns;
+                    var dataColumns = data.Columns;
+                    List<string> stringColumnName = new List<string>();
+                    foreach (var column in columns)
+                    {
+                        if (!dataColumns.Contains(column.Name))
+                        {
+                            stringColumnName.Add(column.Name);
+                        }
+                    }
+
+                    string stringVals = String.Empty;
+                    foreach (var ColName in stringColumnName)
+                    {
+                        stringVals += "<li>" + ColName + "</li>";
+                    }
+
+                    if (stringColumnName.Count > 0)
+                    {
+                        errors = 1;
+                        _uploadRepository.UpdateUploadStatus(uploadId, "Failed - Missing Columns " + string.Join(",", stringColumnName));
+                        
+                        // send email to user that template has been processed successfully
+                        var emailAddresses = new List<EmailAddress>();
+                        emailAddresses.Add(new EmailAddress()
+                        {
+                            Address = upload.User.Email,
+                            DisplayName = upload.User.Person.Name
+                        });
+                        var emailbody = EmailTemplates.RequiredColumnsNotFound(upload.User.Person.Name, upload.Name, stringVals);
+                        var message = new Message(emailAddresses, "Data Portal - Missing Column Names", emailbody);
+                        _emailSender.SendEmail(message);
+                    }
+                    else
+                    {
+                        if (data.Rows.Count > 0)
+                            _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
+                    }
                 }
                 catch (Exception e)
                 {
-                    var uploadedTemplateFailed = _uploadRepository.GetById(uploadId);
-                    uploadedTemplateFailed.IsProcessed = true;
-                    uploadedTemplateFailed.UploadStatus = "Failed";
-                    _uploadRepository.Update(uploadedTemplateFailed);
+                    _uploadRepository.UpdateUploadStatus(uploadId, $"Failed - {e.Message}");
                     _logger.LogError(e.Message, e);
-                    throw;
+                    errors = 2;
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = upload.User.Email,
+                        DisplayName = upload.User.Person.Name
+                    });
+                    var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(upload.User.Person.Name, upload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - Error Processing Template", emailbody);
+                    _emailSender.SendEmail(message);
                 }
             }
 
-            // set the upload has been processed to prevent re-processing
-            var uploadedTemplate = _uploadRepository.GetById(uploadId);
-            uploadedTemplate.IsProcessed = true;
-            uploadedTemplate.UploadStatus = "Successful";
-            _uploadRepository.Update(uploadedTemplate);
+            if (errors == 0)
+            {
+                // set the upload has been processed to prevent re-processing
+                _uploadRepository.UpdateUploadStatus(uploadId, "Successful");
+                // send email to user that template has been processed successfully
+                var emailAddresses = new List<EmailAddress>();
+                emailAddresses.Add(new EmailAddress()
+                {
+                    Address = upload.User.Email,
+                    DisplayName = upload.User.Person.Name
+                });
+                var emailbody = EmailTemplates.SuccessfullyUploadedData(upload.User.Person.Name, upload.Name);
+                var message = new Message(emailAddresses, $"Data Portal - {upload.Name} Successfully Processed", emailbody);
+                _emailSender.SendEmail(message);
+            }
         }
 
         public List<object> ReadUploadData(int uploadId)
@@ -259,37 +308,29 @@ namespace GHPRS.Core.Services
 
         public void Review(Upload upload, Review review)
         {
-            using (var transaction = _dataUnitOfWork.BeginTransaction(IsolationLevel.Snapshot))
+            try
             {
-                try
-                {
-                    // change status to overWritten if existing and approved
-                    var overWrite = _uploadRepository.GetFullUploads().FirstOrDefault(x =>
-                        x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
+                // change status to overWritten if existing and approved
+                var overWrite = _uploadRepository.GetFullUploads().FirstOrDefault(x =>
+                    x.UploadBatch == upload.UploadBatch && x.Status == UploadStatus.Approved);
 
-                    upload.Status = (UploadStatus)review.Status;
-                    upload.Comments = review.Comments;
+                upload.Status = (UploadStatus)review.Status;
+                upload.Comments = review.Comments;
 
-                    _uploadRepository.Update(upload);
+                _uploadRepository.Update(upload);
 
 
-                    // Extract data from approved templates
-                    if ((UploadStatus)review.Status == UploadStatus.Approved)
-                        BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
+                // Extract data from approved templates
+                if ((UploadStatus)review.Status == UploadStatus.Approved)
+                    BackgroundJob.Enqueue<IUploadService>(x => x.InsertUploadData(upload.Id));
                     
-                    // Overwrite after insert of previous data
-                    if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
-                    
-                    transaction.Commit();
-                    _dataUnitOfWork.Dispose();
-                }
-                catch (Exception e)
-                {
-                    transaction.RollbackAsync();
-                    _dataUnitOfWork.Dispose();
-                    _logger.LogError(e.Message, e);
-                    throw e;
-                }
+                // Overwrite after insert of previous data
+                if (overWrite != null) BackgroundJob.Enqueue<IUploadService>(x => x.OverWriteApproved(overWrite.Id));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw e;
             }
         }
 
@@ -300,7 +341,18 @@ namespace GHPRS.Core.Services
             var workSheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(overWrite.Template.Id);
             foreach (var workSheet in workSheets)
             {
-                _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                if (workSheet.Name == "Facility Data")
+                {
+                    _uploadRepository.DeleteFromTable("stg_facility_data", overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                }
+                else if (workSheet.Name == "Community Data")
+                {
+                    _uploadRepository.DeleteFromTable("stg_community_data", overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                }
+                else
+                {
+                    _uploadRepository.DeleteFromTable(workSheet.TableName, overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                }
             }
         }
 
@@ -394,6 +446,13 @@ namespace GHPRS.Core.Services
             {
                 if (pendingUpload != null)
                 {
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress()
+                    {
+                        Address = pendingUpload.User.Email,
+                        DisplayName = pendingUpload.User.Person.Name
+                    });
+                    
                     using (var memoryStream = new MemoryStream(pendingUpload.File))
                     {
                         using var excelPack = new ExcelPackage();
@@ -410,18 +469,40 @@ namespace GHPRS.Core.Services
                             var excelAsTable = ReadExcelWorkSheet(worksheet);
                             //validate data from excel
                             JSchemaGenerator generator = new JSchemaGenerator();
-                            JSchema schema = generator.Generate(typeof(FacilityData));
+                            JSchema schema = generator.Generate(typeof(FacilityDataValidation));
 
                             string json = JsonConvert.SerializeObject(excelAsTable, Formatting.Indented);
-                            JArray person = JArray.Parse(json);
-
+                            JArray dArrays = JArray.Parse(json);
                             IList<string> messages;
-                            bool valid = person.IsValid(schema, out messages);
-                            
+                            string errors = string.Empty;
+                            foreach (var dArray in dArrays)
+                            {
+                                bool valid = dArray.IsValid(schema, out messages);
+                                if (!valid)
+                                {
+                                    foreach (var message in messages)
+                                    {
+                                        var newMessage = string.Empty;
+                                        int indexOfSteam = message.IndexOf("line");
+                                        if(indexOfSteam >= 0)
+                                            newMessage = message.Remove(indexOfSteam);
+                                        errors += "<font color='orange'><li>" + newMessage + "</li></font>";
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (errors.Length > 0)
+                            {
+                                var emailbody = EmailTemplates.GetEmailTemplateListErrors(pendingUpload.User.Person.Name, pendingUpload.Name, errors);
+                                var message = new Message(emailAddresses, "Data Portal - Facility Data Validation Warning",
+                                    emailbody);
+                                _emailSender.SendEmail(message);
+                            }
+
                             var deserializedData = JsonConvert.DeserializeObject<FacilityData[]>(json);
                             List<FacilityData> facilityData = new List<FacilityData>();
                             facilityData.AddRange(deserializedData.ToList());
-                            facilityData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
                             if (facilityData.Any())
                             {
                                 _facilityDataRepository.Insert(facilityData);
@@ -429,16 +510,10 @@ namespace GHPRS.Core.Services
                         }
                         else
                         {
+                            // Facility Data not provided
                             pendingUpload.Status = "Error - Missing Facility Data Worksheet";
                             _fileUploadRepository.UpdateFile(pendingUpload);
-
-                            // Facility Data not provided
-                            var emailAddresses = new List<EmailAddress>();
-                            emailAddresses.Add(new EmailAddress()
-                            {
-                                Address = pendingUpload.User.Email,
-                                DisplayName = pendingUpload.User.Person.Name
-                            });
+                            
                             var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
                             var message = new Message(emailAddresses, "Data Portal - Missing Facility Data Worksheet",
                                 emailbody);
@@ -449,15 +524,42 @@ namespace GHPRS.Core.Services
                         {
                             var excelAsTable = ReadExcelWorkSheet(communityExcelWorksheet);
                             //validate data from excel
+                            //validate data from excel
                             JSchemaGenerator generator = new JSchemaGenerator();
-                            JSchema schema = generator.Generate(typeof(CommunityData));
+                            JSchema schema = generator.Generate(typeof(CommunityDataValidations));
 
                             string json = JsonConvert.SerializeObject(excelAsTable, Formatting.Indented);
+                            JArray dArrays = JArray.Parse(json);
+                            IList<string> messages;
+                            string errors = string.Empty;
+                            foreach (var dArray in dArrays)
+                            {
+                                bool valid = dArray.IsValid(schema, out messages);
+                                if (!valid)
+                                {
+                                    foreach (var message in messages)
+                                    {
+                                        var newMessage = string.Empty;
+                                        int indexOfSteam = message.IndexOf("line");
+                                        if(indexOfSteam >= 0)
+                                            newMessage = message.Remove(indexOfSteam);
+                                        errors += "<font color='orange'><li>" + newMessage + "</li></font>";
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (errors.Length > 0)
+                            {
+                                var emailbody = EmailTemplates.GetEmailTemplateListErrors(pendingUpload.User.Person.Name, pendingUpload.Name, errors);
+                                var message = new Message(emailAddresses, "Data Portal - Community Data Validation Warning",
+                                    emailbody);
+                                _emailSender.SendEmail(message);
+                            }
 
                             var deserializedData = JsonConvert.DeserializeObject<CommunityData[]>(json);
                             List<CommunityData> communityData = new List<CommunityData>();
                             communityData.AddRange(deserializedData.ToList());
-                            communityData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
                             if (communityData.Any())
                             {
                                 _communityDataRepository.Insert(communityData);
@@ -469,12 +571,6 @@ namespace GHPRS.Core.Services
                             _fileUploadRepository.UpdateFile(pendingUpload);
 
                             // Facility Data not provided
-                            var emailAddresses = new List<EmailAddress>();
-                            emailAddresses.Add(new EmailAddress()
-                            {
-                                Address = pendingUpload.User.Email,
-                                DisplayName = pendingUpload.User.Person.Name
-                            });
                             var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
                             var message = new Message(emailAddresses, "Data Portal - Missing Community Data Worksheet",
                                 emailbody);

@@ -10,7 +10,6 @@ using GHPRS.Persistence.Repositories;
 using GHPRS.Persistence.UnitOfWork;
 using Hangfire;
 using Hangfire.PostgreSql;
-using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -111,9 +110,9 @@ namespace GHPRS
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ILookupRepository, LookupRepository>();
-            services.AddScoped<ITemplateRepository, TemplateRepository>();
-            services.AddScoped<ITemplateService, TemplateService>();
-            services.AddScoped<IUploadRepository, UploadRepository>();
+            services.AddTransient<ITemplateRepository, TemplateRepository>();
+            services.AddTransient<ITemplateService, TemplateService>();
+            services.AddTransient<IUploadRepository, UploadRepository>();
             services.AddScoped<IFileUploadRepository, FileUploadRepository>();
             services.AddScoped<IMerDataRepository, MerDataRepository>();
             services.AddScoped<IFacilityDataRepository, FacilityDataRepository>();
@@ -121,7 +120,7 @@ namespace GHPRS
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<ILinkRepository, LinkRepository>();
             services.AddScoped<IExcelService, ExcelService>();
-            services.AddScoped<IWorkSheetRepository, WorkSheetRepository>();
+            services.AddTransient<IWorkSheetRepository, WorkSheetRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IColumnRepository, ColumnRepository>();
@@ -155,7 +154,7 @@ namespace GHPRS
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             var options = new BackgroundJobServerOptions
             {
-                WorkerCount=1    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
+                WorkerCount=3    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
                 // For this we are overriding the default value.
             };
             app.UseHangfireServer(options);

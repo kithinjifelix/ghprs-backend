@@ -1,229 +1,264 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace GHPRS.Core.Entities;
 
-[Table("stg_facility_data")]
+[Table("StagingFacilityData")]
 public class FacilityData : Entity
 {
-    [JsonProperty("Priority Tier (1, 2, 3, 4)")]
+    [Column("Priority Tier (1, 2, 3, 4)")]
     public string Priority_Tier { get; set; }
-    [JsonProperty("Month")]
+    [Column("Month")]
     public string Month { get; set; }
-    [JsonProperty("Year")]
+    [Column("Year")]
     public string Year { get; set; }
-    [JsonProperty("MECHANISM ID", Required = Required.Always)]
+    [Column("MECHANISM ID")]
     public string MECHANISM_ID { get; set; }
-    [JsonProperty("Partner")]
+    [Column("Partner")]
     public string Partner { get; set; }
-    [JsonProperty("Agency")]
+    [Column("Agency")]
     public string Agency { get; set; }
-    [JsonProperty("Region")]
+    [Column("Region")]
     public string Region { get; set; }
-    [JsonProperty("District")]
+    [Column("District")]
     public string District { get; set; }
-    [JsonProperty("Council")]
+    [Column("Council")]
     public string Council { get; set; }
-    [JsonProperty("Ward")]
+    [Column("Ward")]
     public string Ward { get; set; }
-    [JsonProperty("Site Name")]
+    [Column("Site Name")]
     public string Site_Name { get; set; }
-    [JsonProperty("Site ID (from DATIM)")]
+    [Column("Site ID (from DATIM)")]
     public string Site_id { get; set; }
-    [JsonProperty("CLIENT_A_TX_NEW")]
+    [Column("CLIENT_A_TX_NEW")]
     public string CLIENT_A_TX_NEW { get; set; }
-    [JsonProperty("CLIENT_A_TX_CURR")]
+    [Column("CLIENT_A_TX_CURR")]
     public string CLIENT_A_TX_CURR { get; set; }
-    [JsonProperty("CONTACT_A")]
+    [Column("CONTACT_A")]
     public string CONTACT_A { get; set; }
-    [JsonProperty("IPV_HX_SCREEN")]
+    [Column("IPV_HX_SCREEN")]
     public string IPV_HX_SCREEN { get; set; }
-    [JsonProperty("KNOWN_POS_A")]
+    [Column("KNOWN_POS_A")]
     public string KNOWN_POS_A { get; set; }
-    [JsonProperty("NEG_A")]
+    [Column("NEG_A")]
     public string NEG_A { get; set; }
-    [JsonProperty("POS_A")]
+    [Column("POS_A")]
     public string POS_A { get; set; }
-    [JsonProperty("CONTACT_PEDS")]
+    [Column("CONTACT_PEDS")]
     public string CONTACT_PEDS { get; set; }
-    [JsonProperty("KNOWN_POS_PEDS")]
+    [Column("KNOWN_POS_PEDS")]
     public string KNOWN_POS_PEDS { get; set; }
-    [JsonProperty("NEG_PEDS")]
+    [Column("NEG_PEDS")]
     public string NEG_PEDS { get; set; }
-    [JsonProperty("POS_PEDS")]
+    [Column("POS_PEDS")]
     public string POS_PEDS { get; set; }
-    [JsonProperty("OPD_P")]
+    [Column("OPD_P")]
     public string OPD_P { get; set; }
-    [JsonProperty("OPD_A")]
+    [Column("OPD_A")]
     public string OPD_A { get; set; }
-    [JsonProperty("SCREEN_A")]
+    [Column("SCREEN_A")]
     public string SCREEN_A { get; set; }
-    [JsonProperty("SCREEN_ELIG_A")]
+    [Column("SCREEN_ELIG_A")]
     public string SCREEN_ELIG_A { get; set; }
-    [JsonProperty("SCREEN_HTS_A")]
+    [Column("SCREEN_HTS_A")]
     public string SCREEN_HTS_A { get; set; }
-    [JsonProperty("SCREEN_HTS_POS_A")]
+    [Column("SCREEN_HTS_POS_A")]
     public string SCREEN_HTS_POS_A { get; set; }
-    [JsonProperty("LCM_A")]
+    [Column("LCM_A")]
     public string LCM_A { get; set; }
-    [JsonProperty("REFILL")]
+    [Column("REFILL")]
     public string REFILL { get; set; }
-    [JsonProperty("SDI_0_7")]
+    [Column("SDI_0_7")]
     public string SDI_0_7 { get; set; }
-    [JsonProperty("SDI_8_14")]
+    [Column("SDI_8_14")]
     public string SDI_8_14 { get; set; }
-    [JsonProperty("SDI_15")]
+    [Column("SDI_15")]
     public string SDI_15 { get; set; }
-    [JsonProperty("TX_PREV")]
+    [Column("TX_PREV")]
     public string TX_PREV { get; set; }
-    [JsonProperty("TX_CURR")]
+    [Column("TX_CURR")]
     public string TX_CURR { get; set; }
-    [JsonProperty("XFER_IN")]
+    [Column("XFER_IN")]
     public string XFER_IN { get; set; }
-    [JsonProperty("XFER_OUT")]
+    [Column("XFER_OUT")]
     public string XFER_OUT { get; set; }
-    [JsonProperty("XFER_DEATH")]
+    [Column("XFER_DEATH")]
     public string XFER_DEATH { get; set; }
-    [JsonProperty("MMS_1")]
+    [Column("MMS_1")]
     public string MMS_1 { get; set; }
-    [JsonProperty("MMS_2")]
+    [Column("MMS_2")]
     public string MMS_2 { get; set; }
-    [JsonProperty("MMS_3")]
+    [Column("MMS_3")]
     public string MMS_3 { get; set; }
-    [JsonProperty("TB_PREV_D")]
+    [Column("TB_PREV_D")]
     public string TB_PREV_D { get; set; }
-    [JsonProperty("TB_PREV_N")]
+    [Column("TB_PREV_N")]
     public string TB_PREV_N { get; set; }
-    [JsonProperty("TB_PREV_NEW")]
+    [Column("TB_PREV_NEW")]
     public string TB_PREV_NEW { get; set; }
-    [JsonProperty("VL_ELIG_P")]
+    [Column("VL_ELIG_P")]
     public string VL_ELIG_P { get; set; }
-    [JsonProperty("VL_D_P")]
+    [Column("VL_D_P")]
     public string VL_D_P { get; set; }
-    [JsonProperty("VL_N_P")]
+    [Column("VL_N_P")]
     public string VL_N_P { get; set; }
-    [JsonProperty("VL_ELIG _A ")]
+    [Column("VL_ELIG _A ")]
     public string VL_ELIG_A { get; set; }
-    [JsonProperty("VL_D_A")]
+    [Column("VL_D_A")]
     public string VL_D_A { get; set; }
-    [JsonProperty("VL_N_A")]
+    [Column("VL_N_A")]
     public string VL_N_A { get; set; }
-    [JsonProperty("HTS_F_A")]
+    [Column("HTS_F_A")]
     public string HTS_F_A { get; set; }
-    [JsonProperty("HTS_M_A")]
+    [Column("HTS_M_A")]
     public string HTS_M_A { get; set; }
-    [JsonProperty("HTS_F_P")]
+    [Column("HTS_F_P")]
     public string HTS_F_P { get; set; }
-    [JsonProperty("HTS_M_P")]
+    [Column("HTS_M_P")]
     public string HTS_M_P { get; set; }
-    [JsonProperty("POS_F_A")]
+    [Column("POS_F_A")]
     public string POS_F_A { get; set; }
-    [JsonProperty("POS_M_A")]
+    [Column("POS_M_A")]
     public string POS_M_A { get; set; }
-    [JsonProperty("POS_F_P")]
+    [Column("POS_F_P")]
     public string POS_F_P { get; set; }
-    [JsonProperty("POS_M_P")]
+    [Column("POS_M_P")]
     public string POS_M_P { get; set; }
-    [JsonProperty("TX_NEW_F_A")]
+    [Column("TX_NEW_F_A")]
     public string TX_NEW_F_A { get; set; }
-    [JsonProperty("TX_NEW_M_A")]
+    [Column("TX_NEW_M_A")]
     public string TX_NEW_M_A { get; set; }
-    [JsonProperty("TX_NEW_F_P")]
+    [Column("TX_NEW_F_P")]
     public string TX_NEW_F_P { get; set; }
-    [JsonProperty("TX_NEW_M_P")]
+    [Column("TX_NEW_M_P")]
     public string TX_NEW_M_P { get; set; }
-    [JsonProperty("vmmc_circ.u15.m", Required = Required.Always)]
+    [Column("vmmc_circ.u15.m")]
     public string vmmc_circ_u15_m { get; set; }
-    [JsonProperty("vmmc_circ.o15.m")]
+    [Column("vmmc_circ.o15.m")]
     public string vmmc_circ_o15_m { get; set; }
-    [JsonProperty("prep_new.u15.f")]
+    [Column("prep_new.u15.f")]
     public string prep_new_u15_f { get; set; }
-    [JsonProperty("prep_new.u15.m")]
+    [Column("prep_new.u15.m")]
     public string prep_new_u15_m { get; set; }
-    [JsonProperty("prep_new.o15.f")]
+    [Column("prep_new.o15.f")]
     public string prep_new_o15_f { get; set; }
-    [JsonProperty("prep_new.o15.m")]
+    [Column("prep_new.o15.m")]
     public string prep_new_o15_m { get; set; }
-    [JsonProperty("tx_curr.u15.f")]
+    [Column("tx_curr.u15.f")]
     public string tx_curr_u15_f { get; set; }
-    [JsonProperty("tx_curr.u15.m")]
+    [Column("tx_curr.u15.m")]
     public string tx_curr_u15_m { get; set; }
-    [JsonProperty("tx_curr.o15.f")]
+    [Column("tx_curr.o15.f")]
     public string tx_curr_o15_f { get; set; }
-    [JsonProperty("tx_curr.o15.m")]
+    [Column("tx_curr.o15.m")]
     public string tx_curr_o15_m { get; set; }
-    [JsonProperty("tx_mmd.u15.f.u3mo")]
+    [Column("tx_mmd.u15.f.u3mo")]
     public string tx_mmd_u15_f_u3mo { get; set; }
-    [JsonProperty("tx_mmd.u15.m.u3mo")]
+    [Column("tx_mmd.u15.m.u3mo")]
     public string tx_mmd_u15_m_u3mo { get; set; }
-    [JsonProperty("tx_mmd.o15.f.u3mo")]
+    [Column("tx_mmd.o15.f.u3mo")]
     public string tx_mmd_o15_f_u3mo { get; set; }
-    [JsonProperty("tx_mmd.o15.m.u3mo")]
+    [Column("tx_mmd.o15.m.u3mo")]
     public string tx_mmd_o15_m_u3mo { get; set; }
-    [JsonProperty("tx_mmd.u15.f.35mo")]
+    [Column("tx_mmd.u15.f.35mo")]
     public string tx_mmd_u15_f_35mo { get; set; }
-    [JsonProperty("tx_mmd.u15.m.35mo")]
+    [Column("tx_mmd.u15.m.35mo")]
     public string tx_mmd_u15_m_35mo { get; set; }
-    [JsonProperty("tx_mmd.o15.f.35mo")]
+    [Column("tx_mmd.o15.f.35mo")]
     public string tx_mmd_o15_f_35mo { get; set; }
-    [JsonProperty("tx_mmd.o15.m.35mo")]
+    [Column("tx_mmd.o15.m.35mo")]
     public string tx_mmd_o15_m_35mo { get; set; }
-    [JsonProperty("tx_mmd.u15.f.o6mo")]
+    [Column("tx_mmd.u15.f.o6mo")]
     public string tx_mmd_u15_f_o6mo { get; set; }
-    [JsonProperty("tx_mmd.u15.m.o6mo")]
+    [Column("tx_mmd.u15.m.o6mo")]
     public string tx_mmd_u15_m_o6mo { get; set; }
-    [JsonProperty("tx_mmd.o15.f.o6mo")]
+    [Column("tx_mmd.o15.f.o6mo")]
     public string tx_mmd_o15_f_o6mo { get; set; }
-    [JsonProperty("tx_mmd.o15.m.o6mo")]
+    [Column("tx_mmd.o15.m.o6mo")]
     public string tx_mmd_o15_m_o6mo { get; set; }
-    [JsonProperty("Miss_App")]
+    [Column("Miss_App")]
     public string Miss_App { get; set; }
-    [JsonProperty("MMS_6_P")]
+    [Column("MMS_6_P")]
     public string MMS_6_P { get; set; }
-    [JsonProperty("MMS_6_A")]
+    [Column("MMS_6_A")]
     public string MMS_6_A { get; set; }
-    [JsonProperty("LFTU_P")]
+    [Column("LFTU_P")]
     public string LFTU_P { get; set; }
-    [JsonProperty("L_SELF_REF_P")]
+    [Column("L_SELF_REF_P")]
     public string L_SELF_REF_P { get; set; }
-    [JsonProperty("L_CTC_P")]
+    [Column("L_CTC_P")]
     public string L_CTC_P { get; set; }
-    [JsonProperty("L_RTX_P")]
+    [Column("L_RTX_P")]
     public string L_RTX_P { get; set; }
-    [JsonProperty("L_DXD_P")]
+    [Column("L_DXD_P")]
     public string L_DXD_P { get; set; }
-    [JsonProperty("L_REFX_P")]
+    [Column("L_REFX_P")]
     public string L_REFX_P { get; set; }
-    [JsonProperty("L_WRNGD_P")]
+    [Column("L_WRNGD_P")]
     public string L_WRNGD_P { get; set; }
-    [JsonProperty("L_UNBL_P")]
+    [Column("L_UNBL_P")]
     public string L_UNBL_P { get; set; }
-    [JsonProperty("L_NOATTMPT_P")]
+    [Column("L_NOATTMPT_P")]
     public string L_NOATTMPT_P { get; set; }
-    [JsonProperty("LFTU_A")]
+    [Column("LFTU_A")]
     public string LFTU_A { get; set; }
-    [JsonProperty("L_SELF_REF_A")]
+    [Column("L_SELF_REF_A")]
     public string L_SELF_REF_A { get; set; }
-    [JsonProperty("L_CTC_A")]
+    [Column("L_CTC_A")]
     public string L_CTC_A { get; set; }
-    [JsonProperty("L_RTX_A")]
+    [Column("L_RTX_A")]
     public string L_RTX_A { get; set; }
-    [JsonProperty("L_DXD_A")]
+    [Column("L_DXD_A")]
     public string L_DXD_A { get; set; }
-    [JsonProperty("L_REFX_A")]
+    [Column("L_REFX_A")]
     public string L_REFX_A { get; set; }
-    [JsonProperty("L_WRNGD_A")]
+    [Column("L_WRNGD_A")]
     public string L_WRNGD_A { get; set; }
-    [JsonProperty("L_UNBL_A")]
+    [Column("L_UNBL_A")]
     public string L_UNBL_A { get; set; }
-    [JsonProperty("L_NOATTMPT_A")]
+    [Column("L_NOATTMPT_A")]
     public string L_NOATTMPT_A { get; set; }
-    [JsonProperty("HTS_2 months")]
+    [Column("HTS_2 months")]
     public string HTS_2_months { get; set; }
-    [JsonProperty("POS_preg")]
+    [Column("POS_preg")]
     public string POS_preg { get; set; }
-
-    public int FileUploadsId { get; set; }
-    public virtual FileUploads FileUploads { get; set; }
+    [Column("PMTCT_STAT_D")] 
+    public string PMTCT_STAT_D { get; set; }
+    [Column("PMTCT_STAT_N")] 
+    public string PMTCT_STAT_N { get; set; }
+    [Column("PMTCT_ART")] 
+    public string PMTCT_ART { get; set; }
+    [Column("PMTCT_EID")] 
+    public string PMTCT_EID { get; set; }
+    [Column("PMTCT_HEI_POS")] 
+    public string PMTCT_HEI_POS { get; set; }
+    [Column("PMTCT_HEI_POS_ART")] 
+    public string PMTCT_HEI_POS_ART { get; set; }
+    [Column("MMS_6__ELIG_P_F")] 
+    public string MMS_6__ELIG_P_F { get; set; }
+    [Column("MMS_6_ELIG_P_M")] 
+    public string MMS_6_ELIG_P_M { get; set; }
+    [Column("MMS_6_ELIG_A_F")] 
+    public string MMS_6_ELIG_A_F { get; set; }
+    [Column("MMS_6_ELIG_A_M")] 
+    public string MMS_6_ELIG_A_M { get; set; }
+    [Column("TX_TB_D")] 
+    public string TX_TB_D { get; set; }
+    [Column("TX_TB_N")] 
+    public string TX_TB_N { get; set; }
+    [Column("TB_STAT_D")] 
+    public string TB_STAT_D { get; set; }
+    [Column("TB_STAT_N")] 
+    public string TB_STAT_N { get; set; }
+    [Column("TB_STAT_POS")] 
+    public string TB_STAT_POS { get; set; }
+    [Column("TB_ART")] 
+    public string TB_ART { get; set; }
+    
+    public string Upload_Batch { get; set; }
+    [Column("Report Date")]
+    public string Report_Date { get; set; }
+    public Guid UploadBatchGuid { get; set; }
 }
