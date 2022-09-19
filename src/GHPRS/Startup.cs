@@ -21,6 +21,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.OpenApi.Models;
 
 namespace GHPRS
 {
@@ -50,7 +52,7 @@ namespace GHPRS
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins(_allowedOrigins)
+                        policy.WithOrigins("*")
                             .AllowAnyMethod()
                             .AllowAnyHeader();
                     });
@@ -61,7 +63,7 @@ namespace GHPRS
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<DataContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DataConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()
@@ -134,24 +136,40 @@ namespace GHPRS
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "wwwroot";
+            });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Api", Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
+            }
+            else
+            {
+                app.UseForwardedHeaders();
+                app.UseHsts();
+            }
 
-            app.UseCors(MyAllowSpecificOrigins);
-
-            //app.UseHttpsRedirection();
-
+            // app.UseHttpsRedirection();
+            app.UseSpaStaticFiles();
             app.UseRouting();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "wwwroot";
+            });
             var options = new BackgroundJobServerOptions
             {
                 WorkerCount=3    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.

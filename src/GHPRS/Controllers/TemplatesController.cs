@@ -144,11 +144,12 @@ namespace GHPRS.Controllers
                 foreach (var worksheetModel in workSheetModels)
                 {
                     workSheet = _workSheetRepository.GetFullWorkSheetById(worksheetModel.Id);
-                    _templateRepository.CreateTemplateTable(workSheet);
+                    if (workSheet.Name != "Community Data" && workSheet.Name != "Facility Data" && workSheet.Name != "TB")
+                    {
+                        _templateRepository.CreateTemplateTable(workSheet);
+                    }
                 }
-
                 _templateRepository.UpdateStatus(workSheet.TemplateId, TemplateStatus.Active);
-
                 return Ok();
             }
             catch (Exception e)
