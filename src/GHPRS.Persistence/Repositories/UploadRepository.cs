@@ -128,11 +128,15 @@ namespace GHPRS.Persistence.Repositories
                 var tableName = workSheet.TableName;
                 if (workSheet.Name == "Facility Data")
                 {
-                    tableName = "stg_facility_data";
+                    tableName = "StagingFacilityData";
                 }
                 else if (workSheet.Name == "Community Data")
                 {
-                    tableName = "stg_community_data";
+                    tableName = "StagingCommunityData";
+                }
+                else if (workSheet.Name == "TB")
+                {
+                    tableName = "StagingTBData";
                 }
                 var insert = $"INSERT INTO public.\"{tableName}\" ({columns}) VALUES ({rows});";
                 insertScript += insert;

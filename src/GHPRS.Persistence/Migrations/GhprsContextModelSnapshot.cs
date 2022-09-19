@@ -233,6 +233,122 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("Partner");
 
+                    b.Property<string>("PrEP_CT_AGYW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-AGYW");
+
+                    b.Property<string>("PrEP_CT_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-FSW");
+
+                    b.Property<string>("PrEP_CT_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-MSM");
+
+                    b.Property<string>("PrEP_CT_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-PWID");
+
+                    b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-Pregnant& Breastfeeding Women");
+
+                    b.Property<string>("PrEP_CT_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_CT_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT-TG");
+
+                    b.Property<string>("PrEP_Eligible_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-AGY(15-19)");
+
+                    b.Property<string>("PrEP_Eligible_AGY_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-AGY(20-24)");
+
+                    b.Property<string>("PrEP_Eligible_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible_FSW");
+
+                    b.Property<string>("PrEP_Eligible_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-MSM");
+
+                    b.Property<string>("PrEP_Eligible_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-PWID");
+
+                    b.Property<string>("PrEP_Eligible_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-Pregnant& Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Eligible_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Eligible_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Eligible-TG");
+
+                    b.Property<string>("PrEP_NEW_AGYW_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-AGYW(15-19)");
+
+                    b.Property<string>("PrEP_NEW_AGYW_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-AGYW(20-24)");
+
+                    b.Property<string>("PrEP_NEW_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-FSW");
+
+                    b.Property<string>("PrEP_NEW_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-PWID");
+
+                    b.Property<string>("PrEP_NEW_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-Pregnant& Breastfeeding Women");
+
+                    b.Property<string>("PrEP_NEW_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_NEW_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW-TG");
+
+                    b.Property<string>("PrEP_Screen_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-AGY(15-19)");
+
+                    b.Property<string>("PrEP_Screen_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen_FSW");
+
+                    b.Property<string>("PrEP_Screen_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-MSM");
+
+                    b.Property<string>("PrEP_Screen_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-PWID");
+
+                    b.Property<string>("PrEP_Screen_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-Pregnant& Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Screen_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Screen_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP Screen-TG");
+
                     b.Property<string>("Region")
                         .HasColumnType("text")
                         .HasColumnName("Region");
@@ -324,7 +440,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("stg_community_data");
+                    b.ToTable("StagingCommunityData");
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.FacilityData", b =>
@@ -495,9 +611,25 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("MMS_6_A");
 
+                    b.Property<string>("MMS_6_ELIG_A_F")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_A_F");
+
+                    b.Property<string>("MMS_6_ELIG_A_M")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_A_M");
+
+                    b.Property<string>("MMS_6_ELIG_P_M")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_P_M");
+
                     b.Property<string>("MMS_6_P")
                         .HasColumnType("text")
                         .HasColumnName("MMS_6_P");
+
+                    b.Property<string>("MMS_6__ELIG_P_F")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6__ELIG_P_F");
 
                     b.Property<string>("Miss_App")
                         .HasColumnType("text")
@@ -522,6 +654,30 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("OPD_P")
                         .HasColumnType("text")
                         .HasColumnName("OPD_P");
+
+                    b.Property<string>("PMTCT_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_ART");
+
+                    b.Property<string>("PMTCT_EID")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_EID");
+
+                    b.Property<string>("PMTCT_HEI_POS")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_HEI_POS");
+
+                    b.Property<string>("PMTCT_HEI_POS_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_HEI_POS_ART");
+
+                    b.Property<string>("PMTCT_STAT_D")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_STAT_D");
+
+                    b.Property<string>("PMTCT_STAT_N")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_STAT_N");
 
                     b.Property<string>("POS_A")
                         .HasColumnType("text")
@@ -607,6 +763,10 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("Site ID (from DATIM)");
 
+                    b.Property<string>("TB_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_ART");
+
                     b.Property<string>("TB_PREV_D")
                         .HasColumnType("text")
                         .HasColumnName("TB_PREV_D");
@@ -618,6 +778,18 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("TB_PREV_NEW")
                         .HasColumnType("text")
                         .HasColumnName("TB_PREV_NEW");
+
+                    b.Property<string>("TB_STAT_D")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_D");
+
+                    b.Property<string>("TB_STAT_N")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_N");
+
+                    b.Property<string>("TB_STAT_POS")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_POS");
 
                     b.Property<string>("TX_CURR")
                         .HasColumnType("text")
@@ -642,6 +814,14 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("TX_PREV")
                         .HasColumnType("text")
                         .HasColumnName("TX_PREV");
+
+                    b.Property<string>("TX_TB_D")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_TB_D");
+
+                    b.Property<string>("TX_TB_N")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_TB_N");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -786,7 +966,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("stg_facility_data");
+                    b.ToTable("StagingFacilityData");
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.FileUploads", b =>
@@ -1451,6 +1631,92 @@ namespace GHPRS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Person");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.TBData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bacteriological_Diagnosis_Coverage_Pulmonary_TB_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("Bacteriological Diagnosis Coverage (Pulmonary TB) 0 - 14");
+
+                    b.Property<string>("Bacteriological_Diagnosis_Coverage_Pulmonary_TB_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("Bacteriological Diagnosis Coverage (Pulmonary TB) 15+");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text")
+                        .HasColumnName("District");
+
+                    b.Property<string>("Facility_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("Facility ID");
+
+                    b.Property<string>("Health_Facility")
+                        .HasColumnType("text")
+                        .HasColumnName("Health Facility");
+
+                    b.Property<string>("Mechanism_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("Mechanism ID");
+
+                    b.Property<string>("Partner")
+                        .HasColumnType("text")
+                        .HasColumnName("Partner");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text")
+                        .HasColumnName("Region");
+
+                    b.Property<string>("Report_Date")
+                        .HasColumnType("text")
+                        .HasColumnName("Report Date");
+
+                    b.Property<string>("Reporting_Month")
+                        .HasColumnType("text")
+                        .HasColumnName("Reporting Month");
+
+                    b.Property<string>("TB_Detection_Female_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("TB Detection Female 0 - 14");
+
+                    b.Property<string>("TB_Detection_Female_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("TB Detection Female 15+");
+
+                    b.Property<string>("TB_Detection_Male_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("TB Detection Male 0 - 14");
+
+                    b.Property<string>("TB_Detection_Male_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("TB Detection Male 15+");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("UploadBatchGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Upload_Batch")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Year")
+                        .HasColumnType("text")
+                        .HasColumnName("Year");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StagingTBData");
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.Template", b =>
