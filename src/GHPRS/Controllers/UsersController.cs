@@ -119,11 +119,12 @@ namespace GHPRS.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
-                _userRepository.Delete(id);
+                var user = await _userManager.FindByIdAsync(id);
+                await _userManager.DeleteAsync(user);
                 return Ok();
             }
             catch (Exception e)
