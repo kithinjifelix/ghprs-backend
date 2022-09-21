@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GHPRS.Core.Entities
 {
-    [Table("stg_mer_data")]
+    [Table("StagingMerData")]
     public class MerData : Entity
     {
         public string orgunituid { get; set; }

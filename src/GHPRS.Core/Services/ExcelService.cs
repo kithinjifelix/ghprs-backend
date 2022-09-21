@@ -51,6 +51,7 @@ namespace GHPRS.Core.Services
                         excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 0 - 14");
                         excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 15+");
 
+                        var row = excelAsTable.Rows.Add();
                         return excelAsTable;
                     }
                     foreach (var firstRowCell in worksheet.Cells[startRow, startColumn, startRow,
