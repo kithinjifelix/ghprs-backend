@@ -35,17 +35,17 @@ public class CommunityData : Entity
     public string IPV_HX_SCREEN { get; set; }
     [Column("KNOWN_POS_A")]
     public string KNOWN_POS_A { get; set; }
-    [Column("C_NEG_A")]
+    [Column("NEG_A")]
     public string NEG_A { get; set; }
-    [Column("C_POS_A")]
+    [Column("POS_A")]
     public string POS_A { get; set; }
     [Column("CONTACT_PEDS")]
     public string CONTACT_PEDS { get; set; }
     [Column("KNOWN_POS_PEDS")]
     public string KNOWN_POS_PEDS { get; set; }
-    [Column("C_NEG_PEDS")]
+    [Column("NEG_PEDS")]
     public string NEG_PEDS { get; set; }
-    [Column("C_POS_PEDS")]
+    [Column("POS_PEDS")]
     public string POS_PEDS { get; set; }
     [Column("HTS_PWID")]
     public string HTS_PWID { get; set; }
