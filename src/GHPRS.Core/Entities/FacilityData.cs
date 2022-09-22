@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 
 namespace GHPRS.Core.Entities;
 
@@ -70,12 +71,12 @@ public class FacilityData : Entity
     public string LCM_A { get; set; }
     [Column("REFILL")]
     public string REFILL { get; set; }
-    [Column("SDI_0_7")]
-    public string SDI_0_7 { get; set; }
-    [Column("SDI_8_14")]
-    public string SDI_8_14 { get; set; }
-    [Column("SDI_15")]
-    public string SDI_15 { get; set; }
+    // [Column("SDI_0_7")]
+    // public string SDI_0_7 { get; set; }
+    // [Column("SDI_8_14")]
+    // public string SDI_8_14 { get; set; }
+    // [Column("SDI_15")]
+    // public string SDI_15 { get; set; }
     [Column("TX_PREV")]
     public string TX_PREV { get; set; }
     [Column("TX_CURR")]
@@ -86,12 +87,12 @@ public class FacilityData : Entity
     public string XFER_OUT { get; set; }
     [Column("XFER_DEATH")]
     public string XFER_DEATH { get; set; }
-    [Column("MMS_1")]
-    public string MMS_1 { get; set; }
-    [Column("MMS_2")]
-    public string MMS_2 { get; set; }
-    [Column("MMS_3")]
-    public string MMS_3 { get; set; }
+    // [Column("MMS_1")]
+    // public string MMS_1 { get; set; }
+    // [Column("MMS_2")]
+    // public string MMS_2 { get; set; }
+    // [Column("MMS_3")]
+    // public string MMS_3 { get; set; }
     [Column("TB_PREV_D")]
     public string TB_PREV_D { get; set; }
     [Column("TB_PREV_N")]
@@ -138,14 +139,14 @@ public class FacilityData : Entity
     public string vmmc_circ_u15_m { get; set; }
     [Column("vmmc_circ.o15.m")]
     public string vmmc_circ_o15_m { get; set; }
-    [Column("prep_new.u15.f")]
-    public string prep_new_u15_f { get; set; }
-    [Column("prep_new.u15.m")]
-    public string prep_new_u15_m { get; set; }
-    [Column("prep_new.o15.f")]
-    public string prep_new_o15_f { get; set; }
-    [Column("prep_new.o15.m")]
-    public string prep_new_o15_m { get; set; }
+    // [Column("prep_new.u15.f")]
+    // public string prep_new_u15_f { get; set; }
+    // [Column("prep_new.u15.m")]
+    // public string prep_new_u15_m { get; set; }
+    // [Column("prep_new.o15.f")]
+    // public string prep_new_o15_f { get; set; }
+    // [Column("prep_new.o15.m")]
+    // public string prep_new_o15_m { get; set; }
     [Column("tx_curr.u15.f")]
     public string tx_curr_u15_f { get; set; }
     [Column("tx_curr.u15.m")]
@@ -180,10 +181,10 @@ public class FacilityData : Entity
     public string tx_mmd_o15_m_o6mo { get; set; }
     [Column("Miss_App")]
     public string Miss_App { get; set; }
-    [Column("MMS_6_P")]
-    public string MMS_6_P { get; set; }
-    [Column("MMS_6_A")]
-    public string MMS_6_A { get; set; }
+    // [Column("MMS_6_P")]
+    // public string MMS_6_P { get; set; }
+    // [Column("MMS_6_A")]
+    // public string MMS_6_A { get; set; }
     [Column("LFTU_P")]
     public string LFTU_P { get; set; }
     [Column("L_SELF_REF_P")]
@@ -256,7 +257,78 @@ public class FacilityData : Entity
     public string TB_STAT_POS { get; set; }
     [Column("TB_ART")] 
     public string TB_ART { get; set; }
-    
+
+    [Column("SCREEN_P")]
+    public string SCREEN_P { get; set; }
+    [Column("SCREEN_ELIG_P")] 
+    public string SCREEN_ELIG_P { get; set; }
+    [Column("SCREEN_HTS_P")] 
+    public string SCREEN_HTS_P { get; set; }
+    [Column("SCREEN_HTS_POS_P")] 
+    public string SCREEN_HTS_POS_P { get; set; }
+    [Column("PrEP Screen_FSW")] 
+    public string PrEP_Screen_FSW { get; set; }
+    [Column("PrEP Eligible_FSW")] 
+    public string PrEP_Eligible_FSW { get; set; }
+    [Column("PrEP_NEW-FSW")] 
+    public string PrEP_NEW_FSW { get; set; }
+    [Column("PrEP Screen-PWID")] 
+    public string PrEP_Screen_PWID { get; set; }
+    [Column("PrEP Eligible-PWID")] 
+    public string PrEP_Eligible_PWID { get; set; }
+    [Column("PrEP_NEW-PWID")] 
+    public string PrEP_NEW_PWID { get; set; }
+    [Column("PrEP Screen-MSM")] 
+    public string PrEP_Screen_MSM { get; set; }
+    [Column("PrEP Eligible-MSM")] 
+    public string PrEP_Eligible_MSM { get; set; }
+    [Column("PrEP_NEW-MSM")] 
+    public string PrEP_NEW_MSM { get; set; }
+    [Column("PrEP Screen-AGY(15-19)")] 
+    public string PrEP_Screen_AGY_15_19 { get; set; }
+    [Column("PrEP Eligible-AGY(15-19)")]
+    public string PrEP_Eligible_AGY_15_19 { get; set; }
+    [Column("PrEP_NEW-AGYW(15-19)")] 
+    public string PrEP_NEW_AGYW_15_19 { get; set; }
+    [Column("PrEP Screen-AGY(20-24)")] 
+    public string PrEP_Screen_AGY_20_24 { get; set; }
+    [Column("PrEP Eligible-AGY(20-24)")] 
+    public string PrEP_Eligible_AGY_20_24 { get; set; }
+    [Column("PrEP_NEW-AGYW(20-24)")] 
+    public string PrEP_NEW_AGYW_20_24 { get; set; }
+    [Column("PrEP Screen-TG")] 
+    public string PrEP_Screen_TG { get; set; }
+    [Column("PrEP Eligible-TG")] 
+    public string PrEP_Eligible_TG { get; set; }
+    [Column("PrEP_NEW-TG")] 
+    public string PrEP_NEW_TG { get; set; }
+    [Column("PrEP Screen-Serodiscordant Couple")]
+    public string PrEP_Screen_Serodiscordant_Couple { get; set; }
+    [Column("PrEP Eligible-Serodiscordant Couple")]
+    public string PrEP_Eligible_Serodiscordant_Couple { get; set; }
+    [Column("PrEP_NEW-Serodiscordant Couple")]
+    public string PrEP_NEW_Serodiscordant_Couple { get; set; }
+    [Column("PrEP Screen-Pregnant& Breastfeeding Women")]
+    public string PrEP_Screen_Pregnant_Breastfeeding_Women { get; set; }
+    [Column("PrEP Eligible-Pregnant& Breastfeeding Women")]
+    public string PrEP_Eligible_Pregnant_Breastfeeding_Women { get; set; }
+    [Column("PrEP_NEW-Pregnant-Breastfeeding Women")]
+    public string PrEP_NEW_Pregnant_Breastfeeding_Women { get; set; }
+    [Column("PrEP_CT-FSW")] 
+    public string PrEP_CT_FSW { get; set; }
+    [Column("PrEP_CT-PWID")] 
+    public string PrEP_CT_PWID { get; set; }
+    [Column("PrEP_CT-MSM")] 
+    public string PrEP_CT_MSM { get; set; }
+    [Column("PrEP_CT-AGYW")] 
+    public string PrEP_CT_AGYW { get; set; }
+    [Column("PrEP_CT-TG")] 
+    public string PrEP_CT_TG { get; set; }
+    [Column("PrEP_CT-Serodiscordant Couple ")]
+    public string PrEP_CT_Serodiscordant_Couple { get; set; }
+    [Column("PrEP_CT-Pregnant-Breastfeeding Women")]
+    public string PrEP_CT_Pregnant_Breastfeeding_Women { get; set; }
+
     public string Upload_Batch { get; set; }
     [Column("Report Date")]
     public string Report_Date { get; set; }
