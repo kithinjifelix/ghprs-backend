@@ -28,8 +28,12 @@ namespace GHPRS.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMetabaseService _metabaseService;
 
-        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration, IOrganizationRepository organizationRepository, IMetabaseService metabaseService)
+        public AuthenticationController(
+            UserManager<User> userManager, 
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration, 
+            IOrganizationRepository organizationRepository, 
+            IMetabaseService metabaseService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -82,77 +86,84 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Email);
-            if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response {Status = "Error", Message = "User already exists!"});
+            try
+            {
+                var userExists = await _userManager.FindByNameAsync(model.Email);
+                if (userExists != null)
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response {Status = "Error", Message = "User already exists!"});
 
-            var person = new Person
-            {
-                Name = model.Name,
-                GenderId = model.GenderId,
-                MaritalStatusId = model.MaritalStatusId,
-                DateOfBirth = model.DateOfBirth,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-
-            var organization = _organizationRepository.GetById(model.OrganizationId);
-            var user = new User
-            {
-                PhoneNumber = model.PhoneNumber,
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Email,
-                Person = person,
-                Organization = organization
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                var errors = "";
-                foreach (var e in result.Errors)
+                var person = new Person
                 {
-                    var error = "";
-                    error = e.Description;
-                    errors += " " + error;
+                    Name = model.Name,
+                    GenderId = 0,
+                    MaritalStatusId = 0,
+                    DateOfBirth = DateTime.Now,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                var organization = _organizationRepository.GetById(model.OrganizationId);
+                var user = new User
+                {
+                    PhoneNumber = model.PhoneNumber,
+                    Email = model.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = model.Email,
+                    Person = person,
+                    Organization = organization
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
+                {
+                    var errors = "";
+                    foreach (var e in result.Errors)
+                    {
+                        var error = "";
+                        error = e.Description;
+                        errors += " " + error;
+                    }
+
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response
+                            {Status = "Error", Message = $"User creation failed! Please Check your details. {errors} !"});
+                }
+                var names = model.Name.Split(' ');
+                string firstName = names[0];
+                string lastName = names[1];
+                int[] groupIds = {1, 2};
+
+                var metabaseUser = new MetabaseUser()
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = model.Email,
+                    Password = model.Password,
+                    GroupIds = groupIds
+                };
+
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Administrator))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
+                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                if (model.RoleId == 0)
+                {
+                    if (await _roleManager.RoleExistsAsync(UserRoles.Administrator))
+                        await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                    // await _metabaseService.CreateUser(metabaseUser).ConfigureAwait(false);
+                }
+                else if (model.RoleId == 1)
+                {
+                    if (await _roleManager.RoleExistsAsync(UserRoles.User))
+                        await _userManager.AddToRoleAsync(user, UserRoles.User);
                 }
 
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response
-                        {Status = "Error", Message = $"User creation failed! Please Check your details. {errors} !"});
+                return Ok(new Response {Status = "Success", Message = "User created successfully!"});
             }
-            var names = model.Name.Split(' ');
-            string firstName = names[0];
-            string lastName = names[1];
-            int[] groupIds = {1, 2};
-
-            var metabaseUser = new MetabaseUser()
+            catch (Exception e)
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = model.Email,
-                Password = model.Password,
-                GroupIds = groupIds
-            };
-
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Administrator))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Administrator));
-            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-            if (model.RoleId == 0)
-            {
-                if (await _roleManager.RoleExistsAsync(UserRoles.Administrator))
-                    await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
-                // await _metabaseService.CreateUser(metabaseUser).ConfigureAwait(false);
+                return BadRequest(new Response {Status = "Error", Message = $"An error occured while registering a user {e.Message}"});
             }
-            else if (model.RoleId == 1)
-            {
-                if (await _roleManager.RoleExistsAsync(UserRoles.User))
-                    await _userManager.AddToRoleAsync(user, UserRoles.User);
-            }
-
-            return Ok(new Response {Status = "Success", Message = "User created successfully!"});
         }
 
         [HttpPost]
