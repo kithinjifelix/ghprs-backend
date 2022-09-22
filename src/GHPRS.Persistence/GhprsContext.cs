@@ -57,7 +57,7 @@ namespace GHPRS.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Person>().Property(b => b.Id).HasIdentityOptions(startValue: 120);
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Uploads)
                 .WithOne(e => e.User);
