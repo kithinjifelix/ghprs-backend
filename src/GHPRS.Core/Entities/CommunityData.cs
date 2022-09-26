@@ -23,7 +23,7 @@ public class CommunityData : Entity
     public string Council { get; set; }
     [Column("Ward")]
     public string Ward { get; set; }
-    [Column("Site ID/ ward ID (from DATIM)")]
+    [Column("Site ID/ward ID (from DATIM)")]
     public string SiteId { get; set; }
     [Column("CLIENT_A_TX_NEW")]
     public string CLIENT_A_TX_NEW { get; set; }
@@ -47,6 +47,31 @@ public class CommunityData : Entity
     public string NEG_PEDS { get; set; }
     [Column("POS_PEDS")]
     public string POS_PEDS { get; set; }
+    [Column("HTS_Mobile_PEDS")] 
+    public string HTS_Mobile_PEDS { get; set; }
+    [Column("HTS_Mobile_ADULTS")] 
+    public string HTS_Mobile_ADULTS { get; set; }
+    [Column("POS_Mobile_PEDS")] 
+    public string POS_Mobile_PEDS { get; set; }
+    [Column("POS_Mobile_ADULTS")] 
+    public string POS_Mobile_ADULTS { get; set; }
+    [Column("HTS_SNS_Male<15")] 
+    public string HTS_SNS_Male_15 { get; set; }
+    [Column("HTS_SNS_Female<15")] 
+    public string HTS_SNS_Female_15 { get; set; }
+    [Column("HTS_SNS_Male 15+")] 
+    public string HTS_SNS_Male_15_plus { get; set; }
+    [Column("HTS_SNS_Female 15+")] 
+    public string HTS_SNS_Female_15_Plus { get; set; }
+    [Column("POS_SNS_Male<15")] 
+    public string POS_SNS_Male_15 { get; set; }
+    [Column("POS_SNS_Female<15")] 
+    public string POS_SNS_Female_15 { get; set; }
+    [Column("POS_SNS_Male 15+")] 
+    public string POS_SNS_Male_15_Plus { get; set; }
+    [Column("POS_SNS_Female 15+")] 
+    public string POS_SNS_Female_15_Plus { get; set; }
+    
     [Column("HTS_PWID")]
     public string HTS_PWID { get; set; }
     [Column("POS_PWID")]
@@ -151,6 +176,8 @@ public class CommunityData : Entity
     public string PrEP_Eligible_AGY_15_19 { get; set; }
     [Column("PrEP_NEW-AGYW(15-19)")]
     public string PrEP_NEW_AGYW_15_19 { get; set; }
+    [Column("PrEP Screen-AGY(20-24)")] 
+    public string PrEP_Screen_AGY_20_24 { get; set; }
     [Column("PrEP Eligible-AGY(20-24)")]
     public string PrEP_Eligible_AGY_20_24 { get; set; }
     [Column("PrEP_NEW-AGYW(20-24)")]
@@ -187,6 +214,8 @@ public class CommunityData : Entity
     public string PrEP_CT_Serodiscordant_Couple { get; set; }
     [Column("PrEP_CT-Pregnant& Breastfeeding Women")]
     public string PrEP_CT_Pregnant_Breastfeeding_Women { get; set; }
+    [Column("PrEP_NEW-MSM")] 
+    public string PrEP_NEW_MSM { get; set; }
 
     public string Upload_Batch { get; set; }
     [Column("Report Date")]

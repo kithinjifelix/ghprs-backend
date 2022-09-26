@@ -119,7 +119,7 @@ namespace GHPRS.Core.Services
                     }
                     else
                     {
-                        if (data.Rows.Count > 0)
+                        if (data.Rows.Count > 0 && worksheet.Name != "TB")
                             _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
                     }
                 }
@@ -343,11 +343,15 @@ namespace GHPRS.Core.Services
             {
                 if (workSheet.Name == "Facility Data")
                 {
-                    _uploadRepository.DeleteFromTable("stg_facility_data", overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                    _uploadRepository.DeleteFromTable("StagingFacilityData", overWrite.UploadBatch, overWrite.UploadBatchGuid);
                 }
                 else if (workSheet.Name == "Community Data")
                 {
-                    _uploadRepository.DeleteFromTable("stg_community_data", overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                    _uploadRepository.DeleteFromTable("StagingCommunityData", overWrite.UploadBatch, overWrite.UploadBatchGuid);
+                }
+                else if (workSheet.Name == "TB")
+                {
+                    _uploadRepository.DeleteFromTable("StagingTBData", overWrite.UploadBatch, overWrite.UploadBatchGuid);
                 }
                 else
                 {

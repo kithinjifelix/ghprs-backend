@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20220926090338_prep_new_msm_community_data")]
+    partial class prep_new_msm_community_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -377,10 +379,6 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("PrEP Screen-AGY(15-19)");
 
-                    b.Property<string>("PrEP_Screen_AGY_20_24")
-                        .HasColumnType("text")
-                        .HasColumnName("PrEP Screen-AGY(20-24)");
-
                     b.Property<string>("PrEP_Screen_FSW")
                         .HasColumnType("text")
                         .HasColumnName("PrEP Screen_FSW");
@@ -463,7 +461,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("SiteId")
                         .HasColumnType("text")
-                        .HasColumnName("Site ID/ward ID (from DATIM)");
+                        .HasColumnName("Site ID/ ward ID (from DATIM)");
 
                     b.Property<string>("TX_NEW_CHILD")
                         .HasColumnType("text")

@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20220926084245_hts_mobile_community_data")]
+    partial class hts_mobile_community_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,10 +139,6 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("HTS_M_P");
 
-                    b.Property<string>("HTS_Mobile_ADULTS")
-                        .HasColumnType("text")
-                        .HasColumnName("HTS_Mobile_ADULTS");
-
                     b.Property<string>("HTS_Mobile_PEDS")
                         .HasColumnType("text")
                         .HasColumnName("HTS_Mobile_PEDS");
@@ -148,22 +146,6 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("HTS_PWID")
                         .HasColumnType("text")
                         .HasColumnName("HTS_PWID");
-
-                    b.Property<string>("HTS_SNS_Female_15")
-                        .HasColumnType("text")
-                        .HasColumnName("HTS_SNS_Female<15");
-
-                    b.Property<string>("HTS_SNS_Female_15_Plus")
-                        .HasColumnType("text")
-                        .HasColumnName("HTS_SNS_Female 15+");
-
-                    b.Property<string>("HTS_SNS_Male_15")
-                        .HasColumnType("text")
-                        .HasColumnName("HTS_SNS_Male<15");
-
-                    b.Property<string>("HTS_SNS_Male_15_plus")
-                        .HasColumnType("text")
-                        .HasColumnName("HTS_SNS_Male 15+");
 
                     b.Property<string>("IPV_HX_SCREEN")
                         .HasColumnType("text")
@@ -245,14 +227,6 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("POS_M_P");
 
-                    b.Property<string>("POS_Mobile_ADULTS")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_Mobile_ADULTS");
-
-                    b.Property<string>("POS_Mobile_PEDS")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_Mobile_PEDS");
-
                     b.Property<string>("POS_PEDS")
                         .HasColumnType("text")
                         .HasColumnName("POS_PEDS");
@@ -260,22 +234,6 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("POS_PWID")
                         .HasColumnType("text")
                         .HasColumnName("POS_PWID");
-
-                    b.Property<string>("POS_SNS_Female_15")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_SNS_Female<15");
-
-                    b.Property<string>("POS_SNS_Female_15_Plus")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_SNS_Female 15+");
-
-                    b.Property<string>("POS_SNS_Male_15")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_SNS_Male<15");
-
-                    b.Property<string>("POS_SNS_Male_15_Plus")
-                        .HasColumnType("text")
-                        .HasColumnName("POS_SNS_Male 15+");
 
                     b.Property<string>("Partner")
                         .HasColumnType("text")
@@ -353,10 +311,6 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("PrEP_NEW-FSW");
 
-                    b.Property<string>("PrEP_NEW_MSM")
-                        .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW-MSM");
-
                     b.Property<string>("PrEP_NEW_PWID")
                         .HasColumnType("text")
                         .HasColumnName("PrEP_NEW-PWID");
@@ -376,10 +330,6 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("PrEP_Screen_AGY_15_19")
                         .HasColumnType("text")
                         .HasColumnName("PrEP Screen-AGY(15-19)");
-
-                    b.Property<string>("PrEP_Screen_AGY_20_24")
-                        .HasColumnType("text")
-                        .HasColumnName("PrEP Screen-AGY(20-24)");
 
                     b.Property<string>("PrEP_Screen_FSW")
                         .HasColumnType("text")
@@ -463,7 +413,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("SiteId")
                         .HasColumnType("text")
-                        .HasColumnName("Site ID/ward ID (from DATIM)");
+                        .HasColumnName("Site ID/ ward ID (from DATIM)");
 
                     b.Property<string>("TX_NEW_CHILD")
                         .HasColumnType("text")

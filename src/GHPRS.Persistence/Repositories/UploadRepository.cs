@@ -184,7 +184,7 @@ namespace GHPRS.Persistence.Repositories
             try
             {
                 string connectionString;
-                if (tableName == "stg_facility_data" || tableName == "stg_community_data")
+                if (tableName == "StagingCommunityData" || tableName == "StagingFacilityData" || tableName == "StagingTBData")
                 {
                     connectionString = _context.Database.GetConnectionString();
                 }
