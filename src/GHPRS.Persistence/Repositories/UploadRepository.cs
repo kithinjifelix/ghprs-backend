@@ -107,7 +107,7 @@ namespace GHPRS.Persistence.Repositories
                             }
 
                             rows += r == null ? $"NULL, " : $" \'{r}\',";
-                            columns += $" \"{column.Name}\",";
+                            columns += $" \"{column.Name.ToString().Trim()}\",";
                         }
                     }
                     catch (Exception e)

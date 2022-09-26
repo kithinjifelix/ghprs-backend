@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20220926083047_column_notnamed_properly_facility_data")]
+    partial class column_notnamed_properly_facility_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -709,7 +711,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT-Pregnant& Breastfeeding Women");
+                        .HasColumnName("PrEP_CT-Pregnant-Breastfeeding Women");
 
                     b.Property<string>("PrEP_CT_Serodiscordant_Couple")
                         .HasColumnType("text")

@@ -105,7 +105,7 @@ public class FacilityData : Entity
     public string VL_D_P { get; set; }
     [Column("VL_N_P")]
     public string VL_N_P { get; set; }
-    [Column("VL_ELIG _A ")]
+    [Column("VL_ELIG _A")]
     public string VL_ELIG_A { get; set; }
     [Column("VL_D_A")]
     public string VL_D_A { get; set; }
@@ -312,7 +312,7 @@ public class FacilityData : Entity
     public string PrEP_Screen_Pregnant_Breastfeeding_Women { get; set; }
     [Column("PrEP Eligible-Pregnant& Breastfeeding Women")]
     public string PrEP_Eligible_Pregnant_Breastfeeding_Women { get; set; }
-    [Column("PrEP_NEW-Pregnant-Breastfeeding Women")]
+    [Column("PrEP_NEW-Pregnant& Breastfeeding Women")]
     public string PrEP_NEW_Pregnant_Breastfeeding_Women { get; set; }
     [Column("PrEP_CT-FSW")] 
     public string PrEP_CT_FSW { get; set; }
@@ -324,9 +324,9 @@ public class FacilityData : Entity
     public string PrEP_CT_AGYW { get; set; }
     [Column("PrEP_CT-TG")] 
     public string PrEP_CT_TG { get; set; }
-    [Column("PrEP_CT-Serodiscordant Couple ")]
+    [Column("PrEP_CT-Serodiscordant Couple")]
     public string PrEP_CT_Serodiscordant_Couple { get; set; }
-    [Column("PrEP_CT-Pregnant-Breastfeeding Women")]
+    [Column("PrEP_CT-Pregnant& Breastfeeding Women")]
     public string PrEP_CT_Pregnant_Breastfeeding_Women { get; set; }
 
     public string Upload_Batch { get; set; }
