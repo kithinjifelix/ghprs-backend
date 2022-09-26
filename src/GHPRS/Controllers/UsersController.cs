@@ -39,7 +39,12 @@ namespace GHPRS.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
         {
-            var users = _userManager.Users.Include(x => x.Person).Include(z => z.Organization).Select(u => new { User = u, Roles = new List<string>() }).ToList();
+            var users = _userManager.Users
+                .Include(x => x.Person)
+                .Include(z => z.Organization)
+                .Where(x => x.IsEnabled)
+                .Select(u => new { User = u, Roles = new List<string>() })
+                .ToList();
             //Fetch all the Roles
             var roleNames = _roleManager.Roles.Select(r => r.Name).ToList();
 
@@ -132,7 +137,23 @@ namespace GHPRS.Controllers
                 _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-            
+        }
+
+        [HttpGet("DisableUser/{id}")]
+        public async Task<IActionResult> DisableUser(string id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                user.IsEnabled = false;
+                await _userManager.UpdateAsync(user);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
     }
 }

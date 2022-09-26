@@ -49,7 +49,7 @@ namespace GHPRS.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email) ??
                        await _userManager.FindByNameAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user != null && user.IsEnabled && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 

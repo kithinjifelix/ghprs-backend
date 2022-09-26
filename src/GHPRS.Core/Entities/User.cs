@@ -6,6 +6,7 @@ namespace GHPRS.Core.Entities
 {
     public class User : IdentityUser
     {
+        public bool IsEnabled { get; set; } = true;
         public int PersonId { get; set; }
         public virtual Person Person { get; set; }
         public virtual ICollection<Upload> Uploads { get; set; }
