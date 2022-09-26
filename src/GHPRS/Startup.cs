@@ -136,10 +136,10 @@ namespace GHPRS
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
             services.AddSingleton(emailConfig);
             services.AddScoped<IEmailSender, EmailSender>();
-            /*services.AddSpaStaticFiles(configuration =>
+            services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "wwwroot";
-            });*/
+            });
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Api", Version = "v1"}); });
         }
 
@@ -158,18 +158,18 @@ namespace GHPRS
                 app.UseHsts();
             }
 
-            // app.UseHttpsRedirection();
-            // app.UseSpaStaticFiles();
+            app.UseHttpsRedirection();
+            app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            /*app.UseSpa(spa =>
+            app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "wwwroot";
-            });*/
+            });
             var options = new BackgroundJobServerOptions
             {
                 WorkerCount=3    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
