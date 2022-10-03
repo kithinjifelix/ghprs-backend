@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Azure.Communication.Email;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
@@ -159,7 +158,7 @@ namespace GHPRS
                 app.UseHsts();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);

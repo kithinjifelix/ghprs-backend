@@ -1,8 +1,5 @@
 using Azure.Communication.Email;
 using Azure.Communication.Email.Models;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
 
 namespace GHPRS.EmailService;
 
