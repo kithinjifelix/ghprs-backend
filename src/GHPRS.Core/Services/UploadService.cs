@@ -4,10 +4,10 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
-using GHPRS.Core.UnitOfWork;
 using GHPRS.Core.Utilities;
 using GHPRS.Core.Validations;
 using GHPRS.EmailService;
@@ -108,14 +108,10 @@ namespace GHPRS.Core.Services
                         
                         // send email to user that template has been processed successfully
                         var emailAddresses = new List<EmailAddress>();
-                        emailAddresses.Add(new EmailAddress()
-                        {
-                            Address = upload.User.Email,
-                            DisplayName = upload.User.Person.Name
-                        });
+                        emailAddresses.Add(new EmailAddress(upload.User.Email, upload.User.Person.Name));
                         var emailbody = EmailTemplates.RequiredColumnsNotFound(upload.User.Person.Name, upload.Name, stringVals);
                         var message = new Message(emailAddresses, "Data Portal - Missing Column Names", emailbody);
-                        _emailSender.SendEmail(message);
+                        _emailSender.SendEmailAzure(message);
                     }
                     else
                     {
@@ -130,14 +126,10 @@ namespace GHPRS.Core.Services
                     errors = 2;
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = upload.User.Email,
-                        DisplayName = upload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email:upload.User.Email, displayName: upload.User.Person.Name));
                     var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(upload.User.Person.Name, upload.Name);
                     var message = new Message(emailAddresses, "Data Portal - Error Processing Template", emailbody);
-                    _emailSender.SendEmail(message);
+                    _emailSender.SendEmailAzure(message);
                 }
             }
 
@@ -147,14 +139,10 @@ namespace GHPRS.Core.Services
                 _uploadRepository.UpdateUploadStatus(uploadId, "Successful");
                 // send email to user that template has been processed successfully
                 var emailAddresses = new List<EmailAddress>();
-                emailAddresses.Add(new EmailAddress()
-                {
-                    Address = upload.User.Email,
-                    DisplayName = upload.User.Person.Name
-                });
+                emailAddresses.Add(new EmailAddress(email: upload.User.Email, displayName: upload.User.Person.Name));
                 var emailbody = EmailTemplates.SuccessfullyUploadedData(upload.User.Person.Name, upload.Name);
                 var message = new Message(emailAddresses, $"Data Portal - {upload.Name} Successfully Processed", emailbody);
-                _emailSender.SendEmail(message);
+                _emailSender.SendEmailAzure(message);
             }
         }
 
@@ -411,14 +399,10 @@ namespace GHPRS.Core.Services
                             
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = pendingUpload.User.Email,
-                        DisplayName = pendingUpload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
                     var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(pendingUpload.User.Person.Name, pendingUpload.Name);
                     var message = new Message(emailAddresses, "Data Portal - Error MER Data", emailbody);
-                    _emailSender.SendEmail(message);
+                    await _emailSender.SendEmailAzure(message);
                 }
             }
             finally
@@ -430,14 +414,10 @@ namespace GHPRS.Core.Services
                             
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = pendingUpload.User.Email,
-                        DisplayName = pendingUpload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
                     var emailbody = EmailTemplates.SuccessfullyUploadedMerData(pendingUpload.User.Person.Name, pendingUpload.Name);
                     var message = new Message(emailAddresses, "Data Portal - MER Data Processed", emailbody);
-                    _emailSender.SendEmail(message);
+                    await _emailSender.SendEmailAzure(message);
                 }
             }
         }
@@ -451,11 +431,7 @@ namespace GHPRS.Core.Services
                 if (pendingUpload != null)
                 {
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = pendingUpload.User.Email,
-                        DisplayName = pendingUpload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
                     
                     using (var memoryStream = new MemoryStream(pendingUpload.File))
                     {
@@ -501,7 +477,7 @@ namespace GHPRS.Core.Services
                                 var emailbody = EmailTemplates.GetEmailTemplateListErrors(pendingUpload.User.Person.Name, pendingUpload.Name, errors);
                                 var message = new Message(emailAddresses, "Data Portal - Facility Data Validation Warning",
                                     emailbody);
-                                _emailSender.SendEmail(message);
+                                _emailSender.SendEmailAzure(message);
                             }
 
                             var deserializedData = JsonConvert.DeserializeObject<FacilityData[]>(json);
@@ -521,7 +497,7 @@ namespace GHPRS.Core.Services
                             var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
                             var message = new Message(emailAddresses, "Data Portal - Missing Facility Data Worksheet",
                                 emailbody);
-                            _emailSender.SendEmail(message);
+                            _emailSender.SendEmailAzure(message);
                         }
 
                         if (communityExcelWorksheet != null)
@@ -558,7 +534,7 @@ namespace GHPRS.Core.Services
                                 var emailbody = EmailTemplates.GetEmailTemplateListErrors(pendingUpload.User.Person.Name, pendingUpload.Name, errors);
                                 var message = new Message(emailAddresses, "Data Portal - Community Data Validation Warning",
                                     emailbody);
-                                _emailSender.SendEmail(message);
+                                _emailSender.SendEmailAzure(message);
                             }
 
                             var deserializedData = JsonConvert.DeserializeObject<CommunityData[]>(json);
@@ -578,7 +554,7 @@ namespace GHPRS.Core.Services
                             var emailbody = EmailTemplates.GetEmailTemplateNotFound(pendingUpload.User.Person.Name);
                             var message = new Message(emailAddresses, "Data Portal - Missing Community Data Worksheet",
                                 emailbody);
-                            _emailSender.SendEmail(message);
+                            _emailSender.SendEmailAzure(message);
                         }
                     }
                 }
@@ -592,14 +568,10 @@ namespace GHPRS.Core.Services
                 {
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = pendingUpload.User.Email,
-                        DisplayName = pendingUpload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
                     var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(pendingUpload.User.Person.Name, pendingUpload.Name);
                     var message = new Message(emailAddresses, "Data Portal - Error Processing Excel", emailbody);
-                    _emailSender.SendEmail(message);
+                    _emailSender.SendEmailAzure(message);
                     
                     pendingUpload.Status = $"Error - {e.Message}";
                     pendingUpload.User = pendingUpload.User;
@@ -615,14 +587,10 @@ namespace GHPRS.Core.Services
                             
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
-                    emailAddresses.Add(new EmailAddress()
-                    {
-                        Address = pendingUpload.User.Email,
-                        DisplayName = pendingUpload.User.Person.Name
-                    });
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
                     var emailbody = EmailTemplates.SuccessfullyUploadedData(pendingUpload.User.Person.Name, pendingUpload.Name);
                     var message = new Message(emailAddresses, "Data Portal - Excel sheet Successfully Processed", emailbody);
-                    _emailSender.SendEmail(message);
+                    _emailSender.SendEmailAzure(message);
                 }
             }
         }

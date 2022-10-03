@@ -1,3 +1,5 @@
+using Azure.Communication.Email;
+using Azure.Communication.Email.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -14,80 +16,33 @@ public class EmailSender : IEmailSender
     }
     public void SendEmail(Message message)
     {
-        var emailMessage = CreateEmailMessage(message);
-        Send(emailMessage);
+        SendEmailAzure(message);
     }
 
     public async Task SendEmailAsync(Message message)
     {
-        var emailMessage = CreateEmailMessage(message);
-        await SendAsync(emailMessage);
+        await SendEmailAzure(message);
     }
 
-    private MimeMessage CreateEmailMessage(Message message)
+    public async Task<SendEmailResult> SendEmailAzure(Message message)
     {
-        var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From_Name, _emailConfiguration.From));
-        emailMessage.To.AddRange(message.To);
-        emailMessage.Subject = message.Subject;
-
-        var bodyBuilder = new BodyBuilder
-            { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
-
-        emailMessage.Body = bodyBuilder.ToMessageBody();
-        return emailMessage;
-    }
-    
-    private void Send(MimeMessage emailMessage)
-    {
-        using (var client = new SmtpClient())
+        try
         {
-            try
-            {
-                client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, SecureSocketOptions.StartTls);
-                client.AuthenticationMechanisms.Remove("XOAUTH2");
-                client.Authenticate(_emailConfiguration.UserName, _emailConfiguration.Password);
-
-                client.Send(emailMessage);
-            }
-            catch (Exception e)
-            {
-                // Inform people email was not sent
-                throw e;
-            }
-            finally
-            {
-                client.Disconnect(true);
-                client.Dispose();
-            }
+            EmailClient _emailClient = new EmailClient(_emailConfiguration.COMMUNICATION_SERVICES_CONNECTION_STRING);
+            EmailContent emailContent = new EmailContent(message.Subject);
+            emailContent.Html = message.Content;
+            List<EmailAddress> emailAddresses = new List<EmailAddress>();
+            emailAddresses.AddRange(message.To);
+            
+            EmailRecipients emailRecipients = new EmailRecipients(emailAddresses);
+            EmailMessage emailMessage = new EmailMessage("DoNotReply@932b7c05-cc32-47bb-9ec7-0a3b70a7df9e.azurecomm.net", emailContent, emailRecipients);
+            SendEmailResult emailResult = await _emailClient.SendAsync(emailMessage,CancellationToken.None);
+            return emailResult;
         }
-    }
-    
-    private async Task SendAsync(MimeMessage emailMessage)
-    {
-        using (var client = new SmtpClient())
+        catch (Exception e)
         {
-            try
-            {
-                client.ServerCertificateValidationCallback = (s, c, ch, e) => true;
-
-                await client.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.Port,
-                    MailKit.Security.SecureSocketOptions.Auto);
-                client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(_emailConfiguration.UserName, _emailConfiguration.Password);
-
-                await client.SendAsync(emailMessage);
-            }
-            catch (Exception e)
-            {
-                // Inform people email was not sent
-                throw e;
-            }
-            finally
-            {
-                client.Disconnect(true);
-                client.Dispose();
-            }
+            Console.WriteLine(e);
+            throw;
         }
     }
 }
