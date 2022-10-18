@@ -116,7 +116,18 @@ namespace GHPRS.Core.Services
                     else
                     {
                         if (data.Rows.Count > 0 && worksheet.Name != "TB")
+                        {
                             _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
+                        } 
+                        else if (data.Rows.Count > 0 && worksheet.Name != "TB")
+                        {
+                            // send email to user that template has been processed successfully
+                            var emailAddresses = new List<EmailAddress>();
+                            emailAddresses.Add(new EmailAddress(upload.User.Email, upload.User.Person.Name));
+                            var emailbody = EmailTemplates.UploadedTemplateHasNoData(upload.User.Person.Name, worksheet.Name);
+                            var message = new Message(emailAddresses, $"Data Portal - {worksheet.Name} Worksheet Empty", emailbody);
+                            _emailSender.SendEmailAzure(message);
+                        }
                     }
                 }
                 catch (Exception e)
@@ -226,6 +237,7 @@ namespace GHPRS.Core.Services
 
                 initializedUpload.UploadStatus = "Pending";
                 var result = _uploadRepository.Insert(initializedUpload);
+                
                 return result;
             }
             catch (Exception e)
