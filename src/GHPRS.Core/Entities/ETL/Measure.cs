@@ -16,19 +16,19 @@ public class Measure
     public string indicator { get; set; }
     public string num_or_den { get; set; }
     public string period_id { get; set; }
-    public int mechanism_id { get; set; }
-    public int age_dis_id { get; set; }
-    public int sex_dis_id { get; set; }
-    public int hiv_status_id { get; set; }
-    public int tb_status_id { get; set; }
-    public int cx_status_id { get; set; }
-    public int hiv_tx_status_id { get; set; }
+    public int? mechanism_id { get; set; }
+    public int? age_dis_id { get; set; }
+    public int? sex_dis_id { get; set; }
+    public int? hiv_status_id { get; set; }
+    public int? tb_status_id { get; set; }
+    public int? cx_status_id { get; set; }
+    public int? hiv_tx_status_id { get; set; }
     public string disaggregate { get; set; }
     public string other_dis { get; set; }
     public string other_dis_sub { get; set; }
-    public int modality_id { get; set; }
-    public int data_source_id { get; set; }
-    public double value { get; set; }
+    public int? modality_id { get; set; }
+    public int? data_source_id { get; set; }
+    public double? value { get; set; }
     public string is_target { get; set; }
     public string plhiv_estimate { get; set; }
 }

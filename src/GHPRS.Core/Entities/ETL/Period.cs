@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GHPRS.Core.Entities.ETL;
 
-[Table("Modalities", Schema = "data")]
+[Table("Periods", Schema = "data")]
 public class Period
 {
     // id, modality
