@@ -30,6 +30,7 @@ namespace GHPRS.Core.Services
         private readonly IWorkSheetRepository _worksheetRepository;
         private readonly IFileUploadRepository _fileUploadRepository;
         private readonly IMerDataRepository _merDataRepository;
+        private readonly IPLHIVDataRepository _plhivDataRepository;
         private readonly IFacilityDataRepository _facilityDataRepository;
         private readonly ICommunityDataRepository _communityDataRepository;
         private readonly IEmailSender _emailSender;
@@ -41,6 +42,7 @@ namespace GHPRS.Core.Services
             IExcelService excelService,
             IFileUploadRepository fileUploadRepository,
             IMerDataRepository merDataRepository,
+            IPLHIVDataRepository plhivDataRepository,
             IFacilityDataRepository facilityDataRepository,
             ICommunityDataRepository communityDataRepository,
             IEmailSender emailSender)
@@ -52,6 +54,7 @@ namespace GHPRS.Core.Services
             _logger = logger;
             _fileUploadRepository = fileUploadRepository;
             _merDataRepository = merDataRepository;
+            _plhivDataRepository = plhivDataRepository;
             _facilityDataRepository = facilityDataRepository;
             _communityDataRepository = communityDataRepository;
             _emailSender = emailSender;
@@ -237,7 +240,12 @@ namespace GHPRS.Core.Services
 
                 initializedUpload.UploadStatus = "Pending";
                 var result = _uploadRepository.Insert(initializedUpload);
-                
+                // send email to user that template has been processed successfully
+                // var emailAddresses = new List<EmailAddress>();
+                // emailAddresses.Add(new EmailAddress(upload.User.Email, upload.User.Person.Name));
+                // var emailbody = EmailTemplates.RequiredColumnsNotFound(upload.User.Person.Name, upload.Name, stringVals);
+                // var message = new Message(emailAddresses, "Data Portal - Missing Column Names", emailbody);
+                // _emailSender.SendEmailAzure(message);
                 return result;
             }
             catch (Exception e)
@@ -273,6 +281,34 @@ namespace GHPRS.Core.Services
             catch (Exception e)
             {
 
+                throw e;
+            }
+        }
+
+        public async Task<FileUploads> UploadPLHIV(MERUploadModel merUploadModel, User user)
+        {
+            try
+            {
+                var merData = new FileUploads
+                {
+                    Name = merUploadModel.File.FileName,
+                    ContentType = merUploadModel.File.ContentType,
+                    User = user,
+                    UploadDate = DateTime.Now,
+                    Status = "Processing",
+                    UploadType = "PLHIV Data"
+                };
+                await using (var target = new MemoryStream())
+                {
+                    await merUploadModel.File.CopyToAsync(target);
+                    merData.File = target.ToArray();
+                }
+                var result = _fileUploadRepository.Insert(merData);
+                BackgroundJob.Enqueue<IUploadService>(x => x.InsertPLHIVData());
+                return result;
+            }
+            catch (Exception e)
+            {
                 throw e;
             }
         }
@@ -427,13 +463,87 @@ namespace GHPRS.Core.Services
                     // send email to user that template has been processed successfully
                     var emailAddresses = new List<EmailAddress>();
                     emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
-                    var emailbody = EmailTemplates.SuccessfullyUploadedMerData(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var emailbody = EmailTemplates.SuccessfullyUploadedMerData(pendingUpload.User.Person.Name, pendingUpload.Name, "MER");
                     var message = new Message(emailAddresses, "Data Portal - MER Data Processed", emailbody);
                     await _emailSender.SendEmailAzure(message);
                 }
             }
         }
-        
+
+        public async void InsertPLHIVData()
+        {
+            var pendingUpload = _fileUploadRepository.GetPendingUploads("PLHIV Data");
+            bool errorOccured = false;
+            try
+            {
+                DataTable datatable = new DataTable();
+                char[] delimiter = new char[] { '\t' };
+                List<PLHIVData> plhivData = new List<PLHIVData>();
+                if (pendingUpload != null)
+                {
+                    using (var reader = new StreamReader(new MemoryStream(pendingUpload.File)))
+                    {
+                        string[] columnheaders = reader.ReadLine().Split(delimiter);
+                        foreach (string columnheader in columnheaders)
+                        {
+                            datatable.Columns.Add(columnheader); // I've added the column headers here.
+                        }
+
+                        while (reader.Peek() >= 0)
+                        {
+                            DataRow datarow = datatable.NewRow();
+                            datarow.ItemArray = reader.ReadLine().Split(delimiter);
+                            datatable.Rows.Add(datarow);
+                        }
+                    }
+
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+
+                    string json = JsonConvert.SerializeObject(datatable, Formatting.Indented);
+                    var deserializedData = JsonConvert.DeserializeObject<PLHIVData[]>(json);
+                    plhivData.AddRange(deserializedData.ToList());
+                    plhivData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                    if (plhivData.Any())
+                    {
+                        _plhivDataRepository.Insert(plhivData);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                errorOccured = true;
+                _logger.LogError(e.Message, e);
+                if (pendingUpload != null)
+                {
+                    pendingUpload.Status = $"Error - {e.Message}";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                            
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
+                    var emailbody = EmailTemplates.ErrorOccurredProcessingTemplate(pendingUpload.User.Person.Name, pendingUpload.Name);
+                    var message = new Message(emailAddresses, "Data Portal - Error PLHIV Data", emailbody);
+                    await _emailSender.SendEmailAzure(message);
+                }
+            }
+            finally
+            {
+                if (pendingUpload != null && !errorOccured)
+                {
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+                            
+                    // send email to user that template has been processed successfully
+                    var emailAddresses = new List<EmailAddress>();
+                    emailAddresses.Add(new EmailAddress(email: pendingUpload.User.Email, displayName: pendingUpload.User.Person.Name));
+                    var emailbody = EmailTemplates.SuccessfullyUploadedMerData(pendingUpload.User.Person.Name, pendingUpload.Name, "PLHIV");
+                    var message = new Message(emailAddresses, "Data Portal - PLHIV Data Processed", emailbody);
+                    await _emailSender.SendEmailAzure(message);
+                }
+            }
+        }
+
         public void InsertFacilityData()
         {
             var pendingUpload = _fileUploadRepository.GetPendingUploads("Facility Data");

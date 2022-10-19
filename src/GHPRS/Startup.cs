@@ -131,6 +131,7 @@ namespace GHPRS
             services.AddScoped<IColumnRepository, ColumnRepository>();
             services.AddScoped<IMetabaseService, MetabaseService>();
             services.AddScoped<IDataUnitOfWork, DataUnitOfWork>();
+            services.AddScoped<IPLHIVDataRepository, PLHIVDataRepository>();
             services.AddScoped(typeof(IEtlDataRepository<>), typeof(EtlDataRepository<>));
 
             services.AddControllers().AddNewtonsoftJson(options =>

@@ -3143,7 +3143,7 @@ width: 100%;
         return emailbody;
     }
     
-    public static string SuccessfullyUploadedMerData(string name, string fileName)
+    public static string SuccessfullyUploadedMerData(string name, string fileName, string mer_plhiv)
     {
       var emailbody = $@"
                             <head>
@@ -3519,7 +3519,7 @@ width: 100%;
                                         color: #666666;'>
                                       Dear { name },
                                       <br />
-                                      The MER file - {fileName} has been successfully processed.
+                                      The {mer_plhiv} file - {fileName} has been successfully processed.
                                     </p>
                                     <p style='
                                         margin: 0;

@@ -54,6 +54,7 @@ namespace GHPRS.Persistence
         public DbSet<FacilityData> FacilityDatas { get; set; }
         public DbSet<CommunityData> CommunityDatas { get; set; }
         public DbSet<TBData> TbDatas { get; set; }
+        public DbSet<PLHIVData> PlhivDatas { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

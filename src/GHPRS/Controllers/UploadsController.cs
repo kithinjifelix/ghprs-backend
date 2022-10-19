@@ -130,7 +130,7 @@ namespace GHPRS.Controllers
                         }
                         else if (merUploadModel.UploadTypeId == 2)
                         {
-                            await _uploadService.UploadFacilityData(merUploadModel, user);
+                            await _uploadService.UploadPLHIV(merUploadModel, user);
                         }
                         
                         return StatusCode(StatusCodes.Status200OK, "Successfully Uploaded");

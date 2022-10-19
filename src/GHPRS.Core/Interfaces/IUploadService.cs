@@ -9,9 +9,11 @@ namespace GHPRS.Core.Interfaces
     {
         Task<Upload> Upload(UploadModel upload, User user, int organizationId);
         Task<FileUploads> UploadMER(MERUploadModel merUploadModel, User user);
+        Task<FileUploads> UploadPLHIV(MERUploadModel merUploadModel, User user);
         Task<FileUploads> UploadFacilityData(MERUploadModel merUploadModel, User user);
         void InsertUploadData(int uploadId);
         void InsertMerData();
+        void InsertPLHIVData();
         void InsertFacilityData();
         List<object> ReadUploadData(int uploadId);
         void OverWriteApproved(int uploadId);
