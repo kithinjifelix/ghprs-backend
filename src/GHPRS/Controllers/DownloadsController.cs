@@ -78,48 +78,96 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public IActionResult GetAgeDisaggregates()
         {
-            var ageDisaggregates = _etlAgeDisaggregateRepository.GetAll().ToList();
-            return Ok(ageDisaggregates);
+            try
+            {
+                var ageDisaggregates = _etlAgeDisaggregateRepository.GetAll().ToList();
+                return Ok(ageDisaggregates);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetCouncils")]
         [AllowAnonymous]
         public IActionResult GetCouncils()
         {
-            var councils = _etlCouncilsRepository.GetAll().ToList();
-            return Ok(councils);
+            try
+            {
+                var councils = _etlCouncilsRepository.GetAll().ToList();
+                return Ok(councils);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetCxStatus")]
         [AllowAnonymous]
         public IActionResult GetCxStatus()
         {
-            var cxStatus = _etlCxStatusRepository.GetAll().ToList();
-            return Ok(cxStatus);
+            try
+            {
+                var cxStatus = _etlCxStatusRepository.GetAll().ToList();
+                return Ok(cxStatus);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetDataSource")]
         [AllowAnonymous]
         public IActionResult GetDataSource()
         {
-            var dataSources = _etlDataSourceRepository.GetAll().ToList();
-            return Ok(dataSources);
+            try
+            {
+                var dataSources = _etlDataSourceRepository.GetAll().ToList();
+                return Ok(dataSources);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetHivStatus")]
         [AllowAnonymous]
         public IActionResult GetHivStatus()
         {
-            var hivStatus = _etlHivStatusRepository.GetAll().ToList();
-            return Ok(hivStatus);
+            try
+            {
+                var hivStatus = _etlHivStatusRepository.GetAll().ToList();
+                return Ok(hivStatus);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetHivTreatmentStatus")]
         [AllowAnonymous]
         public IActionResult GetHivTreatmentStatus()
         {
-            var hivTreatmentStatus = _etlHivTreatmentStatusRepository.GetAll().ToList();
-            return Ok(hivTreatmentStatus);
+            try
+            {
+                var hivTreatmentStatus = _etlHivTreatmentStatusRepository.GetAll().ToList();
+                return Ok(hivTreatmentStatus);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetMeasures")]
@@ -153,72 +201,144 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public IActionResult GetMechanisms()
         {
-            var mechanisms = _etlMechanismRepository.GetAll().ToList();
-            return Ok(mechanisms);
+            try
+            {
+                var mechanisms = _etlMechanismRepository.GetAll().ToList();
+                return Ok(mechanisms);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetModalities")]
         [AllowAnonymous]
         public IActionResult GetModalities()
         {
-            var modalities = _etlModalityRepository.GetAll().ToList();
-            return Ok(modalities);
+            try
+            {
+                var modalities = _etlModalityRepository.GetAll().ToList();
+                return Ok(modalities);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetPeriods")]
         [AllowAnonymous]
         public IActionResult GetPeriods()
         {
-            var periods = _etlPeriodRepository.GetAll().ToList();
-            return Ok(periods);
+            try
+            {
+                var periods = _etlPeriodRepository.GetAll().ToList();
+                return Ok(periods);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
-        [HttpGet("GetPlhivEstimates")]
-        [AllowAnonymous]
-        public IActionResult GetPlhivEstimates()
-        {
-            var plhivEstimates = _etlPlhivEstimateRepository.GetAll().ToList();
-            return Ok(plhivEstimates);
-        }
+        // [HttpGet("GetPlhivEstimates")]
+        // [AllowAnonymous]
+        // public IActionResult GetPlhivEstimates()
+        // {
+        //     try
+        //     {
+        //         var plhivEstimates = _etlPlhivEstimateRepository.GetAll().ToList();
+        //         return Ok(plhivEstimates);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _logger.LogError(e.Message, e);
+        //         return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        //     }
+        // }
         
         [HttpGet("GetRegions")]
         [AllowAnonymous]
         public IActionResult GetRegions()
         {
-            var regions = _etlRegionRepository.GetAll().ToList();
-            return Ok(regions);
+            try
+            {
+                var regions = _etlRegionRepository.GetAll().ToList();
+                return Ok(regions);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetSexDisaggregates")]
         [AllowAnonymous]
         public IActionResult GetSexDisaggregates()
         {
-            var sexDisaggregates = _etlSexDisaggregatesRepository.GetAll().ToList();
-            return Ok(sexDisaggregates);
+            try
+            {
+                var sexDisaggregates = _etlSexDisaggregatesRepository.GetAll().ToList();
+                return Ok(sexDisaggregates);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetSites")]
         [AllowAnonymous]
         public IActionResult GetSites()
         {
-            var sites = _etlSiteRepository.GetAll().ToList();
-            return Ok(sites);
+            try
+            {
+                var sites = _etlSiteRepository.GetAll().ToList();
+                return Ok(sites);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetTbStatus")]
         [AllowAnonymous]
         public IActionResult GetTbStatus()
         {
-            var tbStatus = _etlTbStatusRepository.GetAll().ToList();
-            return Ok(tbStatus);
+            try
+            {
+                var tbStatus = _etlTbStatusRepository.GetAll().ToList();
+                return Ok(tbStatus);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetWards")]
         [AllowAnonymous]
         public IActionResult GetWards()
         {
-            var wards = _etlWardRepository.GetAll().ToList();
-            return Ok(wards);
+            try
+            {
+                var wards = _etlWardRepository.GetAll().ToList();
+                return Ok(wards);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
     }
 }
