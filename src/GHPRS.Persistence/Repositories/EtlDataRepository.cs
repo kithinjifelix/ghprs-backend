@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using Dapper;
 using GHPRS.Core.Interfaces;
+using GHPRS.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -43,6 +44,13 @@ public class EtlDataRepository<T> : IEtlDataRepository<T> where T : class
     public IEnumerable<T> GetAll()
     {
         return _entities.AsEnumerable();
+    }
+
+    public PagedList<T> GetAll(ETLParameters ownerParameters)
+    {
+        return PagedList<T>.ToPagedList(_entities,
+            ownerParameters.PageNumber,
+            ownerParameters.PageSize);
     }
 
     public virtual IEnumerable<TC> ExecQuery<TC>(string selectStatement)

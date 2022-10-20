@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities.ETL;
 using GHPRS.Core.Interfaces;
+using GHPRS.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace GHPRS.Controllers
 {
@@ -30,6 +33,8 @@ namespace GHPRS.Controllers
         private readonly IEtlDataRepository<Site> _etlSiteRepository;
         private readonly IEtlDataRepository<TbStatus> _etlTbStatusRepository;
         private readonly IEtlDataRepository<Ward> _etlWardRepository;
+        
+        private readonly ILogger<DownloadsController> _logger;
 
         public DownloadsController(
             IEtlDataRepository<AgeDisaggregate> etlAgeDisaggregateRepository,
@@ -47,7 +52,8 @@ namespace GHPRS.Controllers
             IEtlDataRepository<SexDisaggregates> etlSexDisaggregatesRepository,
             IEtlDataRepository<Site> etlSiteRepository,
             IEtlDataRepository<TbStatus> etlTbStatusRepository,
-            IEtlDataRepository<Ward> etlWardRepository)
+            IEtlDataRepository<Ward> etlWardRepository,
+            ILogger<DownloadsController> logger)
         {
             _etlAgeDisaggregateRepository = etlAgeDisaggregateRepository;
             _etlCouncilsRepository = etlCouncilsRepository;
@@ -65,6 +71,7 @@ namespace GHPRS.Controllers
             _etlSiteRepository = etlSiteRepository;
             _etlTbStatusRepository = etlTbStatusRepository;
             _etlWardRepository = etlWardRepository;
+            _logger = logger;
         }
 
         [HttpGet("GetAgeDisaggregates")]
@@ -117,10 +124,29 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetMeasures")]
         [AllowAnonymous]
-        public IActionResult GetMeasures()
+        public IActionResult GetMeasures([FromQuery] ETLParameters ownerParameters)
         {
-            var measures = _etlMeasureRepository.GetAll().ToList();
-            return Ok(measures);
+            try
+            {
+                var measures = _etlMeasureRepository.GetAll(ownerParameters);
+                var metadata = new
+                {
+                    measures.TotalCount,
+                    measures.PageSize,
+                    measures.CurrentPage,
+                    measures.TotalPages,
+                    measures.HasNext,
+                    measures.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                // _logger.LogInfo($"Returned {accounts.TotalCount} owners from database.");
+                return Ok(measures);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
         
         [HttpGet("GetMechanisms")]
