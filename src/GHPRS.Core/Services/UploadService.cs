@@ -12,6 +12,8 @@ using GHPRS.Core.Utilities;
 using GHPRS.Core.Validations;
 using GHPRS.EmailService;
 using Hangfire;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -35,6 +37,9 @@ namespace GHPRS.Core.Services
         private readonly ICommunityDataRepository _communityDataRepository;
         private readonly IEmailSender _emailSender;
 
+        private readonly IOrganizationRepository _organizationRepository;
+        private readonly UserManager<User> _userManager;
+
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
             ILogger<UploadService> logger, 
@@ -45,7 +50,9 @@ namespace GHPRS.Core.Services
             IPLHIVDataRepository plhivDataRepository,
             IFacilityDataRepository facilityDataRepository,
             ICommunityDataRepository communityDataRepository,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOrganizationRepository organizationRepository,
+            UserManager<User> userManager)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -58,6 +65,8 @@ namespace GHPRS.Core.Services
             _facilityDataRepository = facilityDataRepository;
             _communityDataRepository = communityDataRepository;
             _emailSender = emailSender;
+            _organizationRepository = organizationRepository;
+            _userManager = userManager;
         }
 
         public void InsertUploadData(int uploadId)
@@ -238,14 +247,23 @@ namespace GHPRS.Core.Services
                     initializedUpload.File = target.ToArray();
                 }
 
+                var organization = _organizationRepository.GetById(organizationId);
+                var usaidUsers = await _userManager.Users.Where(x => x.OrganizationId == 1)
+                    .Include(y => y.Person)
+                    .ToListAsync();
+                var period = upload.StartDate.ToString("dd/MMMM/yyyy") + " - " +
+                             upload.EndDate.ToString("dd/MMMM/yyyy");
                 initializedUpload.UploadStatus = "Pending";
                 var result = _uploadRepository.Insert(initializedUpload);
                 // send email to user that template has been processed successfully
                 // var emailAddresses = new List<EmailAddress>();
-                // emailAddresses.Add(new EmailAddress(upload.User.Email, upload.User.Person.Name));
-                // var emailbody = EmailTemplates.RequiredColumnsNotFound(upload.User.Person.Name, upload.Name, stringVals);
-                // var message = new Message(emailAddresses, "Data Portal - Missing Column Names", emailbody);
-                // _emailSender.SendEmailAzure(message);
+                // foreach (var usaidUser in usaidUsers)    
+                // {
+                //     emailAddresses.Add(new EmailAddress(usaidUser.Email, usaidUser.Person.Name));
+                // }
+                // var emailbody = EmailTemplates.DataUploadedByReview(organization.Name, template.Name, period);
+                // var message = new Message(emailAddresses, "Data Portal - Review Uploaded Data", emailbody);
+                // await _emailSender.SendEmailAzure(message);
                 return result;
             }
             catch (Exception e)

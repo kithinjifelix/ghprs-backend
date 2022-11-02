@@ -4,10 +4,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Model;
 using GHPRS.Core.Models;
+using GHPRS.EmailService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -27,12 +29,14 @@ namespace GHPRS.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
         private readonly IMetabaseService _metabaseService;
+        private readonly IEmailSender _emailSender;
 
         public AuthenticationController(
             UserManager<User> userManager, 
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration, 
-            IOrganizationRepository organizationRepository, 
+            IOrganizationRepository organizationRepository,
+            IEmailSender emailSender,
             IMetabaseService metabaseService)
         {
             _userManager = userManager;
@@ -40,6 +44,7 @@ namespace GHPRS.Controllers
             _configuration = configuration;
             _organizationRepository = organizationRepository;
             _metabaseService = metabaseService;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
@@ -157,6 +162,12 @@ namespace GHPRS.Controllers
                     if (await _roleManager.RoleExistsAsync(UserRoles.User))
                         await _userManager.AddToRoleAsync(user, UserRoles.User);
                 }
+
+                var emailAddresses = new List<EmailAddress>();
+                emailAddresses.Add(new EmailAddress(model.Email, person.Name));
+                var emailbody = EmailTemplates.AccountCreated(person.Name, model.Email, model.Password);
+                var message = new Message(emailAddresses, "Data Portal - Account Created", emailbody);
+                await _emailSender.SendEmailAzure(message);
 
                 return Ok(new Response {Status = "Success", Message = "User created successfully!"});
             }
