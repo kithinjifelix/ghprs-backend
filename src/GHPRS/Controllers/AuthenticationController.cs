@@ -185,8 +185,18 @@ namespace GHPRS.Controllers
             {
                 var user = await _userManager.FindByIdAsync(id);
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                await _userManager.ResetPasswordAsync(user, token, resetPassword.Password);
-                return Ok(new Response {Status = "Success", Message = "Successfully reset user password!"});
+                var identityResult = await _userManager.ResetPasswordAsync(user, token, resetPassword.Password);
+                if (identityResult.Succeeded)
+                {
+                    return Ok(new Response {Status = "Success", Message = "Successfully reset user password!"});
+                }
+
+                var message = string.Empty;
+                foreach (var error in identityResult.Errors)
+                {
+                    message += error.Description + " ";
+                }
+                return BadRequest(new Response {Status = "Error", Message = message });
             }
             catch (Exception e)
             {
