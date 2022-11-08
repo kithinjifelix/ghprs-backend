@@ -7,6 +7,5 @@ public interface IEtlDataRepository<T> where T : class
 {
     IEnumerable<T> GetAll();
     PagedList<T> GetAll(ETLParameters ownerParameters);
-
     IEnumerable<TC> ExecQuery<TC>(string selectStatement);
 }

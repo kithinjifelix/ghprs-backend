@@ -92,6 +92,8 @@ namespace GHPRS.Controllers
                     {
                         var user = await GetUser();
                         result = await _uploadService.Upload(template, user, organizationId);
+                        Review review = new Review() { Status = 1 };
+                        _uploadService.Review(result, review);
                     }
                     else
                     {

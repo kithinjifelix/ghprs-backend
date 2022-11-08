@@ -34,26 +34,26 @@ namespace GHPRS.Core.Services
                 if (worksheet != null)
                 {
                     var excelAsTable = new DataTable();
-                    if (worksheet.Name == "TB")
-                    {
-                        excelAsTable.Columns.Add("Mechanism ID");
-                        excelAsTable.Columns.Add("Partner");
-                        excelAsTable.Columns.Add("Reporting Month");
-                        excelAsTable.Columns.Add("Year");
-                        excelAsTable.Columns.Add("Region");
-                        excelAsTable.Columns.Add("District");
-                        excelAsTable.Columns.Add("Health Facility");
-                        excelAsTable.Columns.Add("Facility ID");
-                        excelAsTable.Columns.Add("TB Detection Male 0 - 14");
-                        excelAsTable.Columns.Add("TB Detection Male 15+");
-                        excelAsTable.Columns.Add("TB Detection Female 0 - 14");
-                        excelAsTable.Columns.Add("TB Detection Female 15+");
-                        excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 0 - 14");
-                        excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 15+");
-
-                        var row = excelAsTable.Rows.Add();
-                        return excelAsTable;
-                    }
+                    // if (worksheet.Name == "TB")
+                    // {
+                    //     excelAsTable.Columns.Add("Mechanism ID");
+                    //     excelAsTable.Columns.Add("Partner");
+                    //     excelAsTable.Columns.Add("Reporting Month");
+                    //     excelAsTable.Columns.Add("Year");
+                    //     excelAsTable.Columns.Add("Region");
+                    //     excelAsTable.Columns.Add("District");
+                    //     excelAsTable.Columns.Add("Health Facility");
+                    //     excelAsTable.Columns.Add("Facility ID");
+                    //     excelAsTable.Columns.Add("TB Detection Male 0 - 14");
+                    //     excelAsTable.Columns.Add("TB Detection Male 15+");
+                    //     excelAsTable.Columns.Add("TB Detection Female 0 - 14");
+                    //     excelAsTable.Columns.Add("TB Detection Female 15+");
+                    //     excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 0 - 14");
+                    //     excelAsTable.Columns.Add("Bacteriological Diagnosis Coverage (Pulmonary TB) 15+");
+                    //
+                    //     var row = excelAsTable.Rows.Add();
+                    //     return excelAsTable;
+                    // }
                     foreach (var firstRowCell in worksheet.Cells[startRow, startColumn, startRow,
                                  worksheet.Dimension.End.Column])
                         //Get column details

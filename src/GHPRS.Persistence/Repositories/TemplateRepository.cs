@@ -54,6 +54,35 @@ namespace GHPRS.Persistence.Repositories
             }
         }
 
+        public void UpdateStaticTable(string tableName, List<string> columns)
+        {
+            try
+            {
+                var columnsValues = string.Empty;
+                foreach (var column in columns) columnsValues += $" ADD COLUMN \"{column}\" text,";
+                columnsValues = columnsValues.TrimEnd(',');
+                var createScript =
+                    $"ALTER TABLE public.\"{tableName}\" {columnsValues};";
+                
+                var connectionString = _context.Database.GetConnectionString();
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = connection;
+                        cmd.CommandText = createScript;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+        }
+
         public void UpdateStatus(int id, TemplateStatus status)
         {
             var template = GetById(id);

@@ -72,6 +72,7 @@ namespace GHPRS.Core.Services
         public void InsertUploadData(int uploadId)
         {
             int errors = 0;
+            int affectedRecords = 0;
             var upload = _uploadRepository.GetFullUploadById(uploadId);
             var worksheets = _worksheetRepository.GetFullWorkSheetsByTemplateId(upload.Template.Id);
             foreach (var worksheet in worksheets)
@@ -127,11 +128,12 @@ namespace GHPRS.Core.Services
                     }
                     else
                     {
-                        if (data.Rows.Count > 0 && worksheet.Name != "TB")
+                        if (data.Rows.Count > 0)
                         {
+                            affectedRecords = data.Rows.Count;
                             _uploadRepository.InsertToTable(worksheet, data, upload.UploadBatch, upload.UploadBatchGuid);
                         } 
-                        else if (data.Rows.Count > 0 && worksheet.Name != "TB")
+                        else if (data.Rows.Count == 0)
                         {
                             // send email to user that template has been processed successfully
                             var emailAddresses = new List<EmailAddress>();
@@ -156,7 +158,7 @@ namespace GHPRS.Core.Services
                 }
             }
 
-            if (errors == 0)
+            if (errors == 0 && affectedRecords > 0)
             {
                 // set the upload has been processed to prevent re-processing
                 _uploadRepository.UpdateUploadStatus(uploadId, "Successful");

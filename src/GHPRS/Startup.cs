@@ -66,7 +66,7 @@ namespace GHPRS
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddDbContext<ETLContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("ETLConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()

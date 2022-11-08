@@ -3,6 +3,7 @@ using System;
 using GHPRS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
-    partial class GhprsContextModelSnapshot : ModelSnapshot
+    [Migration("20221107073656_tb_data_update_columns")]
+    partial class tb_data_update_columns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,10 +215,6 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("L_WRNGD");
 
-                    b.Property<string>("MECHANISM_ID")
-                        .HasColumnType("text")
-                        .HasColumnName("MECHANISM ID");
-
                     b.Property<string>("Month")
                         .HasColumnType("text")
                         .HasColumnName("Month");
@@ -287,131 +285,127 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("PrEP_CT_AGYW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_AGYW");
+                        .HasColumnName("PrEP_CT-AGYW");
 
                     b.Property<string>("PrEP_CT_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_FSW");
+                        .HasColumnName("PrEP_CT-FSW");
 
                     b.Property<string>("PrEP_CT_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_MSM");
+                        .HasColumnName("PrEP_CT-MSM");
 
                     b.Property<string>("PrEP_CT_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_PWID");
+                        .HasColumnName("PrEP_CT-PWID");
 
                     b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP_CT-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_CT_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_Serodiscordant Couple");
+                        .HasColumnName("PrEP_CT-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_CT_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_TG");
+                        .HasColumnName("PrEP_CT-TG");
 
                     b.Property<string>("PrEP_Eligible_AGY_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_AGY(15-19)");
+                        .HasColumnName("PrEP Eligible-AGY(15-19)");
 
                     b.Property<string>("PrEP_Eligible_AGY_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_AGY(20-24)");
+                        .HasColumnName("PrEP Eligible-AGY(20-24)");
 
                     b.Property<string>("PrEP_Eligible_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_FSW");
+                        .HasColumnName("PrEP Eligible_FSW");
 
                     b.Property<string>("PrEP_Eligible_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_MSM");
+                        .HasColumnName("PrEP Eligible-MSM");
 
                     b.Property<string>("PrEP_Eligible_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_PWID");
+                        .HasColumnName("PrEP Eligible-PWID");
 
                     b.Property<string>("PrEP_Eligible_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP Eligible-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_Eligible_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_Serodiscordant Couple");
+                        .HasColumnName("PrEP Eligible-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_Eligible_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_TG");
+                        .HasColumnName("PrEP Eligible-TG");
 
                     b.Property<string>("PrEP_NEW_AGYW_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_AGYW(15-19)");
+                        .HasColumnName("PrEP_NEW-AGYW(15-19)");
 
                     b.Property<string>("PrEP_NEW_AGYW_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_AGYW(20-24)");
+                        .HasColumnName("PrEP_NEW-AGYW(20-24)");
 
                     b.Property<string>("PrEP_NEW_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_FSW");
+                        .HasColumnName("PrEP_NEW-FSW");
 
                     b.Property<string>("PrEP_NEW_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_MSM");
+                        .HasColumnName("PrEP_NEW-MSM");
 
                     b.Property<string>("PrEP_NEW_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_PWID");
+                        .HasColumnName("PrEP_NEW-PWID");
 
                     b.Property<string>("PrEP_NEW_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP_NEW-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_NEW_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_Serodiscordant Couple");
+                        .HasColumnName("PrEP_NEW-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_NEW_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_TG");
+                        .HasColumnName("PrEP_NEW-TG");
 
                     b.Property<string>("PrEP_Screen_AGY_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_AGY(15-19)");
+                        .HasColumnName("PrEP Screen-AGY(15-19)");
 
                     b.Property<string>("PrEP_Screen_AGY_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_AGY(20-24)");
+                        .HasColumnName("PrEP Screen-AGY(20-24)");
 
                     b.Property<string>("PrEP_Screen_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_FSW");
+                        .HasColumnName("PrEP Screen_FSW");
 
                     b.Property<string>("PrEP_Screen_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_MSM");
+                        .HasColumnName("PrEP Screen-MSM");
 
                     b.Property<string>("PrEP_Screen_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_PWID");
+                        .HasColumnName("PrEP Screen-PWID");
 
                     b.Property<string>("PrEP_Screen_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP Screen-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_Screen_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_Serodiscordant Couple");
+                        .HasColumnName("PrEP Screen-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_Screen_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_TG");
-
-                    b.Property<string>("Priority_Tier")
-                        .HasColumnType("text")
-                        .HasColumnName("Priority_Tier");
+                        .HasColumnName("PrEP Screen-TG");
 
                     b.Property<string>("Region")
                         .HasColumnType("text")
@@ -471,11 +465,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("SiteId")
                         .HasColumnType("text")
-                        .HasColumnName("Site_ID");
-
-                    b.Property<string>("Site_Name")
-                        .HasColumnType("text")
-                        .HasColumnName("Site Name");
+                        .HasColumnName("Site ID/ward ID (from DATIM)");
 
                     b.Property<string>("TX_NEW_CHILD")
                         .HasColumnType("text")
@@ -761,131 +751,131 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("PrEP_CT_AGYW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_AGYW");
+                        .HasColumnName("PrEP_CT-AGYW");
 
                     b.Property<string>("PrEP_CT_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_FSW");
+                        .HasColumnName("PrEP_CT-FSW");
 
                     b.Property<string>("PrEP_CT_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_MSM");
+                        .HasColumnName("PrEP_CT-MSM");
 
                     b.Property<string>("PrEP_CT_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_PWID");
+                        .HasColumnName("PrEP_CT-PWID");
 
                     b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP_CT-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_CT_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_Serodiscordant Couple");
+                        .HasColumnName("PrEP_CT-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_CT_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_CT_TG");
+                        .HasColumnName("PrEP_CT-TG");
 
                     b.Property<string>("PrEP_Eligible_AGY_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_AGY(15-19)");
+                        .HasColumnName("PrEP Eligible-AGY(15-19)");
 
                     b.Property<string>("PrEP_Eligible_AGY_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_AGY(20-24)");
+                        .HasColumnName("PrEP Eligible-AGY(20-24)");
 
                     b.Property<string>("PrEP_Eligible_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_FSW");
+                        .HasColumnName("PrEP Eligible_FSW");
 
                     b.Property<string>("PrEP_Eligible_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_MSM");
+                        .HasColumnName("PrEP Eligible-MSM");
 
                     b.Property<string>("PrEP_Eligible_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_PWID");
+                        .HasColumnName("PrEP Eligible-PWID");
 
                     b.Property<string>("PrEP_Eligible_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP Eligible-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_Eligible_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_Serodiscordant Couple");
+                        .HasColumnName("PrEP Eligible-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_Eligible_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Eligible_TG");
+                        .HasColumnName("PrEP Eligible-TG");
 
                     b.Property<string>("PrEP_NEW_AGYW_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_AGYW(15-19)");
+                        .HasColumnName("PrEP_NEW-AGYW(15-19)");
 
                     b.Property<string>("PrEP_NEW_AGYW_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_AGYW(20-24)");
+                        .HasColumnName("PrEP_NEW-AGYW(20-24)");
 
                     b.Property<string>("PrEP_NEW_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_FSW");
+                        .HasColumnName("PrEP_NEW-FSW");
 
                     b.Property<string>("PrEP_NEW_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_MSM");
+                        .HasColumnName("PrEP_NEW-MSM");
 
                     b.Property<string>("PrEP_NEW_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_PWID");
+                        .HasColumnName("PrEP_NEW-PWID");
 
                     b.Property<string>("PrEP_NEW_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP_NEW-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_NEW_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_Serodiscordant Couple");
+                        .HasColumnName("PrEP_NEW-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_NEW_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_NEW_TG");
+                        .HasColumnName("PrEP_NEW-TG");
 
                     b.Property<string>("PrEP_Screen_AGY_15_19")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_AGY(15-19)");
+                        .HasColumnName("PrEP Screen-AGY(15-19)");
 
                     b.Property<string>("PrEP_Screen_AGY_20_24")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_AGY(20-24)");
+                        .HasColumnName("PrEP Screen-AGY(20-24)");
 
                     b.Property<string>("PrEP_Screen_FSW")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_FSW");
+                        .HasColumnName("PrEP Screen_FSW");
 
                     b.Property<string>("PrEP_Screen_MSM")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_MSM");
+                        .HasColumnName("PrEP Screen-MSM");
 
                     b.Property<string>("PrEP_Screen_PWID")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_PWID");
+                        .HasColumnName("PrEP Screen-PWID");
 
                     b.Property<string>("PrEP_Screen_Pregnant_Breastfeeding_Women")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_Pregnant_Breastfeeding Women");
+                        .HasColumnName("PrEP Screen-Pregnant& Breastfeeding Women");
 
                     b.Property<string>("PrEP_Screen_Serodiscordant_Couple")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_Serodiscordant Couple");
+                        .HasColumnName("PrEP Screen-Serodiscordant Couple");
 
                     b.Property<string>("PrEP_Screen_TG")
                         .HasColumnType("text")
-                        .HasColumnName("PrEP_Screen_TG");
+                        .HasColumnName("PrEP Screen-TG");
 
                     b.Property<string>("Priority_Tier")
                         .HasColumnType("text")
-                        .HasColumnName("Priority_Tier");
+                        .HasColumnName("Priority Tier (1, 2, 3, 4)");
 
                     b.Property<string>("REFILL")
                         .HasColumnType("text")
@@ -937,7 +927,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.Property<string>("Site_id")
                         .HasColumnType("text")
-                        .HasColumnName("Site_ID");
+                        .HasColumnName("Site ID (from DATIM)");
 
                     b.Property<string>("TB_ART")
                         .HasColumnType("text")

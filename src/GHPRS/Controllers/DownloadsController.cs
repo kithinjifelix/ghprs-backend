@@ -27,7 +27,6 @@ namespace GHPRS.Controllers
         private readonly IEtlDataRepository<Mechanism> _etlMechanismRepository;
         private readonly IEtlDataRepository<Modality> _etlModalityRepository;
         private readonly IEtlDataRepository<Period> _etlPeriodRepository;
-        private readonly IEtlDataRepository<PlhivEstimate> _etlPlhivEstimateRepository;
         private readonly IEtlDataRepository<Region> _etlRegionRepository;
         private readonly IEtlDataRepository<SexDisaggregates> _etlSexDisaggregatesRepository;
         private readonly IEtlDataRepository<Site> _etlSiteRepository;
@@ -47,7 +46,6 @@ namespace GHPRS.Controllers
             IEtlDataRepository<Mechanism> etlMechanismRepository,
             IEtlDataRepository<Modality> etlModalityRepository,
             IEtlDataRepository<Period> etlPeriodRepository,
-            IEtlDataRepository<PlhivEstimate> etlPlhivEstimateRepository,
             IEtlDataRepository<Region> etlRegionRepository,
             IEtlDataRepository<SexDisaggregates> etlSexDisaggregatesRepository,
             IEtlDataRepository<Site> etlSiteRepository,
@@ -65,7 +63,6 @@ namespace GHPRS.Controllers
             _etlMechanismRepository = etlMechanismRepository;
             _etlModalityRepository = etlModalityRepository;
             _etlPeriodRepository = etlPeriodRepository;
-            _etlPlhivEstimateRepository = etlPlhivEstimateRepository;
             _etlRegionRepository = etlRegionRepository;
             _etlSexDisaggregatesRepository = etlSexDisaggregatesRepository;
             _etlSiteRepository = etlSiteRepository;
@@ -244,23 +241,7 @@ namespace GHPRS.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
-        
-        // [HttpGet("GetPlhivEstimates")]
-        // [AllowAnonymous]
-        // public IActionResult GetPlhivEstimates()
-        // {
-        //     try
-        //     {
-        //         var plhivEstimates = _etlPlhivEstimateRepository.GetAll().ToList();
-        //         return Ok(plhivEstimates);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         _logger.LogError(e.Message, e);
-        //         return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-        //     }
-        // }
-        
+
         [HttpGet("GetRegions")]
         [AllowAnonymous]
         public IActionResult GetRegions()

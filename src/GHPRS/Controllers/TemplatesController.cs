@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
+using GHPRS.Core.Entities.ETL;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -24,9 +26,13 @@ namespace GHPRS.Controllers
         private readonly ITemplateRepository _templateRepository;
         private readonly ITemplateService _templateService;
         private readonly IWorkSheetRepository _workSheetRepository;
+        private readonly IEtlDataRepository<Measure> _etlMeasureRepository;
 
-        public TemplatesController(ILogger<TemplatesController> logger, ITemplateService templateService,
-            ITemplateRepository templateRepository, IWorkSheetRepository workSheetRepository,
+        public TemplatesController(ILogger<TemplatesController> logger, 
+            ITemplateService templateService,
+            ITemplateRepository templateRepository, 
+            IWorkSheetRepository workSheetRepository,
+            IEtlDataRepository<Measure> etlMeasureRepository,
             IColumnRepository columnRepository)
         {
             _logger = logger;
@@ -34,6 +40,7 @@ namespace GHPRS.Controllers
             _templateRepository = templateRepository;
             _workSheetRepository = workSheetRepository;
             _columnRepository = columnRepository;
+            _etlMeasureRepository = etlMeasureRepository;
         }
 
         [HttpGet("{id}")]
@@ -148,6 +155,69 @@ namespace GHPRS.Controllers
                     {
                         _templateRepository.CreateTemplateTable(workSheet);
                     }
+                    else if (workSheet.Name == "Community Data")
+                    {
+                        var additionalColumns = new List<string>();
+                        var columns = _etlMeasureRepository.ExecQuery<InformationSchema>(
+                            "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'StagingCommunityData'");
+
+                        var worksheetColumns = workSheet.Columns;
+                        foreach (var column in worksheetColumns)
+                        {
+                            var columnNotInDB = columns.Where(x => x.column_name == column.Name);
+                            if (!columnNotInDB.Any())
+                            {
+                                additionalColumns.Add(column.Name);
+                            }
+                        }
+
+                        if (additionalColumns.Any())
+                        {
+                            _templateRepository.UpdateStaticTable("StagingCommunityData", additionalColumns);
+                        }
+                    } 
+                    else if (workSheet.Name == "Facility Data")
+                    {
+                        var additionalColumns = new List<string>();
+                        var columns = _etlMeasureRepository.ExecQuery<InformationSchema>(
+                            "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'StagingFacilityData'");
+
+                        var worksheetColumns = workSheet.Columns;
+                        foreach (var column in worksheetColumns)
+                        {
+                            var columnNotInDB = columns.Where(x => x.column_name.Trim() == column.Name.Trim());
+                            if (!columnNotInDB.Any())
+                            {
+                                additionalColumns.Add(column.Name);
+                            }
+                        }
+
+                        if (additionalColumns.Any())
+                        {
+                            _templateRepository.UpdateStaticTable("StagingFacilityData", additionalColumns);
+                        }
+                    }
+                    else if (workSheet.Name == "TB")
+                    {
+                        var additionalColumns = new List<string>();
+                        var columns = _etlMeasureRepository.ExecQuery<InformationSchema>(
+                            "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'StagingTBData'");
+
+                        var worksheetColumns = workSheet.Columns;
+                        foreach (var column in worksheetColumns)
+                        {
+                            var columnNotInDB = columns.Where(x => x.column_name == column.Name);
+                            if (!columnNotInDB.Any())
+                            {
+                                additionalColumns.Add(column.Name);
+                            }
+                        }
+
+                        if (additionalColumns.Any())
+                        {
+                            _templateRepository.UpdateStaticTable("StagingTBData", additionalColumns);
+                        }
+                    }
                 }
                 _templateRepository.UpdateStatus(workSheet.TemplateId, TemplateStatus.Active);
                 return Ok();
@@ -225,5 +295,11 @@ namespace GHPRS.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
+    }
+
+    public class InformationSchema
+    {
+        public string column_name { get; set; }
+        public string data_type { get; set; }
     }
 }
