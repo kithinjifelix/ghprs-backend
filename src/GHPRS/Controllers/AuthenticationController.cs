@@ -52,38 +52,45 @@ namespace GHPRS.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email) ??
-                       await _userManager.FindByNameAsync(model.Email);
-            if (user != null && user.IsEnabled && await _userManager.CheckPasswordAsync(user, model.Password))
+            try
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
+                var user = await _userManager.FindByEmailAsync(model.Email) ??
+                           await _userManager.FindByNameAsync(model.Email);
+                if (user != null && user.IsEnabled && await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
+                    var userRoles = await _userManager.GetRolesAsync(user);
 
-                foreach (var userRole in userRoles) authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    };
 
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+                    foreach (var userRole in userRoles) authClaims.Add(new Claim(ClaimTypes.Role, userRole));
 
-                var token = new JwtSecurityToken(
-                    _configuration["JWT:ValidIssuer"],
-                    _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddHours(3),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
-                });
+                    var token = new JwtSecurityToken(
+                        _configuration["JWT:ValidIssuer"],
+                        _configuration["JWT:ValidAudience"],
+                        expires: DateTime.Now.AddHours(3),
+                        claims: authClaims,
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                    return Ok(new
+                    {
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo
+                    });
+                }
+
+                return Unauthorized();
             }
-
-            return Unauthorized();
+            catch (Exception e)
+            {
+                return BadRequest(new Response {Status = "Error", Message = $"An error occured on login {e.Message}"});
+            }
         }
 
         [HttpPost]
