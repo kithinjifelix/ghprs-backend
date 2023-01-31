@@ -65,8 +65,8 @@ namespace GHPRS
             services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
             
-            services.AddDbContext<ETLContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            // services.AddDbContext<ETLContext>(options =>
+            //     options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             // For Identity  
             services.AddIdentity<User, IdentityRole>()
@@ -132,6 +132,7 @@ namespace GHPRS
             services.AddScoped<IMetabaseService, MetabaseService>();
             services.AddScoped<IDataUnitOfWork, DataUnitOfWork>();
             services.AddScoped<IPLHIVDataRepository, PLHIVDataRepository>();
+            services.AddScoped<IBlobStorageService, BlobStorageService>();
             services.AddScoped(typeof(IEtlDataRepository<>), typeof(EtlDataRepository<>));
 
             services.AddControllers().AddNewtonsoftJson(options =>
