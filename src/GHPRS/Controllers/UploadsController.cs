@@ -131,53 +131,13 @@ namespace GHPRS.Controllers
             }
         }
 
-        [HttpPost("MER_UPLOAD")]
-        [RequestSizeLimit(MaxFileSize)]
-        [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-        [AllowAnonymous]
-        public async Task<IActionResult> Mer_Upload(IFormFile file)
+        [HttpGet("MER_UPLOAD")]
+        public async Task<IActionResult> Mer_Upload()
         {
             try
             {
-                var chunkId = Guid.NewGuid().ToString();
-                var blockBlob = _container.GetBlockBlobReference($"{chunkId}.tmp");
-
-                using (var stream = file.OpenReadStream())
-                {
-                    await blockBlob.UploadFromStreamAsync(stream);
-                }
-
-                return Ok(new { chunkId });
-                // var chunkId = Guid.NewGuid().ToString();
-                // var chunkPath = Path.Combine(_tempPath, $"{}")
-                // var filePath = Path.GetTempFileName();
-                // using (var stream = new FileStream(filePath, FileMode.Create))
-                // {
-                //     await merUploadModel.File.CopyToAsync(stream);
-                // }
-                // if (merUploadModel != null && merUploadModel.File != null)
-                // {
-                //     if (merUploadModel.File.Length > 0)
-                //     {
-                //         var user = await GetUser();
-                //         if (merUploadModel.UploadTypeId == 1)
-                //         {
-                //             await _uploadService.UploadMER(merUploadModel, user);
-                //         }
-                //         else if (merUploadModel.UploadTypeId == 2)
-                //         {
-                //             await _uploadService.UploadPLHIV(merUploadModel, user);
-                //         }
-                //         
-                //         return StatusCode(StatusCodes.Status200OK, "Successfully Uploaded");
-                //     } 
-                //     else
-                //     {
-                //         return StatusCode(StatusCodes.Status500InternalServerError, "File contains no data");
-                //     }
-                // }
-                // return StatusCode(StatusCodes.Status500InternalServerError, "No File selected");
-                // return StatusCode(StatusCodes.Status200OK, "Successfully Uploaded");
+                var blobs = await _blobStorageService.GetBlobNameAsync();
+                return Ok(blobs);
             }
             catch (Exception e)
             {
@@ -186,32 +146,10 @@ namespace GHPRS.Controllers
             }
         }
         
-        [HttpPost("merge")]
-        public async Task<IActionResult> MergeChunks([FromBody]MergeFile mergeFile)
+        [HttpPost("ProcessBlob/{uploadType}")]
+        public async Task<IActionResult> ProcessBlob([FromForm]BlobFile blobFile, int uploadType)
         {
-            var blockBlobs = mergeFile.chunkIds.Select(chunkId => _container.GetBlockBlobReference($"{chunkId}.tmp"));
-            var fileBlob = _container.GetBlockBlobReference($"{mergeFile.fileId}.bin");
-
-            using (var memoryStream = new MemoryStream())
-            {
-                foreach (var blockBlob in blockBlobs)
-                {
-                    using (var chunkStream = new MemoryStream())
-                    {
-                        await blockBlob.DownloadToStreamAsync(chunkStream);
-                        chunkStream.Seek(0, SeekOrigin.Begin);
-                        await chunkStream.CopyToAsync(memoryStream);
-                        await blockBlob.DeleteAsync();
-                    }
-                }
-
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                await fileBlob.UploadFromStreamAsync(memoryStream);
-            }
-
-            // var user = await GetUser();
-            await _blobStorageService.GetTextAsync($"{mergeFile.fileId}.bin", mergeFile.uploadTypeId);
-
+            _blobStorageService.GetTextAsync(blobFile.name, uploadType);
             return Ok();
         }
 
@@ -253,10 +191,8 @@ namespace GHPRS.Controllers
         }
     }
 
-    public class MergeFile
+    public class BlobFile
     {
-        public string fileId { get; set; }
-        public IEnumerable<string> chunkIds { get; set; }
-        public int uploadTypeId { get; set; }
+        public string name { get; set; }
     }
 }

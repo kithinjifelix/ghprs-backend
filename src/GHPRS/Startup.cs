@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using GHPRS.Core.Entities;
+using GHPRS.Core.Hubs;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
 using GHPRS.Core.UnitOfWork;
@@ -8,8 +9,8 @@ using GHPRS.EmailService;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
 using GHPRS.Persistence.UnitOfWork;
-using Hangfire;
-using Hangfire.PostgreSql;
+// using Hangfire;
+// using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -99,17 +100,17 @@ namespace GHPRS
             // Add Hangfire services.
             // services.AddHangfire(config =>
             //     config.UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection")));
-            services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection"), new PostgreSqlStorageOptions
-                {
-                    QueuePollInterval = TimeSpan.FromSeconds(5.0),
-                }));
-
-            // Add the processing server as IHostedService
-            services.AddHangfireServer();
+            // services.AddHangfire(configuration => configuration
+            //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            //     .UseSimpleAssemblyNameTypeSerializer()
+            //     .UseRecommendedSerializerSettings()
+            //     .UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection"), new PostgreSqlStorageOptions
+            //     {
+            //         QueuePollInterval = TimeSpan.FromSeconds(5.0),
+            //     }));
+            //
+            // // Add the processing server as IHostedService
+            // services.AddHangfireServer();
 
             services.AddControllers();
 
@@ -147,6 +148,8 @@ namespace GHPRS
                 configuration.RootPath = "wwwroot";
             });
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Api", Version = "v1"}); });
+            //Signal R
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -164,25 +167,29 @@ namespace GHPRS
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ExtractProgressHub>("/progressHub");
+            });
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "wwwroot";
             });
-            var options = new BackgroundJobServerOptions
-            {
-                WorkerCount=3    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
-                // For this we are overriding the default value.
-            };
-            app.UseHangfireServer(options);
-            app.UseHangfireDashboard();
+            // var options = new BackgroundJobServerOptions
+            // {
+            //     WorkerCount=3    //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
+            //     // For this we are overriding the default value.
+            // };
+            // app.UseHangfireServer(options);
+            // app.UseHangfireDashboard();
             loggerFactory.AddFile("Logs/GHPRS-{Date}.txt");
         }
     }
