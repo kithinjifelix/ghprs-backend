@@ -1,5 +1,7 @@
+using System;
 using GHPRS.Core.Entities.ETL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace GHPRS.Persistence;
 
@@ -9,11 +11,17 @@ public class ETLContext : DbContext
     {
         
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql(
-            "DefaultConnection",
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
+        optionsBuilder.UseNpgsql(
+            configuration.GetConnectionString("DefaultConnection"),
             options => options.EnableRetryOnFailure());
+    }
 
     public DbSet<AgeDisaggregate> AgeDisaggregates { get; set; }
     public DbSet<Council> Councils { get; set; }
