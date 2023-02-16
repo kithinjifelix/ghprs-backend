@@ -47,22 +47,22 @@ public class BlobStorageService : IBlobStorageService
     
     public async Task<DataTable> GetTextAsync(string blobName, int uploadTypeId)
     {
+        var merData = new FileUploads
+        {
+            Name = blobName,
+            ContentType = "text/plain",
+            // User = user,
+            UploadDate = DateTime.Now,
+            Status = "Processing",
+            UploadType = uploadTypeId == 1 ? "MER Data" : "PLHIV Data"
+        };
+        _fileUploadRepository.Insert(merData);
         try
         {
             var extractProgress = new ExtractProgress { name = blobName, Value = 0.1 };
             await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
             if (uploadTypeId == 1)
             {
-                var merData = new FileUploads
-                {
-                    Name = blobName,
-                    ContentType = "text/plain",
-                    // User = user,
-                    UploadDate = DateTime.Now,
-                    Status = "Processing",
-                    UploadType = "MER Data"
-                };
-                _fileUploadRepository.Insert(merData);
                 var blob = _container.GetBlockBlobReference(blobName);
                 // Get the size of the blob
                 await blob.FetchAttributesAsync();
@@ -139,16 +139,16 @@ public class BlobStorageService : IBlobStorageService
 
             if (uploadTypeId == 2)
             {
-                var plHIVData = new FileUploads
-                {
-                    Name = blobName,
-                    ContentType = "text/plain",
-                    // User = user,
-                    UploadDate = DateTime.Now,
-                    Status = "Processing",
-                    UploadType = "PLHIV Data"
-                };
-                _fileUploadRepository.Insert(plHIVData);
+                // var plHIVData = new FileUploads
+                // {
+                //     Name = blobName,
+                //     ContentType = "text/plain",
+                //     // User = user,
+                //     UploadDate = DateTime.Now,
+                //     Status = "Processing",
+                //     UploadType = "PLHIV Data"
+                // };
+                // _fileUploadRepository.Insert(plHIVData);
                 var blob = _container.GetBlockBlobReference(blobName);
                 // Get the size of the blob
                 await blob.FetchAttributesAsync();
@@ -220,8 +220,11 @@ public class BlobStorageService : IBlobStorageService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            var pendingUpload = _fileUploadRepository.GetPendingUploads("PLHIV Data");
+            // pendingUpload.Status = "E";
+            // pendingUpload. = "E";
+            _fileUploadRepository.UpdateFile(pendingUpload);
+            return new DataTable();
         }
     }
 

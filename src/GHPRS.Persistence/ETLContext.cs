@@ -9,6 +9,11 @@ public class ETLContext : DbContext
     {
         
     }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql(
+            "DefaultConnection",
+            options => options.EnableRetryOnFailure());
 
     public DbSet<AgeDisaggregate> AgeDisaggregates { get; set; }
     public DbSet<Council> Councils { get; set; }
