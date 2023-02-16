@@ -69,7 +69,7 @@ public class BlobStorageService : IBlobStorageService
                 long blobSize = blob.Properties.Length;
                 
                 // Set the chunk size to 100MB
-                int chunkSize = 100 * 1024 * 1024;
+                int chunkSize = 50 * 1024 * 1024;
 
                 var dataTable = new DataTable();
                 // Loop through the blob in chunks of 100MB
