@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace GHPRS.Core.Services;
@@ -25,12 +26,14 @@ public class BlobStorageService : IBlobStorageService
     private readonly IPLHIVDataRepository _plhivDataRepository;
     private readonly IConfiguration _configuration;
     private readonly IHubContext<ExtractProgressHub> _progressHubContext;
+    private readonly ILogger<BlobStorageService> _logger;
     
     public BlobStorageService(
         IConfiguration configuration,
         IMerDataRepository merDataRepository,
         IPLHIVDataRepository plhivDataRepository,
         IFileUploadRepository fileUploadRepository,
+        ILogger<BlobStorageService> logger,
         IHubContext<ExtractProgressHub> progressHubContext)
     {
         _configuration = configuration;
@@ -38,6 +41,7 @@ public class BlobStorageService : IBlobStorageService
         _fileUploadRepository = fileUploadRepository;
         _plhivDataRepository = plhivDataRepository;
         _progressHubContext = progressHubContext;
+        _logger = logger;
         
         var connectionString = configuration.GetConnectionString("AzureStorage");
         var account = CloudStorageAccount.Parse(connectionString);
@@ -220,10 +224,11 @@ public class BlobStorageService : IBlobStorageService
         }
         catch (Exception e)
         {
-            var pendingUpload = _fileUploadRepository.GetPendingUploads("PLHIV Data");
-            // pendingUpload.Status = "E";
-            // pendingUpload. = "E";
+            var pendingUpload = _fileUploadRepository.GetPendingUploads(uploadTypeId == 1 ? "MER Data" : "PLHIV Data");
+            pendingUpload.Status = "Error";
+            pendingUpload.ErrorMessage = $"{e.Message} {e}";
             _fileUploadRepository.UpdateFile(pendingUpload);
+            _logger.LogError($"{e.Message} {e}");
             return new DataTable();
         }
     }

@@ -13,5 +13,6 @@ namespace GHPRS.Core.Entities
         public DateTime UploadDate { get; set; }
         public string Status { get; set; }
         public string UploadType { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
