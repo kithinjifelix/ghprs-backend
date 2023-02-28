@@ -6,13 +6,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
+using GHPRS.Core.Hubs;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
 using GHPRS.Core.Utilities;
 using GHPRS.Core.Validations;
 using GHPRS.EmailService;
 using Hangfire;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -39,6 +42,9 @@ namespace GHPRS.Core.Services
 
         private readonly IOrganizationRepository _organizationRepository;
         private readonly UserManager<User> _userManager;
+        
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IHubContext<ExtractProgressHub> _progressHubContext;
 
         public UploadService(IUploadRepository uploadRepository, 
             ITemplateRepository templateRepository,
@@ -52,7 +58,9 @@ namespace GHPRS.Core.Services
             ICommunityDataRepository communityDataRepository,
             IEmailSender emailSender,
             IOrganizationRepository organizationRepository,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IWebHostEnvironment hostingEnvironment,
+            IHubContext<ExtractProgressHub> progressHubContext)
         {
             _uploadRepository = uploadRepository;
             _templateRepository = templateRepository;
@@ -67,6 +75,8 @@ namespace GHPRS.Core.Services
             _emailSender = emailSender;
             _organizationRepository = organizationRepository;
             _userManager = userManager;
+            _hostingEnvironment = hostingEnvironment;
+            _progressHubContext = progressHubContext;
         }
 
         public void InsertUploadData(int uploadId)
@@ -387,6 +397,112 @@ namespace GHPRS.Core.Services
             {
                 _logger.LogError(e.Message, e);
                 throw e;
+            }
+        }
+
+        public List<string> GetDirectoryFiles()
+        {
+            try
+            {
+                string webRootPath = _hostingEnvironment.ContentRootPath;
+                string newPath = Path.Combine(webRootPath, "Files");
+                var files = Directory.GetFiles(newPath).Select(Path.GetFileName)
+                    .ToArray();
+                return files.ToList();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+        }
+
+        public async Task<DataTable> GetTextFileDataAsync(string fileName, int uploadTypeId)
+        {
+            try
+            {
+                var extractProgress = new ExtractProgress { name = fileName, Value = 0 };
+                await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                var merData = new FileUploads
+                {
+                    Name = fileName,
+                    ContentType = "text/plain",
+                    // User = user,
+                    UploadDate = DateTime.Now,
+                    Status = "Processing",
+                    UploadType = uploadTypeId == 1 ? "MER Data" : "PLHIV Data"
+                };
+                _fileUploadRepository.Insert(merData);
+                string webRootPath = _hostingEnvironment.ContentRootPath;
+                string newPath = Path.Combine(webRootPath, "Files");
+                var dataTable = new DataTable();
+                using (var reader = new StreamReader(newPath + "/" + fileName))
+                {
+                    // Create columns based on the first line of the file
+                    var headerLine = reader.ReadLine();
+                    char[] delimiter = new char[] { '\t' };
+                    var columns = headerLine.Split(delimiter);
+                    foreach (var column in columns)
+                    {
+                        dataTable.Columns.Add(column.Trim());
+                    }
+
+                    var lineCount = 0;
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        var values = line.Split(delimiter);
+                        var row = dataTable.NewRow();
+                        for (int i = 0; i < values.Length; i++)
+                        {
+                            row[i] = values[i].Trim();
+                        }
+
+                        dataTable.Rows.Add(row);
+                        lineCount++;
+                        extractProgress.Value = lineCount;
+                        await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                    }
+                }
+
+                if (uploadTypeId == 1)
+                {
+                    List<MerData> listMerData = new List<MerData>();
+                    var pendingUpload = _fileUploadRepository.GetPendingUploads("MER Data");
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+
+                    string json = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
+                    var deserializedData = JsonConvert.DeserializeObject<MerData[]>(json);
+                    listMerData.AddRange(deserializedData.ToList());
+                    listMerData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                    if (listMerData.Any())
+                    {
+                        _merDataRepository.Insert(listMerData);
+                    }
+                }
+                else if (uploadTypeId == 2)
+                {
+                    List<PLHIVData> listPLHIVData = new List<PLHIVData>();
+                    var pendingUpload = _fileUploadRepository.GetPendingUploads("PLHIV Data");
+                    pendingUpload.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(pendingUpload);
+
+                    string json = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
+                    var deserializedData = JsonConvert.DeserializeObject<PLHIVData[]>(json);
+                    listPLHIVData.AddRange(deserializedData.ToList());
+                    listPLHIVData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                    if (listPLHIVData.Any())
+                    {
+                        _plhivDataRepository.Insert(listPLHIVData);
+                    }
+                }
+                return dataTable;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
 

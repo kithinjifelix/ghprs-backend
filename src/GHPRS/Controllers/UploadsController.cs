@@ -136,8 +136,8 @@ namespace GHPRS.Controllers
         {
             try
             {
-                var blobs = await _blobStorageService.GetBlobNameAsync();
-                return Ok(blobs);
+                var files = _uploadService.GetDirectoryFiles();
+                return Ok(files);
             }
             catch (Exception e)
             {
@@ -149,7 +149,7 @@ namespace GHPRS.Controllers
         [HttpPost("ProcessBlob/{uploadType}")]
         public async Task<IActionResult> ProcessBlob([FromForm]BlobFile blobFile, int uploadType)
         {
-            _blobStorageService.GetTextAsync(blobFile.name, uploadType);
+            await _uploadService.GetTextFileDataAsync(blobFile.name, uploadType);
             return Ok();
         }
 

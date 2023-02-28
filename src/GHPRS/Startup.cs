@@ -167,7 +167,7 @@ namespace GHPRS
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);

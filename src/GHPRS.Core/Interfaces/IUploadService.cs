@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Models;
 using System.Threading.Tasks;
@@ -18,5 +19,7 @@ namespace GHPRS.Core.Interfaces
         List<object> ReadUploadData(int uploadId);
         void OverWriteApproved(int uploadId);
         void Review(Upload upload, Review review);
+        List<string> GetDirectoryFiles();
+        Task<DataTable> GetTextFileDataAsync(string fileName, int uploadTypeId);
     }
 }
