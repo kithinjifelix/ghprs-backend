@@ -1,4 +1,5 @@
-﻿using GHPRS.Core.Entities;
+﻿using System;
+using GHPRS.Core.Entities;
 using System.Collections.Generic;
 using System.Data;
 
@@ -12,8 +13,9 @@ namespace GHPRS.Core.Interfaces
         IEnumerable<object> GetListByUser(User user);
         IEnumerable<object> GetListByStatus(UploadStatus status);
         object GetDetailsById(int id);
-        void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch);
+        void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch, Guid uploadBatchGuid);
         void UpdateStatus(int id, UploadStatus status);
-        void DeleteFromTable(string tableName, string uploadBatch);
+        void DeleteFromTable(string tableName, string uploadBatch, Guid uploadBatchGuid);
+        void UpdateUploadStatus(int id, string uploadStatus);
     }
 }

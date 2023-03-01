@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GHPRS.Core.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace GHPRS.Controllers
 {
@@ -21,18 +23,43 @@ namespace GHPRS.Controllers
         private readonly IUserRepository _userRepository;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<LinksController> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(ILogger<LinksController> logger, UserManager<User> userManager, IUserRepository userRepository)
+        public UsersController(ILogger<LinksController> logger, 
+            UserManager<User> userManager, 
+            IUserRepository userRepository,
+            RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
             _userManager = userManager;
             _userRepository = userRepository;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
-        public IActionResult GetUsersAsync()
+        public async Task<IActionResult> GetUsersAsync()
         {
-            var users = _userRepository.GetAll();
+            var users = _userManager.Users
+                .Include(x => x.Person)
+                .Include(z => z.Organization)
+                .Where(x => x.IsEnabled)
+                .Select(u => new { User = u, Roles = new List<string>() })
+                .ToList();
+            //Fetch all the Roles
+            var roleNames = _roleManager.Roles.Select(r => r.Name).ToList();
+
+            foreach (var roleName in roleNames)
+            {
+                //For each role, fetch the users
+                var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+                //Populate the roles for each user in memory
+                var toUpdate = users.Where(u => usersInRole.Any(ur => ur.Id == u.User.Id));
+                foreach (var user in toUpdate)
+                {
+                    user.Roles.Add(roleName);
+                }
+            }
             return Ok(users);
         }
 
@@ -68,29 +95,41 @@ namespace GHPRS.Controllers
         [HttpPut("{id}")]
         public async Task<User> Update(string id, [FromBody] EditUser model)
         {
-            var user = _userRepository.GetById(id);
-            user.Person.Name = model.Name;
-            user.OrganizationId = model.OrganizationId;
-            var roles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
-            if (model.RoleId == 0)
+            try
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                var user = await _userManager.Users
+                    .Include(x => x.Person)
+                    .Include(z => z.Organization)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                var roles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+                if (model.RoleId == 0)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.Administrator);
+                }
+                else if (model.RoleId == 1)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                }
+                user.Person.Name = model.Name;
+                user.OrganizationId = model.OrganizationId;
+                await _userManager.UpdateAsync(user);
+                return user;
             }
-            else if (model.RoleId == 1)
+            catch (Exception e)
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.User);
+                Console.WriteLine(e);
+                throw;
             }
-            _userRepository.Update(user);
-            return user;
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
-                _userRepository.Delete(id);
+                var user = await _userManager.FindByIdAsync(id);
+                await _userManager.DeleteAsync(user);
                 return Ok();
             }
             catch (Exception e)
@@ -98,7 +137,23 @@ namespace GHPRS.Controllers
                 _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
-            
+        }
+
+        [HttpGet("DisableUser/{id}")]
+        public async Task<IActionResult> DisableUser(string id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                user.IsEnabled = false;
+                await _userManager.UpdateAsync(user);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
         }
     }
 }

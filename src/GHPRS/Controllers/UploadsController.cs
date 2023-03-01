@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,17 +17,23 @@ namespace GHPRS.Controllers
     [Authorize]
     public class UploadsController : ControllerBase
     {
+        // private const long MaxFileSize = 10L * 1024L * 1024L * 1024L;
         private readonly ILogger<UploadsController> _logger;
         private readonly IUploadRepository _uploadRepository;
+        private readonly IFileUploadRepository _fileRepository;
         private readonly IUploadService _uploadService;
         private readonly UserManager<User> _userManager;
 
-        public UploadsController(ILogger<UploadsController> logger, IUploadService uploadService,
-            IUploadRepository uploadRepository, UserManager<User> userManager)
+        public UploadsController(ILogger<UploadsController> logger, 
+            IUploadService uploadService,
+            IUploadRepository uploadRepository,
+            IFileUploadRepository fileRepository,
+            UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = uploadService;
             _uploadRepository = uploadRepository;
+            _fileRepository = fileRepository;
             _userManager = userManager;
         }
 
@@ -74,8 +78,8 @@ namespace GHPRS.Controllers
             return Ok(result);
         }
 
-        [HttpPost("UPLOAD")]
-        public async Task<IActionResult> Upload([FromForm] UploadModel template)
+        [HttpPost("UPLOAD/{organizationId}")]
+        public async Task<IActionResult> Upload(int organizationId, [FromForm] UploadModel template)
         {
             try
             {
@@ -85,7 +89,9 @@ namespace GHPRS.Controllers
                     if (template.File.Length > 0)
                     {
                         var user = await GetUser();
-                        result = await _uploadService.Upload(template, user);
+                        result = await _uploadService.Upload(template, user, organizationId);
+                        Review review = new Review() { Status = 1 };
+                        _uploadService.Review(result, review);
                     }
                     else
                     {
@@ -98,6 +104,42 @@ namespace GHPRS.Controllers
                 }
 
                 return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpGet("MER_UPLOAD")]
+        public async Task<IActionResult> Mer_Upload()
+        {
+            try
+            {
+                var files = _uploadService.GetDirectoryFiles();
+                return Ok(files);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+        
+        [HttpPost("ProcessBlob/{uploadType}")]
+        public async Task<IActionResult> ProcessBlob([FromForm]BlobFile blobFile, int uploadType)
+        {
+            await _uploadService.GetTextFileDataAsync(blobFile.name, uploadType);
+            return Ok();
+        }
+
+        [HttpGet("GetAllFileUploads/{status}")]
+        public IActionResult GetAllFileUploads(string status)
+        {
+            try
+            {
+                return Ok(_fileRepository.GetAllFileUploads(status));
             }
             catch (Exception e)
             {
@@ -124,8 +166,14 @@ namespace GHPRS.Controllers
 
         private async Task<User> GetUser()
         {
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            return await _userManager.FindByNameAsync(userName);
+            return await _userManager.FindByNameAsync(User.Identity?.Name);
+            // var userName = User.FindFirstValue(ClaimTypes.Name);
+            // return await _userManager.FindByNameAsync(userName);
         }
+    }
+
+    public class BlobFile
+    {
+        public string name { get; set; }
     }
 }

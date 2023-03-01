@@ -15,6 +15,11 @@ namespace GHPRS.Core.Entities
         public string UploadBatch { get; set; }
         public virtual User User { get; set; }
         public virtual Template Template { get; set; }
+        public bool IsProcessed { get; set; } = false;
+        public Guid UploadBatchGuid { get; set; }
+        public string UploadStatus { get; set; }
+        public int OrganizationId { get; set; }
+        public virtual Organization Organization { get; set; }
 
         public void GenerateUploadBatch()
         {

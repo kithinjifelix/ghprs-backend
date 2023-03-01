@@ -22,7 +22,7 @@ namespace GHPRS.Persistence.Repositories
         {
             _entities = context.Uploads
                 .Include(i => i.Template)
-                .Include(i => i.User)
+                .Include(i => i.User).ThenInclude(z => z.Person)
                 .AsNoTracking();
             _context = context;
             _dataContext = dataContext;
@@ -31,13 +31,13 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<Upload> GetFullUploads()
         {
-            return _entities;
+            return _entities.OrderBy(n => n.Name);
         }
 
         public object GetDetailsById(int id)
         {
             var result = _entities.Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
                 .FirstOrDefault(x => x.Id == id);
             return result;
         }
@@ -50,7 +50,8 @@ namespace GHPRS.Persistence.Repositories
         public IEnumerable<object> GetList()
         {
             var result = _entities.Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
+                .OrderBy(n => n.Name)
                 .ToList();
             return result;
         }
@@ -59,8 +60,8 @@ namespace GHPRS.Persistence.Repositories
         {
             var result = _entities
                 .Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
-                .Where(x => x.Status == status).ToList();
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
+                .Where(x => x.Status == status).OrderBy(n => n.Name).ToList();
             return result;
         }
 
@@ -68,12 +69,12 @@ namespace GHPRS.Persistence.Repositories
         {
             var result = _entities
                 .Select(s => new
-                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt})
-                .Where(x => x.User == user).ToList();
+                    {s.Id, s.Name, s.Comments, s.Status, s.ContentType, s.User, s.StartDate, s.EndDate, s.CreatedAt, s.UploadStatus})
+                .Where(x => x.User == user).OrderBy(n => n.Name).ToList();
             return result;
         }
 
-        public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch)
+        public void InsertToTable(WorkSheet workSheet, DataTable data, string uploadBatch, Guid uploadBatchGuid)
         {
             var insertScript = string.Empty;
             foreach (DataRow row in data.Rows)
@@ -92,7 +93,7 @@ namespace GHPRS.Persistence.Repositories
                                     row[column.Name].ToString()?.Trim() == "-" ||
                                     row[column.Name].ToString()?.ToLower().Trim() == "o")
                                 {
-                                    r = "0";
+                                    r = null;
                                 }
                                 else
                                 {
@@ -105,8 +106,8 @@ namespace GHPRS.Persistence.Repositories
                                 r = EscapeSqlCharacters(row[column.Name].ToString());
                             }
 
-                            rows += $" \'{r}\',";
-                            columns += $" \"{column.Name}\",";
+                            rows += r == null ? $"NULL, " : $" \'{r}\',";
+                            columns += $" \"{column.Name.ToString().Trim()}\",";
                         }
                     }
                     catch (Exception e)
@@ -117,18 +118,41 @@ namespace GHPRS.Persistence.Repositories
                 rows += $" \'{uploadBatch}\',";
                 columns += " \"Upload_Batch\",";
                 var reportDate = CreateReportDate(row);
-                rows += $" \'{reportDate}\',";
+                rows += $" \'{reportDate.ToString("yyyy-MM-dd")}\',";
                 columns += " \"Report Date\",";
+                rows += $" \'{uploadBatchGuid}\',";
+                columns += " \"UploadBatchGuid\",";
                 //remove trailing commas
                 rows = rows.Remove(rows.Length - 1);
                 columns = columns.Remove(columns.Length - 1);
-                var insert = $"INSERT INTO public.\"{workSheet.TableName}\" ({columns}) VALUES ({rows});";
+                var tableName = workSheet.TableName;
+                if (workSheet.Name == "Facility Data")
+                {
+                    tableName = "StagingFacilityData";
+                }
+                else if (workSheet.Name == "Community Data")
+                {
+                    tableName = "StagingCommunityData";
+                }
+                else if (workSheet.Name == "TB")
+                {
+                    tableName = "StagingTBData";
+                }
+                var insert = $"INSERT INTO public.\"{tableName}\" ({columns}) VALUES ({rows});";
                 insertScript += insert;
             }
 
             try
             {
-                var connectionString = _dataContext.Database.GetConnectionString();
+                string connectionString;
+                if (workSheet.Name == "Facility Data" || workSheet.Name == "Community Data")
+                {
+                    connectionString = _context.Database.GetConnectionString();
+                }
+                else
+                {
+                    connectionString = _dataContext.Database.GetConnectionString();
+                }
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
@@ -154,12 +178,18 @@ namespace GHPRS.Persistence.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteFromTable(string tableName, string uploadBatch)
+        public void DeleteFromTable(string tableName, string uploadBatch, Guid uploadBatchGuid)
         {
-            var deleteScript = $"DELETE FROM public.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\'; ";
+            var deleteScript = $"DELETE FROM public.\"{tableName}\" WHERE \"Upload_Batch\" = \'{uploadBatch}\' AND \"UploadBatchGuid\" = \'{uploadBatchGuid}\'; ";
             try
             {
-                var connectionString = _dataContext.Database.GetConnectionString();
+                string connectionString;
+                if (tableName == "StagingCommunityData" || tableName == "StagingFacilityData" || tableName == "StagingTBData")
+                {
+                    connectionString = _context.Database.GetConnectionString();
+                }
+                else
+                    connectionString = _dataContext.Database.GetConnectionString();
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
@@ -174,6 +204,29 @@ namespace GHPRS.Persistence.Repositories
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
+                throw;
+            }
+        }
+
+        public void UpdateUploadStatus(int id, string uploadStatus)
+        {
+            try
+            {
+                var connectionString = _context.Database.GetConnectionString();
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = connection;
+                        cmd.CommandText = $"UPDATE public.\"Uploads\" SET \"UploadStatus\" = \'{uploadStatus}\', \"IsProcessed\" = true WHERE \"Id\" = {id}";
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 throw;
             }
         }
@@ -195,7 +248,11 @@ namespace GHPRS.Persistence.Repositories
                 object monthNumber = null;
                 try
                 {
-                    monthNumber = row["Month_Num"];
+                    DataColumnCollection Columns = row.Table.Columns;
+                    if (Columns.Contains("Month_Num"))
+                    {
+                        monthNumber = row["Month_Num"];
+                    }
                 }
                 catch (Exception e)
                 {

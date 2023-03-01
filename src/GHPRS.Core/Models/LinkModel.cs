@@ -11,5 +11,6 @@ namespace GHPRS.Core.Models
         public int LinkType { get; set; }
         public int Number { get; set; }
         public string Key { get; set; }
+        public string Description { get; set; }
     }
 }

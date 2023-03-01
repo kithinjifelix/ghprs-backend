@@ -37,6 +37,7 @@ namespace GHPRS.Controllers
                     LinkType = (LinkType)model.LinkType,
                     Number = model.Number,
                     Key = model.Key,
+                    Description = model.Description,
                 };
                 var result = _linkRepository.Insert(link);
                 return Ok(result);
@@ -51,13 +52,20 @@ namespace GHPRS.Controllers
         [HttpGet]
         public IEnumerable<Link> GetList()
         {
-            return _linkRepository.GetAll();
+            return _linkRepository.GetAll().OrderBy(n => n.Name);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var result = _linkRepository.GetById(id);
+            return Ok(result);
+        }
+
+        [HttpGet("NUMBER/{number}")]
+        public IActionResult GetByNumber(int number)
+        {
+            var result = _linkRepository.GetByNumber(number);
             return Ok(result);
         }
 

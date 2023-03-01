@@ -49,12 +49,16 @@ namespace GHPRS.Persistence
         public DbSet<WorkSheet> WorkSheets { get; set; }
         public DbSet<Column> Columns { get; set; }
         public DbSet<Organization> Organizations { get; set; }
-
-
+        public DbSet<MerData> MerDatas { get; set; }
+        public DbSet<FileUploads> FileUploads { get; set; }
+        public DbSet<FacilityData> FacilityDatas { get; set; }
+        public DbSet<CommunityData> CommunityDatas { get; set; }
+        public DbSet<TBData> TbDatas { get; set; }
+        public DbSet<PLHIVData> PlhivDatas { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Person>().Property(b => b.Id).HasIdentityOptions(startValue: 120);
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Uploads)
                 .WithOne(e => e.User);

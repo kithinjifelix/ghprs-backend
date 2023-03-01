@@ -35,6 +35,8 @@ namespace GHPRS.Persistence.Repositories
         public void Update(T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
+            Context.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
             Context.SaveChanges();
         }
         public void Delete(int id)

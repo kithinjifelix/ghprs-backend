@@ -16,7 +16,12 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<Link> GetByType(LinkType type)
         {
-            return _entities.Where(s => s.LinkType == type);
+            return _entities.Where(s => s.LinkType == type).OrderBy(n => n.Name);
+        }
+
+        public Link GetByNumber(int number)
+        {
+            return _entities.SingleOrDefault(s => s.Number == number);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<Lookup> GetByType(LookupType type)
         {
-            return _entities.Where(s => s.LookupType == type);
+            return _entities.Where(s => s.LookupType == type).OrderBy(n => n.Name);
         }
     }
 }

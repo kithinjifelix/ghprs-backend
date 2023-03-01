@@ -25,7 +25,7 @@ namespace GHPRS.Persistence.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            return _entities.AsEnumerable();
+            return _entities.OrderBy(n => n.Person.Name).AsEnumerable();
         }
 
         public User GetById(string id)

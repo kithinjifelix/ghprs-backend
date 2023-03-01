@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
+#nullable disable
+
 namespace GHPRS.Persistence.Migrations
 {
     [DbContext(typeof(GhprsContext))]
@@ -15,16 +17,19 @@ namespace GHPRS.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityByDefaultColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.1");
+                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("GHPRS.Core.Entities.Column", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -48,15 +53,1142 @@ namespace GHPRS.Persistence.Migrations
                     b.ToTable("Columns");
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.CommunityData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Agency")
+                        .HasColumnType("text")
+                        .HasColumnName("Agency");
+
+                    b.Property<string>("CLIENT_A_TX_CURR")
+                        .HasColumnType("text")
+                        .HasColumnName("CLIENT_A_TX_CURR");
+
+                    b.Property<string>("CLIENT_A_TX_NEW")
+                        .HasColumnType("text")
+                        .HasColumnName("CLIENT_A_TX_NEW");
+
+                    b.Property<string>("CONTACT_A")
+                        .HasColumnType("text")
+                        .HasColumnName("CONTACT_A");
+
+                    b.Property<string>("CONTACT_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("CONTACT_PEDS");
+
+                    b.Property<string>("CTC_CHILD")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_CHILD");
+
+                    b.Property<string>("CTC_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_F_A");
+
+                    b.Property<string>("CTC_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_F_P");
+
+                    b.Property<string>("CTC_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_M_A");
+
+                    b.Property<string>("CTC_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_M_P");
+
+                    b.Property<string>("CTC_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_PWID");
+
+                    b.Property<string>("CTC_SEX")
+                        .HasColumnType("text")
+                        .HasColumnName("CTC_SEX");
+
+                    b.Property<string>("Council")
+                        .HasColumnType("text")
+                        .HasColumnName("Council");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text")
+                        .HasColumnName("District");
+
+                    b.Property<string>("HTS_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_F_A");
+
+                    b.Property<string>("HTS_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_F_P");
+
+                    b.Property<string>("HTS_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_M_A");
+
+                    b.Property<string>("HTS_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_M_P");
+
+                    b.Property<string>("HTS_Mobile_ADULTS")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_Mobile_ADULTS");
+
+                    b.Property<string>("HTS_Mobile_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_Mobile_PEDS");
+
+                    b.Property<string>("HTS_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_PWID");
+
+                    b.Property<string>("HTS_SNS_Female_15")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_SNS_Female<15");
+
+                    b.Property<string>("HTS_SNS_Female_15_Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_SNS_Female 15+");
+
+                    b.Property<string>("HTS_SNS_Male_15")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_SNS_Male<15");
+
+                    b.Property<string>("HTS_SNS_Male_15_plus")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_SNS_Male 15+");
+
+                    b.Property<string>("IPV_HX_SCREEN")
+                        .HasColumnType("text")
+                        .HasColumnName("IPV_HX_SCREEN");
+
+                    b.Property<string>("KNOWN_POS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("KNOWN_POS_A");
+
+                    b.Property<string>("KNOWN_POS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("KNOWN_POS_PEDS");
+
+                    b.Property<string>("LFTU")
+                        .HasColumnType("text")
+                        .HasColumnName("LFTU");
+
+                    b.Property<string>("L_CTC")
+                        .HasColumnType("text")
+                        .HasColumnName("L_CTC");
+
+                    b.Property<string>("L_DXD")
+                        .HasColumnType("text")
+                        .HasColumnName("L_DXD");
+
+                    b.Property<string>("L_NOATTMPT")
+                        .HasColumnType("text")
+                        .HasColumnName("L_NOATTMPT");
+
+                    b.Property<string>("L_REFX")
+                        .HasColumnType("text")
+                        .HasColumnName("L_REFX");
+
+                    b.Property<string>("L_RTX")
+                        .HasColumnType("text")
+                        .HasColumnName("L_RTX");
+
+                    b.Property<string>("L_SELF_REF")
+                        .HasColumnType("text")
+                        .HasColumnName("L_SELF_REF");
+
+                    b.Property<string>("L_UNBL")
+                        .HasColumnType("text")
+                        .HasColumnName("L_UNBL");
+
+                    b.Property<string>("L_WRNGD")
+                        .HasColumnType("text")
+                        .HasColumnName("L_WRNGD");
+
+                    b.Property<string>("MECHANISM_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("MECHANISM ID");
+
+                    b.Property<string>("Month")
+                        .HasColumnType("text")
+                        .HasColumnName("Month");
+
+                    b.Property<string>("NEG_A")
+                        .HasColumnType("text")
+                        .HasColumnName("NEG_A");
+
+                    b.Property<string>("NEG_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("NEG_PEDS");
+
+                    b.Property<string>("POS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_A");
+
+                    b.Property<string>("POS_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_F_A");
+
+                    b.Property<string>("POS_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_F_P");
+
+                    b.Property<string>("POS_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_M_A");
+
+                    b.Property<string>("POS_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_M_P");
+
+                    b.Property<string>("POS_Mobile_ADULTS")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_Mobile_ADULTS");
+
+                    b.Property<string>("POS_Mobile_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_Mobile_PEDS");
+
+                    b.Property<string>("POS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_PEDS");
+
+                    b.Property<string>("POS_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_PWID");
+
+                    b.Property<string>("POS_SNS_Female_15")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_SNS_Female<15");
+
+                    b.Property<string>("POS_SNS_Female_15_Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_SNS_Female 15+");
+
+                    b.Property<string>("POS_SNS_Male_15")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_SNS_Male<15");
+
+                    b.Property<string>("POS_SNS_Male_15_Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_SNS_Male 15+");
+
+                    b.Property<string>("Partner")
+                        .HasColumnType("text")
+                        .HasColumnName("Partner");
+
+                    b.Property<string>("PrEP_CT_AGYW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_AGYW");
+
+                    b.Property<string>("PrEP_CT_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_FSW");
+
+                    b.Property<string>("PrEP_CT_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_MSM");
+
+                    b.Property<string>("PrEP_CT_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_PWID");
+
+                    b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_CT_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_CT_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_TG");
+
+                    b.Property<string>("PrEP_Eligible_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_AGY(15-19)");
+
+                    b.Property<string>("PrEP_Eligible_AGY_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_AGY(20-24)");
+
+                    b.Property<string>("PrEP_Eligible_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_FSW");
+
+                    b.Property<string>("PrEP_Eligible_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_MSM");
+
+                    b.Property<string>("PrEP_Eligible_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_PWID");
+
+                    b.Property<string>("PrEP_Eligible_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Eligible_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Eligible_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_TG");
+
+                    b.Property<string>("PrEP_NEW_AGYW_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_AGYW(15-19)");
+
+                    b.Property<string>("PrEP_NEW_AGYW_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_AGYW(20-24)");
+
+                    b.Property<string>("PrEP_NEW_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_FSW");
+
+                    b.Property<string>("PrEP_NEW_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_MSM");
+
+                    b.Property<string>("PrEP_NEW_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_PWID");
+
+                    b.Property<string>("PrEP_NEW_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_NEW_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_NEW_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_TG");
+
+                    b.Property<string>("PrEP_Screen_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_AGY(15-19)");
+
+                    b.Property<string>("PrEP_Screen_AGY_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_AGY(20-24)");
+
+                    b.Property<string>("PrEP_Screen_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_FSW");
+
+                    b.Property<string>("PrEP_Screen_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_MSM");
+
+                    b.Property<string>("PrEP_Screen_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_PWID");
+
+                    b.Property<string>("PrEP_Screen_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Screen_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Screen_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_TG");
+
+                    b.Property<string>("Priority_Tier")
+                        .HasColumnType("text")
+                        .HasColumnName("Priority_Tier");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text")
+                        .HasColumnName("Region");
+
+                    b.Property<string>("Report_Date")
+                        .HasColumnType("text")
+                        .HasColumnName("Report Date");
+
+                    b.Property<string>("SCREEN_ELIG_F")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_ELIG_F");
+
+                    b.Property<string>("SCREEN_ELIG_M")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_ELIG_M");
+
+                    b.Property<string>("SCREEN_ELIG_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_ELIG_PEDS");
+
+                    b.Property<string>("SCREEN_F")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_F");
+
+                    b.Property<string>("SCREEN_HTS_F")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_F");
+
+                    b.Property<string>("SCREEN_HTS_M")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_M");
+
+                    b.Property<string>("SCREEN_HTS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_PEDS");
+
+                    b.Property<string>("SCREEN_HTS_POS_F")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_POS_F");
+
+                    b.Property<string>("SCREEN_HTS_POS_M")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_POS_M");
+
+                    b.Property<string>("SCREEN_HTS_POS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_POS_PEDS");
+
+                    b.Property<string>("SCREEN_M")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_M");
+
+                    b.Property<string>("SCREEN_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_PEDS");
+
+                    b.Property<string>("SiteId")
+                        .HasColumnType("text")
+                        .HasColumnName("Site_ID");
+
+                    b.Property<string>("Site_Name")
+                        .HasColumnType("text")
+                        .HasColumnName("Site Name");
+
+                    b.Property<string>("TX_NEW_CHILD")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_CHILD");
+
+                    b.Property<string>("TX_NEW_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_PWID");
+
+                    b.Property<string>("TX_NEW_SEX")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_SEX");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("UploadBatchGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Upload_Batch")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Ward")
+                        .HasColumnType("text")
+                        .HasColumnName("Ward");
+
+                    b.Property<string>("Year")
+                        .HasColumnType("text")
+                        .HasColumnName("Year");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StagingCommunityData");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.FacilityData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Agency")
+                        .HasColumnType("text")
+                        .HasColumnName("Agency");
+
+                    b.Property<string>("CLIENT_A_TX_CURR")
+                        .HasColumnType("text")
+                        .HasColumnName("CLIENT_A_TX_CURR");
+
+                    b.Property<string>("CLIENT_A_TX_NEW")
+                        .HasColumnType("text")
+                        .HasColumnName("CLIENT_A_TX_NEW");
+
+                    b.Property<string>("CONTACT_A")
+                        .HasColumnType("text")
+                        .HasColumnName("CONTACT_A");
+
+                    b.Property<string>("CONTACT_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("CONTACT_PEDS");
+
+                    b.Property<string>("Council")
+                        .HasColumnType("text")
+                        .HasColumnName("Council");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text")
+                        .HasColumnName("District");
+
+                    b.Property<string>("HTS_2_months")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_2 months");
+
+                    b.Property<string>("HTS_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_F_A");
+
+                    b.Property<string>("HTS_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_F_P");
+
+                    b.Property<string>("HTS_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_M_A");
+
+                    b.Property<string>("HTS_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("HTS_M_P");
+
+                    b.Property<string>("IPV_HX_SCREEN")
+                        .HasColumnType("text")
+                        .HasColumnName("IPV_HX_SCREEN");
+
+                    b.Property<string>("KNOWN_POS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("KNOWN_POS_A");
+
+                    b.Property<string>("KNOWN_POS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("KNOWN_POS_PEDS");
+
+                    b.Property<string>("LCM_A")
+                        .HasColumnType("text")
+                        .HasColumnName("LCM_A");
+
+                    b.Property<string>("LFTU_A")
+                        .HasColumnType("text")
+                        .HasColumnName("LFTU_A");
+
+                    b.Property<string>("LFTU_P")
+                        .HasColumnType("text")
+                        .HasColumnName("LFTU_P");
+
+                    b.Property<string>("L_CTC_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_CTC_A");
+
+                    b.Property<string>("L_CTC_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_CTC_P");
+
+                    b.Property<string>("L_DXD_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_DXD_A");
+
+                    b.Property<string>("L_DXD_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_DXD_P");
+
+                    b.Property<string>("L_NOATTMPT_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_NOATTMPT_A");
+
+                    b.Property<string>("L_NOATTMPT_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_NOATTMPT_P");
+
+                    b.Property<string>("L_REFX_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_REFX_A");
+
+                    b.Property<string>("L_REFX_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_REFX_P");
+
+                    b.Property<string>("L_RTX_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_RTX_A");
+
+                    b.Property<string>("L_RTX_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_RTX_P");
+
+                    b.Property<string>("L_SELF_REF_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_SELF_REF_A");
+
+                    b.Property<string>("L_SELF_REF_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_SELF_REF_P");
+
+                    b.Property<string>("L_UNBL_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_UNBL_A");
+
+                    b.Property<string>("L_UNBL_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_UNBL_P");
+
+                    b.Property<string>("L_WRNGD_A")
+                        .HasColumnType("text")
+                        .HasColumnName("L_WRNGD_A");
+
+                    b.Property<string>("L_WRNGD_P")
+                        .HasColumnType("text")
+                        .HasColumnName("L_WRNGD_P");
+
+                    b.Property<string>("MECHANISM_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("MECHANISM ID");
+
+                    b.Property<string>("MMS_6_ELIG_A_F")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_A_F");
+
+                    b.Property<string>("MMS_6_ELIG_A_M")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_A_M");
+
+                    b.Property<string>("MMS_6_ELIG_P_M")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6_ELIG_P_M");
+
+                    b.Property<string>("MMS_6__ELIG_P_F")
+                        .HasColumnType("text")
+                        .HasColumnName("MMS_6__ELIG_P_F");
+
+                    b.Property<string>("Miss_App")
+                        .HasColumnType("text")
+                        .HasColumnName("Miss_App");
+
+                    b.Property<string>("Month")
+                        .HasColumnType("text")
+                        .HasColumnName("Month");
+
+                    b.Property<string>("NEG_A")
+                        .HasColumnType("text")
+                        .HasColumnName("NEG_A");
+
+                    b.Property<string>("NEG_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("NEG_PEDS");
+
+                    b.Property<string>("OPD_A")
+                        .HasColumnType("text")
+                        .HasColumnName("OPD_A");
+
+                    b.Property<string>("OPD_P")
+                        .HasColumnType("text")
+                        .HasColumnName("OPD_P");
+
+                    b.Property<string>("PMTCT_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_ART");
+
+                    b.Property<string>("PMTCT_EID")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_EID");
+
+                    b.Property<string>("PMTCT_HEI_POS")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_HEI_POS");
+
+                    b.Property<string>("PMTCT_HEI_POS_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_HEI_POS_ART");
+
+                    b.Property<string>("PMTCT_STAT_D")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_STAT_D");
+
+                    b.Property<string>("PMTCT_STAT_N")
+                        .HasColumnType("text")
+                        .HasColumnName("PMTCT_STAT_N");
+
+                    b.Property<string>("POS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_A");
+
+                    b.Property<string>("POS_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_F_A");
+
+                    b.Property<string>("POS_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_F_P");
+
+                    b.Property<string>("POS_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_M_A");
+
+                    b.Property<string>("POS_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_M_P");
+
+                    b.Property<string>("POS_PEDS")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_PEDS");
+
+                    b.Property<string>("POS_preg")
+                        .HasColumnType("text")
+                        .HasColumnName("POS_preg");
+
+                    b.Property<string>("Partner")
+                        .HasColumnType("text")
+                        .HasColumnName("Partner");
+
+                    b.Property<string>("PrEP_CT_AGYW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_AGYW");
+
+                    b.Property<string>("PrEP_CT_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_FSW");
+
+                    b.Property<string>("PrEP_CT_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_MSM");
+
+                    b.Property<string>("PrEP_CT_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_PWID");
+
+                    b.Property<string>("PrEP_CT_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_CT_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_CT_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_CT_TG");
+
+                    b.Property<string>("PrEP_Eligible_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_AGY(15-19)");
+
+                    b.Property<string>("PrEP_Eligible_AGY_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_AGY(20-24)");
+
+                    b.Property<string>("PrEP_Eligible_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_FSW");
+
+                    b.Property<string>("PrEP_Eligible_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_MSM");
+
+                    b.Property<string>("PrEP_Eligible_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_PWID");
+
+                    b.Property<string>("PrEP_Eligible_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Eligible_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Eligible_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Eligible_TG");
+
+                    b.Property<string>("PrEP_NEW_AGYW_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_AGYW(15-19)");
+
+                    b.Property<string>("PrEP_NEW_AGYW_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_AGYW(20-24)");
+
+                    b.Property<string>("PrEP_NEW_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_FSW");
+
+                    b.Property<string>("PrEP_NEW_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_MSM");
+
+                    b.Property<string>("PrEP_NEW_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_PWID");
+
+                    b.Property<string>("PrEP_NEW_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_NEW_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_NEW_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_NEW_TG");
+
+                    b.Property<string>("PrEP_Screen_AGY_15_19")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_AGY(15-19)");
+
+                    b.Property<string>("PrEP_Screen_AGY_20_24")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_AGY(20-24)");
+
+                    b.Property<string>("PrEP_Screen_FSW")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_FSW");
+
+                    b.Property<string>("PrEP_Screen_MSM")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_MSM");
+
+                    b.Property<string>("PrEP_Screen_PWID")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_PWID");
+
+                    b.Property<string>("PrEP_Screen_Pregnant_Breastfeeding_Women")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_Pregnant_Breastfeeding Women");
+
+                    b.Property<string>("PrEP_Screen_Serodiscordant_Couple")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_Serodiscordant Couple");
+
+                    b.Property<string>("PrEP_Screen_TG")
+                        .HasColumnType("text")
+                        .HasColumnName("PrEP_Screen_TG");
+
+                    b.Property<string>("Priority_Tier")
+                        .HasColumnType("text")
+                        .HasColumnName("Priority_Tier");
+
+                    b.Property<string>("REFILL")
+                        .HasColumnType("text")
+                        .HasColumnName("REFILL");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text")
+                        .HasColumnName("Region");
+
+                    b.Property<string>("Report_Date")
+                        .HasColumnType("text")
+                        .HasColumnName("Report Date");
+
+                    b.Property<string>("SCREEN_A")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_A");
+
+                    b.Property<string>("SCREEN_ELIG_A")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_ELIG_A");
+
+                    b.Property<string>("SCREEN_ELIG_P")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_ELIG_P");
+
+                    b.Property<string>("SCREEN_HTS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_A");
+
+                    b.Property<string>("SCREEN_HTS_P")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_P");
+
+                    b.Property<string>("SCREEN_HTS_POS_A")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_POS_A");
+
+                    b.Property<string>("SCREEN_HTS_POS_P")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_HTS_POS_P");
+
+                    b.Property<string>("SCREEN_P")
+                        .HasColumnType("text")
+                        .HasColumnName("SCREEN_P");
+
+                    b.Property<string>("Site_Name")
+                        .HasColumnType("text")
+                        .HasColumnName("Site Name");
+
+                    b.Property<string>("Site_id")
+                        .HasColumnType("text")
+                        .HasColumnName("Site_ID");
+
+                    b.Property<string>("TB_ART")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_ART");
+
+                    b.Property<string>("TB_PREV_D")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_PREV_D");
+
+                    b.Property<string>("TB_PREV_N")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_PREV_N");
+
+                    b.Property<string>("TB_PREV_NEW")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_PREV_NEW");
+
+                    b.Property<string>("TB_STAT_D")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_D");
+
+                    b.Property<string>("TB_STAT_N")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_N");
+
+                    b.Property<string>("TB_STAT_POS")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_STAT_POS");
+
+                    b.Property<string>("TX_CURR")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_CURR");
+
+                    b.Property<string>("TX_NEW_F_A")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_F_A");
+
+                    b.Property<string>("TX_NEW_F_P")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_F_P");
+
+                    b.Property<string>("TX_NEW_M_A")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_M_A");
+
+                    b.Property<string>("TX_NEW_M_P")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_NEW_M_P");
+
+                    b.Property<string>("TX_PREV")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_PREV");
+
+                    b.Property<string>("TX_TB_D")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_TB_D");
+
+                    b.Property<string>("TX_TB_N")
+                        .HasColumnType("text")
+                        .HasColumnName("TX_TB_N");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("UploadBatchGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Upload_Batch")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VL_D_A")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_D_A");
+
+                    b.Property<string>("VL_D_P")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_D_P");
+
+                    b.Property<string>("VL_ELIG_A")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_ELIG _A");
+
+                    b.Property<string>("VL_ELIG_P")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_ELIG_P");
+
+                    b.Property<string>("VL_N_A")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_N_A");
+
+                    b.Property<string>("VL_N_P")
+                        .HasColumnType("text")
+                        .HasColumnName("VL_N_P");
+
+                    b.Property<string>("Ward")
+                        .HasColumnType("text")
+                        .HasColumnName("Ward");
+
+                    b.Property<string>("XFER_DEATH")
+                        .HasColumnType("text")
+                        .HasColumnName("XFER_DEATH");
+
+                    b.Property<string>("XFER_IN")
+                        .HasColumnType("text")
+                        .HasColumnName("XFER_IN");
+
+                    b.Property<string>("XFER_OUT")
+                        .HasColumnType("text")
+                        .HasColumnName("XFER_OUT");
+
+                    b.Property<string>("Year")
+                        .HasColumnType("text")
+                        .HasColumnName("Year");
+
+                    b.Property<string>("tx_curr_o15_f")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_curr.o15.f");
+
+                    b.Property<string>("tx_curr_o15_m")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_curr.o15.m");
+
+                    b.Property<string>("tx_curr_u15_f")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_curr.u15.f");
+
+                    b.Property<string>("tx_curr_u15_m")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_curr.u15.m");
+
+                    b.Property<string>("tx_mmd_o15_f_35mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.f.35mo");
+
+                    b.Property<string>("tx_mmd_o15_f_o6mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.f.o6mo");
+
+                    b.Property<string>("tx_mmd_o15_f_u3mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.f.u3mo");
+
+                    b.Property<string>("tx_mmd_o15_m_35mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.m.35mo");
+
+                    b.Property<string>("tx_mmd_o15_m_o6mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.m.o6mo");
+
+                    b.Property<string>("tx_mmd_o15_m_u3mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.o15.m.u3mo");
+
+                    b.Property<string>("tx_mmd_u15_f_35mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.f.35mo");
+
+                    b.Property<string>("tx_mmd_u15_f_o6mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.f.o6mo");
+
+                    b.Property<string>("tx_mmd_u15_f_u3mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.f.u3mo");
+
+                    b.Property<string>("tx_mmd_u15_m_35mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.m.35mo");
+
+                    b.Property<string>("tx_mmd_u15_m_o6mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.m.o6mo");
+
+                    b.Property<string>("tx_mmd_u15_m_u3mo")
+                        .HasColumnType("text")
+                        .HasColumnName("tx_mmd.u15.m.u3mo");
+
+                    b.Property<string>("vmmc_circ_o15_m")
+                        .HasColumnType("text")
+                        .HasColumnName("vmmc_circ.o15.m");
+
+                    b.Property<string>("vmmc_circ_u15_m")
+                        .HasColumnType("text")
+                        .HasColumnName("vmmc_circ.u15.m");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StagingFacilityData");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.FileUploads", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("File")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UploadType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FileUploads");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.Link", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Key")
                         .HasColumnType("text");
@@ -85,6 +1217,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 8,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "Document Manager",
@@ -96,6 +1229,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 9,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "DATIM",
@@ -107,6 +1241,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 10,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "Panaroma Dashboard",
@@ -118,6 +1253,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 11,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "OHA Dashboard",
@@ -129,6 +1265,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 12,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "Partner Performance Report",
@@ -140,6 +1277,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 13,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "Monthly Portal",
@@ -151,6 +1289,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 14,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "IP Reporting System",
@@ -162,6 +1301,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 15,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "STAT Compiler",
@@ -173,6 +1313,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 16,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "UNICEF (MICS)",
@@ -184,6 +1325,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 17,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "Global Health Data",
@@ -195,6 +1337,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 18,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "World Bank",
@@ -206,6 +1349,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 19,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "World Bank Service Delivery Indicators",
@@ -217,6 +1361,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 20,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "",
                             LinkType = 3,
                             Name = "WHO Global Health Observatory",
@@ -228,6 +1373,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 21,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
                             Name = "Pediatric ARV Optimization",
@@ -239,6 +1385,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 22,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
                             Name = "D5 USAID Monthly Reporting",
@@ -250,6 +1397,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 23,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
                             Name = "D5 USAID Monthly Reporting - Site Level",
@@ -261,6 +1409,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 24,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
                             Name = "MCH FP Performance Dashboard",
@@ -272,6 +1421,7 @@ namespace GHPRS.Persistence.Migrations
                         {
                             Id = 25,
                             CreatedAt = new DateTime(2021, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "",
                             Key = "80334b54cc4c696b67e0d20c2bc461b9d867781b4234af3819030209cbde6751",
                             LinkType = 0,
                             Name = "Boresha Afya Facilities",
@@ -286,7 +1436,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -393,12 +1545,189 @@ namespace GHPRS.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.MerData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FileUploadsId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("age_2018")
+                        .HasColumnType("text");
+
+                    b.Property<string>("age_2019")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ageasentered")
+                        .HasColumnType("text");
+
+                    b.Property<string>("award_number")
+                        .HasColumnType("text");
+
+                    b.Property<string>("categoryoptioncomboname")
+                        .HasColumnType("text");
+
+                    b.Property<string>("community")
+                        .HasColumnType("text");
+
+                    b.Property<string>("communityuid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("country")
+                        .HasColumnType("text");
+
+                    b.Property<string>("cumulative")
+                        .HasColumnType("text");
+
+                    b.Property<string>("disaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("dreams")
+                        .HasColumnType("text");
+
+                    b.Property<string>("facility")
+                        .HasColumnType("text");
+
+                    b.Property<string>("facilityuid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("fiscal_year")
+                        .HasColumnType("text");
+
+                    b.Property<string>("funding_agency")
+                        .HasColumnType("text");
+
+                    b.Property<string>("hiv_treatment_status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("indicator")
+                        .HasColumnType("text");
+
+                    b.Property<string>("indicatortype")
+                        .HasColumnType("text");
+
+                    b.Property<string>("mech_code")
+                        .HasColumnType("text");
+
+                    b.Property<string>("mech_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("modality")
+                        .HasColumnType("text");
+
+                    b.Property<string>("numeratordenom")
+                        .HasColumnType("text");
+
+                    b.Property<string>("operatingunit")
+                        .HasColumnType("text");
+
+                    b.Property<string>("operatingunituid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("orgunituid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("otherdisaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("otherdisaggregate_sub")
+                        .HasColumnType("text");
+
+                    b.Property<string>("prime_partner_duns")
+                        .HasColumnType("text");
+
+                    b.Property<string>("prime_partner_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("prime_partner_uei")
+                        .HasColumnType("text");
+
+                    b.Property<string>("psnu")
+                        .HasColumnType("text");
+
+                    b.Property<string>("psnuuid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("qtr1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("qtr2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("qtr3")
+                        .HasColumnType("text");
+
+                    b.Property<string>("qtr4")
+                        .HasColumnType("text");
+
+                    b.Property<string>("sex")
+                        .HasColumnType("text");
+
+                    b.Property<string>("sitename")
+                        .HasColumnType("text");
+
+                    b.Property<string>("sitetype")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snu1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snu1uid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snuprioritization")
+                        .HasColumnType("text");
+
+                    b.Property<string>("source_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("standardizeddisaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("statuscx")
+                        .HasColumnType("text");
+
+                    b.Property<string>("statushiv")
+                        .HasColumnType("text");
+
+                    b.Property<string>("statustb")
+                        .HasColumnType("text");
+
+                    b.Property<string>("targets")
+                        .HasColumnType("text");
+
+                    b.Property<string>("trendscoarse")
+                        .HasColumnType("text");
+
+                    b.Property<string>("typemilitary")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUploadsId");
+
+                    b.ToTable("StagingMerData");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.Organization", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -440,7 +1769,10 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 120L, null, null, null, null, null);
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -465,12 +1797,216 @@ namespace GHPRS.Persistence.Migrations
                     b.ToTable("Person");
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.PLHIVData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FileUploadsId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("age_2018")
+                        .HasColumnType("text");
+
+                    b.Property<string>("age_2019")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ageasentered")
+                        .HasColumnType("text");
+
+                    b.Property<string>("categoryoptioncomboname")
+                        .HasColumnType("text");
+
+                    b.Property<string>("country")
+                        .HasColumnType("text");
+
+                    b.Property<string>("disaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("fiscal_year")
+                        .HasColumnType("text");
+
+                    b.Property<string>("indicator")
+                        .HasColumnType("text");
+
+                    b.Property<string>("indicatortype")
+                        .HasColumnType("text");
+
+                    b.Property<string>("numeratordenom")
+                        .HasColumnType("text");
+
+                    b.Property<string>("operatingunit")
+                        .HasColumnType("text");
+
+                    b.Property<string>("operatingunituid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("otherdisaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("psnu")
+                        .HasColumnType("text");
+
+                    b.Property<string>("psnuuid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("qtr4")
+                        .HasColumnType("text");
+
+                    b.Property<string>("sex")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snu1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snu1uid")
+                        .HasColumnType("text");
+
+                    b.Property<string>("snuprioritization")
+                        .HasColumnType("text");
+
+                    b.Property<string>("source_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("standardizeddisaggregate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("statushiv")
+                        .HasColumnType("text");
+
+                    b.Property<string>("targets")
+                        .HasColumnType("text");
+
+                    b.Property<string>("trendscoarse")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUploadsId");
+
+                    b.ToTable("StagingPLHIVData");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.TBData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Agency")
+                        .HasColumnType("text")
+                        .HasColumnName("Agency");
+
+                    b.Property<string>("Bacteriological_Diagnosis_Coverage_Pulmonary_TB_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("Pulmonary_TB_0-14");
+
+                    b.Property<string>("Bacteriological_Diagnosis_Coverage_Pulmonary_TB_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("Pulmonary_TB_15+");
+
+                    b.Property<string>("Council")
+                        .HasColumnType("text")
+                        .HasColumnName("Council");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text")
+                        .HasColumnName("District");
+
+                    b.Property<string>("Facility_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("Site_ID");
+
+                    b.Property<string>("Health_Facility")
+                        .HasColumnType("text")
+                        .HasColumnName("Site Name");
+
+                    b.Property<string>("Mechanism_ID")
+                        .HasColumnType("text")
+                        .HasColumnName("MECHANISM ID");
+
+                    b.Property<string>("Partner")
+                        .HasColumnType("text")
+                        .HasColumnName("Partner");
+
+                    b.Property<string>("Priority_Tier")
+                        .HasColumnType("text")
+                        .HasColumnName("Priority_Tier");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text")
+                        .HasColumnName("Region");
+
+                    b.Property<string>("Report_Date")
+                        .HasColumnType("text")
+                        .HasColumnName("Report Date");
+
+                    b.Property<string>("Reporting_Month")
+                        .HasColumnType("text")
+                        .HasColumnName("Month");
+
+                    b.Property<string>("TB_Detection_Female_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_Detection_Female_0-14");
+
+                    b.Property<string>("TB_Detection_Female_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_Detection_Female_15+");
+
+                    b.Property<string>("TB_Detection_Male_0_14")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_Detection_Male_0-14");
+
+                    b.Property<string>("TB_Detection_Male_15Plus")
+                        .HasColumnType("text")
+                        .HasColumnName("TB_Detection_Male_15+");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("UploadBatchGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Upload_Batch")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Ward")
+                        .HasColumnType("text")
+                        .HasColumnName("Ward");
+
+                    b.Property<string>("Year")
+                        .HasColumnType("text")
+                        .HasColumnName("Year");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StagingTBData");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.Template", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
@@ -512,7 +2048,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comments")
                         .HasColumnType("text");
@@ -532,8 +2070,14 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("FileExtension")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
@@ -550,10 +2094,18 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<string>("UploadBatch")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("UploadBatchGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UploadStatus")
+                        .HasColumnType("text");
+
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("TemplateId");
 
@@ -579,6 +2131,9 @@ namespace GHPRS.Persistence.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -633,7 +2188,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.WorkSheet", b =>
@@ -641,7 +2196,9 @@ namespace GHPRS.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -691,15 +2248,16 @@ namespace GHPRS.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -715,15 +2273,16 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("text");
@@ -739,7 +2298,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -761,7 +2320,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -776,7 +2335,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -795,7 +2354,7 @@ namespace GHPRS.Persistence.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("GHPRS.Core.Entities.Column", b =>
@@ -807,8 +2366,45 @@ namespace GHPRS.Persistence.Migrations
                     b.Navigation("WorkSheet");
                 });
 
+            modelBuilder.Entity("GHPRS.Core.Entities.FileUploads", b =>
+                {
+                    b.HasOne("GHPRS.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.MerData", b =>
+                {
+                    b.HasOne("GHPRS.Core.Entities.FileUploads", "FileUploads")
+                        .WithMany()
+                        .HasForeignKey("FileUploadsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUploads");
+                });
+
+            modelBuilder.Entity("GHPRS.Core.Entities.PLHIVData", b =>
+                {
+                    b.HasOne("GHPRS.Core.Entities.FileUploads", "FileUploads")
+                        .WithMany()
+                        .HasForeignKey("FileUploadsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUploads");
+                });
+
             modelBuilder.Entity("GHPRS.Core.Entities.Upload", b =>
                 {
+                    b.HasOne("GHPRS.Core.Entities.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GHPRS.Core.Entities.Template", "Template")
                         .WithMany()
                         .HasForeignKey("TemplateId");
@@ -816,6 +2412,8 @@ namespace GHPRS.Persistence.Migrations
                     b.HasOne("GHPRS.Core.Entities.User", "User")
                         .WithMany("Uploads")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Organization");
 
                     b.Navigation("Template");
 
