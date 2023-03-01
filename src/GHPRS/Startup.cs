@@ -4,13 +4,9 @@ using GHPRS.Core.Entities;
 using GHPRS.Core.Hubs;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Services;
-using GHPRS.Core.UnitOfWork;
 using GHPRS.EmailService;
 using GHPRS.Persistence;
 using GHPRS.Persistence.Repositories;
-using GHPRS.Persistence.UnitOfWork;
-// using Hangfire;
-// using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.OpenApi.Models;
 
 namespace GHPRS
@@ -97,28 +92,13 @@ namespace GHPRS
                     };
                 });
 
-            // Add Hangfire services.
-            // services.AddHangfire(config =>
-            //     config.UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection")));
-            // services.AddHangfire(configuration => configuration
-            //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-            //     .UseSimpleAssemblyNameTypeSerializer()
-            //     .UseRecommendedSerializerSettings()
-            //     .UsePostgreSqlStorage(Configuration.GetConnectionString("defaultConnection"), new PostgreSqlStorageOptions
-            //     {
-            //         QueuePollInterval = TimeSpan.FromSeconds(5.0),
-            //     }));
-            //
-            // // Add the processing server as IHostedService
-            // services.AddHangfireServer();
-
             services.AddControllers();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddTransient<ITemplateRepository, TemplateRepository>();
             services.AddTransient<ITemplateService, TemplateService>();
-            services.AddTransient<IUploadRepository, UploadRepository>();
+            services.AddScoped<IUploadRepository, UploadRepository>();
             services.AddScoped<IFileUploadRepository, FileUploadRepository>();
             services.AddScoped<IMerDataRepository, MerDataRepository>();
             services.AddScoped<IFacilityDataRepository, FacilityDataRepository>();
@@ -131,9 +111,9 @@ namespace GHPRS
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IColumnRepository, ColumnRepository>();
             services.AddScoped<IMetabaseService, MetabaseService>();
-            services.AddScoped<IDataUnitOfWork, DataUnitOfWork>();
+            // services.AddScoped<IDataUnitOfWork, DataUnitOfWork>();
             services.AddScoped<IPLHIVDataRepository, PLHIVDataRepository>();
-            services.AddScoped<IBlobStorageService, BlobStorageService>();
+            // services.AddScoped<IBlobStorageService, BlobStorageService>();
             services.AddScoped(typeof(IEtlDataRepository<>), typeof(EtlDataRepository<>));
 
             services.AddControllers().AddNewtonsoftJson(options =>
@@ -167,7 +147,7 @@ namespace GHPRS
                 app.UseHsts();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);

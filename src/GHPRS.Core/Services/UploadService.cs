@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
@@ -427,55 +428,105 @@ namespace GHPRS.Core.Services
                 {
                     Name = fileName,
                     ContentType = "text/plain",
-                    // User = user,
                     UploadDate = DateTime.Now,
                     Status = "Processing",
                     UploadType = uploadTypeId == 1 ? "MER Data" : "PLHIV Data"
                 };
-                _fileUploadRepository.Insert(merData);
+                merData = _fileUploadRepository.Insert(merData);
+                
                 string webRootPath = _hostingEnvironment.ContentRootPath;
-                string newPath = Path.Combine(webRootPath, "Files");
+                string filePath = Path.Combine(webRootPath, "Files", fileName);
                 var dataTable = new DataTable();
-                using (var reader = new StreamReader(newPath + "/" + fileName))
-                {
-                    // Create columns based on the first line of the file
-                    var headerLine = reader.ReadLine();
-                    char[] delimiter = new char[] { '\t' };
-                    var columns = headerLine.Split(delimiter);
-                    foreach (var column in columns)
-                    {
-                        dataTable.Columns.Add(column.Trim());
-                    }
 
+                using (var reader = new StreamReader(filePath))
+                {
+                    char[] delimiter = new char[] { '\t' };
+                    
+                    // Create columns based on the first line of the file
+                    var headerLine = await reader.ReadLineAsync();
+                    var columns = headerLine.Split(delimiter);
+                    dataTable = CreateDataTable(columns);
+                    
                     var lineCount = 0;
                     while (!reader.EndOfStream)
                     {
-                        var line = reader.ReadLine();
-                        var values = line.Split(delimiter);
-                        var row = dataTable.NewRow();
-                        for (int i = 0; i < values.Length; i++)
-                        {
-                            row[i] = values[i].Trim();
-                        }
+                        var chunk = await ReadChunkAsync(reader, 100 * 1024 * 1024);
+                        var lines = chunk.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                        dataTable.Rows.Add(row);
-                        lineCount++;
-                        extractProgress.Value = lineCount;
-                        await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                        foreach (var line in lines) 
+                        {
+                            var values = line.Split(delimiter);
+                            var row = dataTable.NewRow();
+
+                            for (int i = 0; i < values.Length; i++)
+                            {
+                                row[i] = values[i].Trim();
+                            }
+
+                            dataTable.Rows.Add(row);
+                            lineCount++;
+                            extractProgress.Value = lineCount;
+                            await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                        }
+                        
+                        await SaveChunkAsync(dataTable, merData, uploadTypeId);
+                        dataTable.Clear();
                     }
+                    await SaveChunkAsync(dataTable, merData, uploadTypeId);
+
+                    // var pendingUpload = _fileUploadRepository.GetPendingUploads(merData.UploadType);
+                    merData.Status = "Completed";
+                    _fileUploadRepository.UpdateFile(merData);
                 }
+                File.Delete(Path.Combine(webRootPath, "Files", fileName));
+                return dataTable;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+        }
+        
+        public DataTable CreateDataTable(IEnumerable<string> columnNames)
+        {
+            DataTable dataTable = new DataTable();
+
+            foreach (string columnName in columnNames)
+            {
+                dataTable.Columns.Add(columnName);
+            }
+
+            return dataTable;
+        }
+        
+        private async Task<string> ReadChunkAsync(StreamReader reader, int bufferSize)
+        {
+            char[] buffer = new char[bufferSize];
+            int bytesRead = await reader.ReadAsync(buffer, 0, bufferSize);
+            return new string(buffer, 0, bytesRead);
+        }
+
+        private async Task SaveChunkAsync(DataTable dataTable, FileUploads merData, int uploadTypeId)
+        {
+            try
+            {
+                if (dataTable.Rows.Count == 0)
+                {
+                    return;
+                }
+
+                var serializedData = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
 
                 if (uploadTypeId == 1)
                 {
-                    List<MerData> listMerData = new List<MerData>();
-                    var pendingUpload = _fileUploadRepository.GetPendingUploads("MER Data");
-                    pendingUpload.Status = "Completed";
-                    _fileUploadRepository.UpdateFile(pendingUpload);
-
-                    string json = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
-                    var deserializedData = JsonConvert.DeserializeObject<MerData[]>(json);
-                    listMerData.AddRange(deserializedData.ToList());
-                    listMerData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
+                    var deserializedData = JsonConvert.DeserializeObject<MerData[]>(serializedData);
+                    var listMerData = deserializedData.Select(z =>
+                    {
+                        z.FileUploadsId = merData.Id;
+                        return z;
+                    }).ToList(); 
+                
                     if (listMerData.Any())
                     {
                         _merDataRepository.Insert(listMerData);
@@ -483,25 +534,22 @@ namespace GHPRS.Core.Services
                 }
                 else if (uploadTypeId == 2)
                 {
-                    List<PLHIVData> listPLHIVData = new List<PLHIVData>();
-                    var pendingUpload = _fileUploadRepository.GetPendingUploads("PLHIV Data");
-                    pendingUpload.Status = "Completed";
-                    _fileUploadRepository.UpdateFile(pendingUpload);
+                    var deserializedData = JsonConvert.DeserializeObject<PLHIVData[]>(serializedData);
+                    var listPLHIVData = deserializedData.Select(z =>
+                    {
+                        z.FileUploadsId = merData.Id;
+                        return z;
+                    }).ToList();
 
-                    string json = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
-                    var deserializedData = JsonConvert.DeserializeObject<PLHIVData[]>(json);
-                    listPLHIVData.AddRange(deserializedData.ToList());
-                    listPLHIVData.ForEach(z => z.FileUploadsId = pendingUpload.Id);
                     if (listPLHIVData.Any())
                     {
                         _plhivDataRepository.Insert(listPLHIVData);
                     }
                 }
-                return dataTable;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e.Message, e);
                 throw;
             }
         }

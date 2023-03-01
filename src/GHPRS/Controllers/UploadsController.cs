@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities;
 using GHPRS.Core.Interfaces;
 using GHPRS.Core.Models;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace GHPRS.Controllers
@@ -24,36 +17,24 @@ namespace GHPRS.Controllers
     [Authorize]
     public class UploadsController : ControllerBase
     {
-        private const long MaxFileSize = 10L * 1024L * 1024L * 1024L;
+        // private const long MaxFileSize = 10L * 1024L * 1024L * 1024L;
         private readonly ILogger<UploadsController> _logger;
         private readonly IUploadRepository _uploadRepository;
         private readonly IFileUploadRepository _fileRepository;
         private readonly IUploadService _uploadService;
         private readonly UserManager<User> _userManager;
-        private readonly CloudBlobContainer _container;
-        private readonly IBlobStorageService _blobStorageService;
 
         public UploadsController(ILogger<UploadsController> logger, 
             IUploadService uploadService,
             IUploadRepository uploadRepository,
             IFileUploadRepository fileRepository,
-            UserManager<User> userManager,
-            IConfiguration configuration,
-            IBlobStorageService blobStorageService)
+            UserManager<User> userManager)
         {
             _logger = logger;
             _uploadService = uploadService;
             _uploadRepository = uploadRepository;
             _fileRepository = fileRepository;
             _userManager = userManager;
-            _blobStorageService = blobStorageService;
-            
-            //blob storage
-            var connectionString = configuration.GetConnectionString("AzureStorage");
-            var account = CloudStorageAccount.Parse(connectionString);
-            var client = account.CreateCloudBlobClient();
-            _container = client.GetContainerReference("merplhiv");
-            _container.CreateIfNotExistsAsync().GetAwaiter().GetResult();
         }
 
         [HttpGet]
