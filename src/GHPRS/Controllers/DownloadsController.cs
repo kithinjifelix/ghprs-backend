@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using GHPRS.Core.Entities.ETL;
 using GHPRS.Core.Interfaces;
@@ -73,11 +74,15 @@ namespace GHPRS.Controllers
 
         [HttpGet("GetAgeDisaggregates")]
         [AllowAnonymous]
-        public IActionResult GetAgeDisaggregates()
+        public IActionResult GetAgeDisaggregates(string type)
         {
             try
             {
                 var ageDisaggregates = _etlAgeDisaggregateRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<AgeDisaggregate>(ageDisaggregates).ToString()), "text/csv", "AgeDisaggregates.csv");
+                }
                 return Ok(ageDisaggregates);
             }
             catch (Exception e)
@@ -89,11 +94,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetCouncils")]
         [AllowAnonymous]
-        public IActionResult GetCouncils()
+        public IActionResult GetCouncils(string type)
         {
             try
             {
                 var councils = _etlCouncilsRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Council>(councils).ToString()), "text/csv", "Councils.csv");
+                }
                 return Ok(councils);
             }
             catch (Exception e)
@@ -105,11 +114,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetCxStatus")]
         [AllowAnonymous]
-        public IActionResult GetCxStatus()
+        public IActionResult GetCxStatus(string type)
         {
             try
             {
                 var cxStatus = _etlCxStatusRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<CxStatus>(cxStatus).ToString()), "text/csv", "CXStatus.csv");
+                }
                 return Ok(cxStatus);
             }
             catch (Exception e)
@@ -121,11 +134,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetDataSource")]
         [AllowAnonymous]
-        public IActionResult GetDataSource()
+        public IActionResult GetDataSource(string type)
         {
             try
             {
                 var dataSources = _etlDataSourceRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<DataSource>(dataSources).ToString()), "text/csv", "DataSources.csv");
+                }
                 return Ok(dataSources);
             }
             catch (Exception e)
@@ -137,11 +154,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetHivStatus")]
         [AllowAnonymous]
-        public IActionResult GetHivStatus()
+        public IActionResult GetHivStatus(string type)
         {
             try
             {
                 var hivStatus = _etlHivStatusRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<HivStatus>(hivStatus).ToString()), "text/csv", "HIVStatus.csv");
+                }
                 return Ok(hivStatus);
             }
             catch (Exception e)
@@ -153,11 +174,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetHivTreatmentStatus")]
         [AllowAnonymous]
-        public IActionResult GetHivTreatmentStatus()
+        public IActionResult GetHivTreatmentStatus(string type)
         {
             try
             {
                 var hivTreatmentStatus = _etlHivTreatmentStatusRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<HivTreatmentStatus>(hivTreatmentStatus).ToString()), "text/csv", "HIVTreatmentStatus.csv");
+                }
                 return Ok(hivTreatmentStatus);
             }
             catch (Exception e)
@@ -173,6 +198,11 @@ namespace GHPRS.Controllers
         {
             try
             {
+                if (ownerParameters.type != null && ownerParameters.type.ToLower() == "csv")
+                {
+                    var allMeasures = _etlMeasureRepository.GetAll(ownerParameters);
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Measure>(allMeasures.ToList()).ToString()), "text/csv", "Measures.csv");
+                }
                 var measures = _etlMeasureRepository.GetAll(ownerParameters);
                 var metadata = new
                 {
@@ -184,7 +214,6 @@ namespace GHPRS.Controllers
                     measures.HasPrevious
                 };
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                // _logger.LogInfo($"Returned {accounts.TotalCount} owners from database.");
                 return Ok(measures);
             }
             catch (Exception e)
@@ -196,11 +225,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetMechanisms")]
         [AllowAnonymous]
-        public IActionResult GetMechanisms()
+        public IActionResult GetMechanisms(string type)
         {
             try
             {
                 var mechanisms = _etlMechanismRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Mechanism>(mechanisms).ToString()), "text/csv", "Mechanisms.csv");
+                }
                 return Ok(mechanisms);
             }
             catch (Exception e)
@@ -212,11 +245,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetModalities")]
         [AllowAnonymous]
-        public IActionResult GetModalities()
+        public IActionResult GetModalities(string type)
         {
             try
             {
                 var modalities = _etlModalityRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Modality>(modalities).ToString()), "text/csv", "Modalities.csv");
+                }
                 return Ok(modalities);
             }
             catch (Exception e)
@@ -228,11 +265,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetPeriods")]
         [AllowAnonymous]
-        public IActionResult GetPeriods()
+        public IActionResult GetPeriods(string type)
         {
             try
             {
                 var periods = _etlPeriodRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Period>(periods).ToString()), "text/csv", "Periods.csv");
+                }
                 return Ok(periods);
             }
             catch (Exception e)
@@ -244,11 +285,15 @@ namespace GHPRS.Controllers
 
         [HttpGet("GetRegions")]
         [AllowAnonymous]
-        public IActionResult GetRegions()
+        public IActionResult GetRegions(string type)
         {
             try
             {
                 var regions = _etlRegionRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Region>(regions).ToString()), "text/csv", "Regions.csv");
+                }
                 return Ok(regions);
             }
             catch (Exception e)
@@ -260,11 +305,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetSexDisaggregates")]
         [AllowAnonymous]
-        public IActionResult GetSexDisaggregates()
+        public IActionResult GetSexDisaggregates(string type)
         {
             try
             {
                 var sexDisaggregates = _etlSexDisaggregatesRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<SexDisaggregates>(sexDisaggregates).ToString()), "text/csv", "SexDisaggregates.csv");
+                }
                 return Ok(sexDisaggregates);
             }
             catch (Exception e)
@@ -276,11 +325,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetSites")]
         [AllowAnonymous]
-        public IActionResult GetSites()
+        public IActionResult GetSites(string type)
         {
             try
             {
                 var sites = _etlSiteRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Site>(sites).ToString()), "text/csv", "Sites.csv");
+                }
                 return Ok(sites);
             }
             catch (Exception e)
@@ -292,11 +345,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetTbStatus")]
         [AllowAnonymous]
-        public IActionResult GetTbStatus()
+        public IActionResult GetTbStatus(string type)
         {
             try
             {
                 var tbStatus = _etlTbStatusRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<TbStatus>(tbStatus).ToString()), "text/csv", "TbStatus.csv");
+                }
                 return Ok(tbStatus);
             }
             catch (Exception e)
@@ -308,11 +365,15 @@ namespace GHPRS.Controllers
         
         [HttpGet("GetWards")]
         [AllowAnonymous]
-        public IActionResult GetWards()
+        public IActionResult GetWards(string type)
         {
             try
             {
                 var wards = _etlWardRepository.GetAll().ToList();
+                if (type != null && type.ToLower() == "csv")
+                {
+                    return File(Encoding.UTF8.GetBytes(getEntityStringBuilder<Ward>(wards).ToString()), "text/csv", "Wards.csv");
+                }
                 return Ok(wards);
             }
             catch (Exception e)
@@ -320,6 +381,42 @@ namespace GHPRS.Controllers
                 _logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        private StringBuilder getEntityStringBuilder<T>(List<T> result)
+        {
+            var columnNamesAppended = false;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < result.Count; i++)
+            {
+                var stringPropertyNamesAndValues = result[i].GetType()
+                    .GetProperties()
+                    .Select(pi => new
+                    {
+                        pi.Name,
+                        Value = pi.GetGetMethod().Invoke(result[i], null)
+                    });
+                if (!columnNamesAppended)
+                {
+                    var names = stringPropertyNamesAndValues.Select(x => x.Name).ToArray();
+                    sb.Append(String.Join(",", names));
+                    columnNamesAppended = true;
+                    sb.Append("\r\n");
+                }
+                foreach (var pair in stringPropertyNamesAndValues)
+                {
+                    if(pair.Value == null)
+                    {
+                        sb.Append("" + ',');
+                    }
+                    else
+                    {
+                        sb.Append(pair.Value.ToString() + ',');
+                    }
+                }
+                sb.Append("\r\n");
+            }
+            return sb;
         }
     }
 }
