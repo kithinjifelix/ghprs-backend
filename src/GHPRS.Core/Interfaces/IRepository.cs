@@ -10,5 +10,6 @@ namespace GHPRS.Core.Interfaces
         T Insert(T entity);
         void Update(T entity);
         void Delete(int id);
+        void DeleteAll(string tableName);
     }
 }

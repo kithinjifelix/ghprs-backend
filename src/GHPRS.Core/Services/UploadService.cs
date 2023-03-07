@@ -438,6 +438,8 @@ namespace GHPRS.Core.Services
                 string filePath = Path.Combine(webRootPath, "Files", fileName);
                 var dataTable = new DataTable();
 
+                var tableName = uploadTypeId == 1 ? "public.\"StagingMerData\"" : "public.\"StagingPLHIVData\"";
+                _merDataRepository.DeleteAll(tableName);
                 using (var reader = new StreamReader(filePath))
                 {
                     char[] delimiter = new char[] { '\t' };
@@ -445,12 +447,14 @@ namespace GHPRS.Core.Services
                     // Create columns based on the first line of the file
                     var headerLine = await reader.ReadLineAsync();
                     var columns = headerLine.Split(delimiter);
+                    _logger.LogInformation($"Columns {string.Join(",", columns)}");
+                    _logger.LogInformation($"Column Count {columns.Length}");
                     dataTable = CreateDataTable(columns);
                     
                     var lineCount = 0;
                     while (!reader.EndOfStream)
                     {
-                        var chunk = await ReadChunkAsync(reader, 100 * 1024 * 1024);
+                        var chunk = await ReadChunkAsync(reader, 10 * 1024 * 1024);
                         var lines = chunk.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (var line in lines) 
@@ -460,9 +464,18 @@ namespace GHPRS.Core.Services
 
                             for (int i = 0; i < values.Length; i++)
                             {
-                                row[i] = values[i].Trim();
+                                _logger.LogInformation($"i {i}");
+                                if (i <= columns.Length - 1)
+                                {
+                                    row[i] = values[i].Trim();
+                                }
+                                else
+                                {
+                                    _logger.LogInformation($"Not read {values[i].Trim()}");
+                                }
                             }
-
+                            
+                            _logger.LogInformation($"Rows read {lineCount}");
                             dataTable.Rows.Add(row);
                             lineCount++;
                             extractProgress.Value = lineCount;
@@ -478,7 +491,8 @@ namespace GHPRS.Core.Services
                     merData.Status = "Completed";
                     _fileUploadRepository.UpdateFile(merData);
                 }
-                File.Delete(Path.Combine(webRootPath, "Files", fileName));
+                // Move the file to archive
+                File.Move(Path.Combine(webRootPath, "Files", fileName), Path.Combine(webRootPath, "archive", fileName));
                 return dataTable;
             }
             catch (Exception e)
