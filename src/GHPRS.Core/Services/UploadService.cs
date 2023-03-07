@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
@@ -447,15 +448,13 @@ namespace GHPRS.Core.Services
                     // Create columns based on the first line of the file
                     var headerLine = await reader.ReadLineAsync();
                     var columns = headerLine.Split(delimiter);
-                    _logger.LogInformation($"Columns {string.Join(",", columns)}");
-                    _logger.LogInformation($"Column Count {columns.Length}");
                     dataTable = CreateDataTable(columns);
                     
                     var lineCount = 0;
                     while (!reader.EndOfStream)
                     {
                         var chunk = await ReadChunkAsync(reader, 10 * 1024 * 1024);
-                        var lines = chunk.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        var lines = Regex.Split(chunk, @"(?:DATIM|Derived)\r?\n", RegexOptions.None);
 
                         foreach (var line in lines) 
                         {
@@ -464,30 +463,22 @@ namespace GHPRS.Core.Services
 
                             for (int i = 0; i < values.Length; i++)
                             {
-                                _logger.LogInformation($"i {i}");
                                 if (i <= columns.Length - 1)
                                 {
                                     row[i] = values[i].Trim();
                                 }
-                                else
-                                {
-                                    _logger.LogInformation($"Not read {values[i].Trim()}");
-                                }
                             }
-                            
-                            _logger.LogInformation($"Rows read {lineCount}");
                             dataTable.Rows.Add(row);
                             lineCount++;
                             extractProgress.Value = lineCount;
                             await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
                         }
                         
+                        _logger.LogInformation($"Saved chunk");
                         await SaveChunkAsync(dataTable, merData, uploadTypeId);
                         dataTable.Clear();
                     }
                     await SaveChunkAsync(dataTable, merData, uploadTypeId);
-
-                    // var pendingUpload = _fileUploadRepository.GetPendingUploads(merData.UploadType);
                     merData.Status = "Completed";
                     _fileUploadRepository.UpdateFile(merData);
                 }
