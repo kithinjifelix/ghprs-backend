@@ -19,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Z.Dapper.Plus;
 
 namespace GHPRS
 {
@@ -130,6 +132,22 @@ namespace GHPRS
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Api", Version = "v1"}); });
             //Signal R
             services.AddSignalR();
+            
+            try
+            {
+                DapperPlusManager.AddLicense("1755;700-ThePalladiumGroup", "218460a6-02d0-c26b-9add-e6b8d13ccbf4");
+                if (!Z.Dapper.Plus.DapperPlusManager.ValidateLicense(out var licenseErrorMessage))
+                {
+                    throw new Exception(licenseErrorMessage);
+                }
+            }
+            catch (Exception e)
+            {
+                var error = "DapperPlus Initialization Error";
+                Log.Error($"{e}");
+                // StartupErrors.Add(error);
+                throw;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -3,6 +3,8 @@ using GHPRS.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Z.Dapper.Plus;
 
 namespace GHPRS.Persistence.Repositories
 {
@@ -18,8 +20,9 @@ namespace GHPRS.Persistence.Repositories
         public IEnumerable<MerData> Insert(IEnumerable<MerData> entities)
         {
             if (!entities.Any()) throw new ArgumentException(nameof(entities));
-            _context.AddRange(entities);
-            _context.SaveChanges();
+            // _context.AddRange(entities);
+            // _context.SaveChanges();
+            Context.Database.GetDbConnection().BulkInsert(entities);
             return entities;
         }
     }
