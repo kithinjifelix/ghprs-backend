@@ -16,6 +16,7 @@ namespace GHPRS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DownloadsController : ControllerBase
     {
         private readonly IEtlDataRepository<AgeDisaggregate> _etlAgeDisaggregateRepository;
@@ -73,7 +74,6 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("GetAgeDisaggregates")]
-        [AllowAnonymous]
         public IActionResult GetAgeDisaggregates(string type)
         {
             try
@@ -93,7 +93,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetCouncils")]
-        [AllowAnonymous]
         public IActionResult GetCouncils(string type)
         {
             try
@@ -113,7 +112,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetCxStatus")]
-        [AllowAnonymous]
         public IActionResult GetCxStatus(string type)
         {
             try
@@ -133,7 +131,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetDataSource")]
-        [AllowAnonymous]
         public IActionResult GetDataSource(string type)
         {
             try
@@ -153,7 +150,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetHivStatus")]
-        [AllowAnonymous]
         public IActionResult GetHivStatus(string type)
         {
             try
@@ -173,7 +169,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetHivTreatmentStatus")]
-        [AllowAnonymous]
         public IActionResult GetHivTreatmentStatus(string type)
         {
             try
@@ -193,7 +188,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetMeasures")]
-        [AllowAnonymous]
         public IActionResult GetMeasures([FromQuery] ETLParameters ownerParameters)
         {
             try
@@ -224,7 +218,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetMechanisms")]
-        [AllowAnonymous]
         public IActionResult GetMechanisms(string type)
         {
             try
@@ -244,7 +237,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetModalities")]
-        [AllowAnonymous]
         public IActionResult GetModalities(string type)
         {
             try
@@ -264,7 +256,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetPeriods")]
-        [AllowAnonymous]
         public IActionResult GetPeriods(string type)
         {
             try
@@ -284,7 +275,6 @@ namespace GHPRS.Controllers
         }
 
         [HttpGet("GetRegions")]
-        [AllowAnonymous]
         public IActionResult GetRegions(string type)
         {
             try
@@ -304,7 +294,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetSexDisaggregates")]
-        [AllowAnonymous]
         public IActionResult GetSexDisaggregates(string type)
         {
             try
@@ -324,7 +313,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetSites")]
-        [AllowAnonymous]
         public IActionResult GetSites(string type)
         {
             try
@@ -344,7 +332,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetTbStatus")]
-        [AllowAnonymous]
         public IActionResult GetTbStatus(string type)
         {
             try
@@ -364,7 +351,6 @@ namespace GHPRS.Controllers
         }
         
         [HttpGet("GetWards")]
-        [AllowAnonymous]
         public IActionResult GetWards(string type)
         {
             try
