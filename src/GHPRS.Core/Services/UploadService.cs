@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure.Communication.Email.Models;
 using GHPRS.Core.Entities;
@@ -433,52 +436,140 @@ namespace GHPRS.Core.Services
                     UploadType = uploadTypeId == 1 ? "MER Data" : "PLHIV Data"
                 };
                 merData = _fileUploadRepository.Insert(merData);
-                
+                var dataTable = new DataTable();
                 string webRootPath = _hostingEnvironment.ContentRootPath;
                 string filePath = Path.Combine(webRootPath, "Files", fileName);
-                var dataTable = new DataTable();
 
-                using (var reader = new StreamReader(filePath))
+                var tableName = uploadTypeId == 1 ? "public.\"StagingMerData\"" : "public.\"StagingPLHIVData\"";
+                _merDataRepository.DeleteAll(tableName);
+                
+                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     char[] delimiter = new char[] { '\t' };
-                    
-                    // Create columns based on the first line of the file
-                    var headerLine = await reader.ReadLineAsync();
-                    var columns = headerLine.Split(delimiter);
-                    dataTable = CreateDataTable(columns);
-                    
                     var lineCount = 0;
-                    while (!reader.EndOfStream)
+                    var chunkSize = 100 * 1024 * 1024;
+                    byte[] buffer = new byte[chunkSize];
+                    int bytesRead = 0;
+                    List<string> currentDataList = new List<string>();
+                    bool isFirstChunk = true;
+                    string currentData = string.Empty;
+                    var columns = new string[50];
+                    
+                    while ((bytesRead = await fileStream.ReadAsync(buffer, 0, chunkSize)) > 0)
                     {
-                        var chunk = await ReadChunkAsync(reader, 100 * 1024 * 1024);
-                        var lines = chunk.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                        foreach (var line in lines) 
+                        if (isFirstChunk)
                         {
-                            var values = line.Split(delimiter);
-                            var row = dataTable.NewRow();
+                            // First chunk of data, process headers separately
+                            currentData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                            for (int i = 0; i < values.Length; i++)
+                            int endIndex = currentData.IndexOf('\n');
+                            string headerLine = currentData.Substring(0, endIndex);
+                            columns = headerLine.Split(delimiter);
+                            isFirstChunk = false;
+                            
+                            // Move startIndex to the next line
+                            int startIndex = endIndex + 1;
+                            if (startIndex < currentData.Length)
                             {
-                                row[i] = values[i].Trim();
+                                currentData = currentData.Substring(startIndex);
+                            }
+                            else
+                            {
+                                currentData = string.Empty;
+                            }
+                        }
+                        else
+                        {
+                            currentData += Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                            int startIndex = 0;
+                            int endIndex = currentData.IndexOf('\n');
+                            while (endIndex >= 0)
+                            {
+                                string line = currentData.Substring(startIndex, endIndex - startIndex);
+                                currentDataList.Add(line);
+
+                                startIndex = endIndex + 1;
+                                endIndex = currentData.IndexOf('\n', startIndex);
                             }
 
-                            dataTable.Rows.Add(row);
-                            lineCount++;
-                            extractProgress.Value = lineCount;
-                            await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                            if (startIndex < currentData.Length)
+                            {
+                                currentData = currentData.Substring(startIndex);
+                            }
+                            else
+                            {
+                                currentData = string.Empty;
+                            }
                         }
-                        
-                        await SaveChunkAsync(dataTable, merData, uploadTypeId);
-                        dataTable.Clear();
-                    }
-                    await SaveChunkAsync(dataTable, merData, uploadTypeId);
 
-                    // var pendingUpload = _fileUploadRepository.GetPendingUploads(merData.UploadType);
+                        dataTable = CreateDataTable(columns);
+                        int dataLinesCount = 0;
+                        if (currentDataList.Any())
+                        {
+                            // Extract the rest of the lines
+                            string[] dataLines = currentDataList.ToArray();
+                            dataLinesCount = dataLines.Length;
+                            foreach (var line in dataLines)
+                            {
+                                var values = line.Split(delimiter);
+                        
+                                if (values.Length >= columns.Length)
+                                {
+                                    var row = dataTable.NewRow();
+                        
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        row[i] = values[i].Trim();
+                                    }
+                        
+                                    dataTable.Rows.Add(row);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Extract the data from the currentData variable
+                            var lines = currentData.Split('\n');
+                            dataLinesCount = lines.Length;
+                            foreach (var line in lines)
+                            {
+                                var values = line.Split(delimiter);
+
+                                if (values.Length >= columns.Length)
+                                {
+                                    var row = dataTable.NewRow();
+
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        row[i] = values[i].Trim();
+                                    }
+
+                                    dataTable.Rows.Add(row);
+                                }
+                            }
+                        }
+                        await SaveChunkAsync(dataTable, merData, uploadTypeId);
+                        _logger.LogInformation($"Saved chunk");
+                        dataTable.Clear();
+                        lineCount += dataLinesCount;
+                        extractProgress.Value = lineCount;
+                        await _progressHubContext.Clients.All.SendAsync("Progress", extractProgress);
+                        currentDataList.Clear();
+                    }
+                    _logger.LogInformation($"Completed reading file");
                     merData.Status = "Completed";
                     _fileUploadRepository.UpdateFile(merData);
                 }
-                File.Delete(Path.Combine(webRootPath, "Files", fileName));
+                // Move the file to archive
+                // File.Move(Path.Combine(webRootPath, "Files", fileName), Path.Combine(webRootPath, "archive"));
+                // Get the parent directory of _environment.ContentRootPath
+                string parentDirectoryPath = Directory.GetParent(_hostingEnvironment.ContentRootPath).FullName;
+                // Combine the parent directory path with the subdirectory name
+                string destinationDirectory = Path.Combine(parentDirectoryPath, "archive");
+                var newFileName = AppendGuidToFileName(fileName);
+                MoveAndRenameFile(fileName, "Files", destinationDirectory, newFileName);
+                _logger.LogInformation($"File archived");
                 return dataTable;
             }
             catch (Exception e)
@@ -486,6 +577,44 @@ namespace GHPRS.Core.Services
                 _logger.LogError(e.Message, e);
                 throw;
             }
+        }
+        
+        public void MoveAndRenameFile(string fileName, string sourceDirectory, string destinationDirectory, string newFileName)
+        {
+            string sourcePath = Path.Combine(_hostingEnvironment.ContentRootPath, sourceDirectory, fileName);
+            string destinationPath = Path.Combine(destinationDirectory, newFileName);
+
+            // Ensure the source file exists
+            if (!File.Exists(sourcePath))
+            {
+                throw new FileNotFoundException($"Source file not found: {sourcePath}");
+            }
+
+            // Create the destination directory if it doesn't exist
+            if (!Directory.Exists(destinationDirectory))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+
+            // Move the file and rename it
+            File.Move(sourcePath, destinationPath);
+        }
+        
+        public string AppendGuidToFileName(string fileName)
+        {
+            // Get the filename without the extension
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+            // Get the extension
+            string extension = Path.GetExtension(fileName);
+
+            // Generate a new GUID
+            Guid guid = Guid.NewGuid();
+
+            // Append the GUID and extension to the original filename
+            string newFileName = $"{fileNameWithoutExtension}_{guid}{extension}";
+
+            return newFileName;
         }
         
         public DataTable CreateDataTable(IEnumerable<string> columnNames)
